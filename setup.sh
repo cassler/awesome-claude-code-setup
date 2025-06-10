@@ -77,6 +77,7 @@ Claude has access to helper scripts at: ~/.claude/scripts/
 
 Key scripts to use:
 - Start with: `~/.claude/scripts/project-info.sh`
+- Generate context: `~/.claude/scripts/claude-context.sh for-task "your task"`
 - Search code: `~/.claude/scripts/search-tools.sh find-code "pattern"`
 - Git ops: `~/.claude/scripts/git-ops.sh status`
 
