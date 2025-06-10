@@ -2,6 +2,13 @@
 
 Supercharge your Claude Code experience with lightning-fast commands and intelligent workflows.
 
+> 📚 **Based on [Anthropic's Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)**
+> 
+> This toolkit implements Anthropic's recommended patterns for working with Claude Code, focusing on:
+> - 🚀 **Reducing token usage** through batched operations
+> - ⚡ **Improving speed** by scripting repetitive tasks
+> - 🎯 **Ensuring consistency** with standardized workflows
+
 ### 💡 What developers are saying:
 > "I used to type `git add . && git commit -m 'msg' && git push`... now it's just `chg quick-commit 'msg'`" 
 
@@ -29,6 +36,22 @@ git clone https://github.com/cassler/awesome-claude-code-setup.git && cd awesome
 - 🧠 **Smarter Claude** - Give it superpowers with these tools
 - 💰 **Save tokens** - Batch operations = fewer API calls
 - 🚀 **Pro shortcuts** - Work like a 10x developer
+
+### 📖 Why This Exists
+
+Following Anthropic's best practices, these tools solve real problems:
+
+**Without these tools:**
+- Claude makes multiple tool calls to gather project info
+- You type long commands repeatedly
+- Token usage adds up quickly
+- Workflows vary between sessions
+
+**With these tools:**
+- One command (`chp`) = complete project context
+- Shortcuts for everything (`chg quick-commit "msg"`)
+- Batched operations save 50-80% on tokens
+- Consistent, reproducible workflows every time
 
 ## 🎯 Try It Now!
 
