@@ -2,7 +2,7 @@
 
 Supercharge your Claude Code experience with lightning-fast commands and intelligent workflows.
 
-**🎯 14 Slash Commands** | **⚡ 9 Shell Tools** | **💰 50-80% Token Savings**
+**🎯 14 Slash Commands** | **⚡ 11 Shell Tools** | **💰 50-80% Token Savings**
 
 > 📚 **Based on [Anthropic's Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)**
 > 
@@ -114,6 +114,8 @@ Run these in your terminal for instant results:
 | 📦 `ch ts build` | **Node.js shortcuts** | Build, test, lint with less typing |
 | 📚 `ch m read-many` | **Read multiple files** | Save tokens, get context fast |
 | 🎯 `ch ctx for-task` | **Smart context generation** | `ch ctx for-task "refactor auth"` - instant focus |
+| 🔗 `ch cr imports-of` | **Code relationships** | Trace dependencies and imports |
+| ✅ `ch cq todos` | **Code quality checks** | Find TODOs, debug code, complexity |
 
 ## 📦 What Gets Installed (Technical Details)
 
@@ -254,6 +256,8 @@ Type `/` in Claude to see available commands:
 | 🔧 `ch env` | Environment health checks and tool verification |
 | 🔌 `ch mcp` | MCP integrations - Linear, Notion, browser |
 | 🎯 `ch ctx` | Generate optimal context, reduce token usage |
+| 🔗 `ch cr` | Analyze code relationships and dependencies |
+| ✅ `ch cq` | Check code quality - TODOs, complexity, secrets |
 | **Slash Commands** | |
 | 🔄 `/commit-and-push` | Complete git workflow - review, commit, push, check PRs |
 | 🧠 `/understand-codebase` | AI-powered analysis to understand any project in minutes |

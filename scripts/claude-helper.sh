@@ -51,6 +51,16 @@ case "$1" in
         "$SCRIPT_DIR/claude-context.sh" "$@"
         ;;
     
+    "code-relationships"|"cr")
+        shift
+        "$SCRIPT_DIR/code-relationships.sh" "$@"
+        ;;
+    
+    "code-quality"|"cq")
+        shift
+        "$SCRIPT_DIR/code-quality.sh" "$@"
+        ;;
+    
     "list"|"help"|"")
         echo "=== CLAUDE HELPER SCRIPTS ==="
         echo ""
@@ -66,6 +76,8 @@ case "$1" in
         echo "  env|e         - Environment checks"
         echo "  mcp           - MCP server helpers"
         echo "  context|ctx   - Claude context generation"
+        echo "  code-relationships|cr - Analyze code dependencies"
+        echo "  code-quality|cq - Check code quality"
         echo ""
         echo "Quick Examples:"
         echo "  $0 p                    # Project overview"

@@ -26,7 +26,7 @@ Skip checks: ${SKIP_CHECKS:-none}
    chs find-code "process\\.env\\.|ENV\\[|getenv\\("
    
    # Check for missing defaults
-   chs find-code "process\\.env\\.\\w+" | while read match; do
+   chs find-code "process\\.env\\.\\w+" 2>/dev/null | while IFS= read -r match; do
      echo "$match" | grep -q "||" || echo "Missing default: $match"
    done
    

@@ -15,9 +15,11 @@ Thresholds:
    ch cq todos --with-context
    
    # Find old TODOs (using git blame)
-   chs find-code "TODO|FIXME|HACK|XXX" | while read file; do
-     echo "=== $file ==="
-     git blame "$file" | grep -E "TODO|FIXME|HACK|XXX"
+   chs find-code "TODO|FIXME|HACK|XXX" 2>/dev/null | while IFS= read -r file; do
+     if [ -f "$file" ]; then
+       echo "=== $file ==="
+       git blame "$file" 2>/dev/null | grep -E "TODO|FIXME|HACK|XXX" || true
+     fi
    done
    ```
 

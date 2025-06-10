@@ -5,18 +5,23 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Colors for output
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+# Source common functions
+source "${SCRIPT_DIR}/common-functions.sh"
+
+# Check optional dependencies
+check_dependencies rg tree jq
 
 case "$1" in
     "for-task"|"task")
         # Generate context for a specific task
-        TASK="$2"
+        TASK="${2:-}"
         if [ -z "$TASK" ]; then
-            echo "Usage: $0 for-task <task-description>"
-            exit 1
+            error_exit "Usage: $0 for-task <task-description>"
+        fi
+        
+        # Validate input
+        if ! validate_input "$TASK"; then
+            error_exit "Invalid task description. Use only alphanumeric characters, spaces, and basic punctuation."
         fi
         
         echo -e "${GREEN}=== GENERATING CONTEXT FOR: $TASK ===${NC}"
@@ -24,14 +29,21 @@ case "$1" in
         
         # Find files related to the task keywords
         echo "=== RELATED FILES ==="
-        for word in $TASK; do
+        
+        # Save and modify IFS for word splitting
+        OLD_IFS="$IFS"
+        IFS=' '
+        read -ra WORDS <<< "$TASK"
+        IFS="$OLD_IFS"
+        
+        for word in "${WORDS[@]}"; do
             # Skip common words
             if [[ "$word" =~ ^(the|and|or|in|on|at|to|for|of|with|a|an)$ ]]; then
                 continue
             fi
             
             echo "Files containing '$word':"
-            if command -v rg &> /dev/null; then
+            if check_command rg; then
                 rg -l "$word" --type-add 'code:*.{js,jsx,ts,tsx,py,go,java,c,cpp,rs,rb,php}' -tcode 2>/dev/null | head -10
             else
                 grep -r -l "$word" . --include="*.js" --include="*.jsx" --include="*.ts" --include="*.tsx" \
@@ -42,7 +54,7 @@ case "$1" in
         
         echo "=== KEY DIRECTORIES ==="
         # Find directories that might be relevant
-        for word in $TASK; do
+        for word in "${WORDS[@]}"; do
             if [[ "$word" =~ ^(the|and|or|in|on|at|to|for|of|with|a|an)$ ]]; then
                 continue
             fi
@@ -91,12 +103,15 @@ case "$1" in
     
     "focus")
         # Focus on a specific directory
-        DIR="$2"
+        DIR="${2:-}"
         DEPTH="${3:-2}"
         
         if [ -z "$DIR" ]; then
-            echo "Usage: $0 focus <directory> [depth]"
-            exit 1
+            error_exit "Usage: $0 focus <directory> [depth]"
+        fi
+        
+        if [ ! -d "$DIR" ]; then
+            error_exit "Directory not found: $DIR"
         fi
         
         echo -e "${GREEN}=== FOCUSED CONTEXT: $DIR ===${NC}"
@@ -104,7 +119,7 @@ case "$1" in
         
         # Show directory structure
         echo "=== STRUCTURE ==="
-        if command -v tree &> /dev/null; then
+        if check_command tree; then
             tree "$DIR" -L "$DEPTH" -I 'node_modules|__pycache__|*.pyc|.git'
         else
             find "$DIR" -maxdepth "$DEPTH" -type f | grep -v node_modules | sort
@@ -128,12 +143,18 @@ case "$1" in
     
     "prepare-migration")
         # Prepare context for migration
-        MIGRATION="$2"
+        MIGRATION="${2:-}"
         
         if [ -z "$MIGRATION" ]; then
-            echo "Usage: $0 prepare-migration <description>"
-            exit 1
+            error_exit "Usage: $0 prepare-migration <description>"
         fi
+        
+        # Validate input
+        if ! validate_input "$MIGRATION"; then
+            error_exit "Invalid migration description. Use only alphanumeric characters, spaces, and basic punctuation."
+        fi
+        
+        check_git_repo
         
         echo -e "${GREEN}=== MIGRATION CONTEXT: $MIGRATION ===${NC}"
         echo ""
@@ -150,7 +171,11 @@ case "$1" in
         echo "=== DEPENDENCIES ==="
         if [ -f "package.json" ]; then
             echo "Current dependencies:"
-            cat package.json | jq '.dependencies' 2>/dev/null || grep -A20 '"dependencies"' package.json
+            if check_command jq; then
+                jq '.dependencies' package.json 2>/dev/null
+            else
+                grep -A20 '"dependencies"' package.json
+            fi
         fi
         
         echo ""

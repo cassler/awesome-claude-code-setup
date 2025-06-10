@@ -43,10 +43,12 @@ Focus areas: ${FOCUS_AREAS:-all changes}
 4. **Verify test coverage**:
    ```bash
    # Find untested files
-   git diff --name-only origin/main...HEAD | while IFS= read -r f; do
+   if ! git diff --name-only origin/main...HEAD 2>/dev/null | while IFS= read -r f; do
      echo "Checking tests for: $f"
      chs find-file "*.test.*" | xargs grep -l "$(basename "$f" .js)" 2>/dev/null || echo "  No tests found for $f"
-   done
+   done; then
+     echo "Note: Could not compare with origin/main"
+   fi
    
    # Run tests
    ch ts test
