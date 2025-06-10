@@ -74,15 +74,34 @@ Focus areas: ${FOCUS_AREAS:-all changes}
    ch ctx summarize > PR_CONTEXT.md
    
    # Show what changed
-   chg diff --stat
+   git diff --stat origin/main...HEAD
    ```
 
 2. **Check commit history**:
    ```bash
    # Review commits
-   chg log --oneline origin/main..HEAD
+   git log --oneline origin/main..HEAD
    
    # Consider squashing if needed
+   ```
+
+3. **Update PR if exists**:
+   ```bash
+   # Check if PR exists
+   PR_NUMBER=$(gh pr list --head "$(git branch --show-current)" --json number -q ".[0].number")
+   
+   if [ -n "$PR_NUMBER" ]; then
+     # Update PR description with context
+     gh pr edit "$PR_NUMBER" --body "$(gh pr view "$PR_NUMBER" --json body -q .body)\n\n## Review Context\n\n$(cat PR_CONTEXT.md)"
+     
+     # Mark as ready if it's a draft
+     gh pr ready "$PR_NUMBER" 2>/dev/null || echo "PR already ready for review"
+     
+     # Add review request if needed
+     gh pr edit "$PR_NUMBER" --add-reviewer "${REVIEWER:-@me}"
+   else
+     echo "No PR found. Create one with: gh pr create"
+   fi
    ```
 
 ## Final Checklist

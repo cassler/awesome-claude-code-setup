@@ -5,6 +5,8 @@ Please help me debug this issue: $ISSUE_DESCRIPTION
 Error/symptom: $ERROR_MESSAGE
 Component/area (if known): ${COMPONENT:-unknown}
 When it started: ${TIMEFRAME:-recently}
+GitHub issue: ${ISSUE_NUMBER:-none}
+PR causing issue: ${PR_NUMBER:-unknown}
 
 ## Systematic Debugging Workflow
 
@@ -56,11 +58,47 @@ When it started: ${TIMEFRAME:-recently}
    ch cq console-logs
    ```
 
-7. **Generate debugging report**:
+7. **Check related GitHub items**:
+   ```bash
+   # If issue number provided, get details
+   if [ -n "$ISSUE_NUMBER" ]; then
+     gh issue view "$ISSUE_NUMBER"
+   fi
+   
+   # If PR number provided, check changes
+   if [ -n "$PR_NUMBER" ]; then
+     gh pr diff "$PR_NUMBER" | grep -C5 "$COMPONENT"
+   fi
+   
+   # Search for related issues
+   gh issue list --search "$ERROR_MESSAGE" --limit 5
+   ```
+
+8. **Generate debugging report**:
    - Summarize findings
    - Identify root cause
    - Propose fix
    - Note any side effects
+   - Link to issue/PR if applicable
+
+## Fix Workflow
+
+Once root cause is identified:
+
+```bash
+# Create fix branch from issue
+git checkout -b "fix/${ISSUE_NUMBER:-bug}-${ISSUE_SLUGIFIED}"
+
+# After implementing fix
+git add -A
+git commit -m "fix: $ISSUE_DESCRIPTION (#$ISSUE_NUMBER)"
+git push -u origin HEAD
+
+# Create PR linked to issue
+gh pr create \
+  --title "fix: $ISSUE_DESCRIPTION" \
+  --body "## Description\n\nFixes $ERROR_MESSAGE\n\nCloses #$ISSUE_NUMBER\n\n## Root Cause\n\n[Explanation]\n\n## Solution\n\n[What was changed]\n\n## Testing\n\n- [ ] Error no longer occurs\n- [ ] No regressions\n- [ ] Tests added"
+```
 
 ## Debug Checklist
 
@@ -70,5 +108,6 @@ When it started: ${TIMEFRAME:-recently}
 - [ ] Tests added/updated
 - [ ] No new issues introduced
 - [ ] Documentation updated if needed
+- [ ] Issue/PR updated with findings
 
 Please analyze the codebase and help me resolve this issue systematically.
