@@ -2,6 +2,8 @@
 
 Supercharge your Claude Code experience with lightning-fast commands and intelligent workflows.
 
+**🎯 14 Slash Commands** | **⚡ 9 Shell Tools** | **💰 50-80% Token Savings**
+
 > 📚 **Based on [Anthropic's Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)**
 > 
 > This toolkit implements Anthropic's recommended patterns for working with Claude Code, focusing on:
@@ -28,8 +30,38 @@ git clone https://github.com/cassler/awesome-claude-code-setup.git && cd awesome
 
 **That's it!** You now have:
 - ✅ **Instant commands** like `chp` (full project analysis in 1 second)
-- ✅ **Slash commands** in Claude like `/commit-and-push` (complete git workflow)
+- ✅ **14 Slash commands** in Claude like `/start-feature` (complete workflows)
 - ✅ **Zero config** - everything just works
+
+## 🎯 Slash Commands - Your New Superpowers
+
+Type `/` in Claude to access these complete workflows:
+
+### 🚀 Development Workflows
+| Command | What it does | Perfect for |
+|---------|--------------|-------------|
+| ✨ `/start-feature` | **Feature development kickstart** | Creates issue, branch, draft PR automatically |
+| 🐛 `/debug-issue` | **Systematic debugging** | Traces errors, finds root cause, creates fix PR |
+| ✅ `/pre-review-check` | **Code review readiness** | Quality checks, removes debug code, updates PR |
+| 🔍 `/explore-module` | **Deep code analysis** | Understand any module's structure & dependencies |
+| 💸 `/tech-debt-hunt` | **Debt discovery** | Find and prioritize technical debt with estimates |
+| 🚢 `/pre-deploy-check` | **Deployment safety** | Security scans, build verification, rollback plan |
+
+### 📝 Documentation & Testing
+| Command | What it does | Perfect for |
+|---------|--------------|-------------|
+| 🧠 `/understand-codebase` | **AI code analysis** | Get up to speed on any project in minutes |
+| 🧪 `/tdd` | **Test-driven development** | Red → Green → Refactor workflow |
+| 📝 `/update-docs` | **Smart documentation** | Keep docs in sync with code changes |
+| 🎨 `/visual-test` | **Visual testing** | Screenshot comparisons and visual QA |
+| 📚 `/gather-tech-docs` | **Doc compilation** | Extract all technical documentation |
+
+### 🔄 Git & Process
+| Command | What it does | Perfect for |
+|---------|--------------|-------------|
+| 🔄 `/commit-and-push` | **Complete git workflow** | Review, commit, push, check PR feedback |
+| 📓 `/dev-diary` | **Development journal** | Track decisions, progress, and blockers |
+| 🚀 `/post-init-onboarding` | **Project onboarding** | Understand new codebases systematically |
 
 ### 🎉 What you'll get:
 - ⚡ **10x faster workflows** - Stop typing long commands
@@ -69,9 +101,9 @@ chg quick-commit "Fixed the thing"
 
 In Claude, type `/` to see your new commands!
 
-## 🌟 Why You'll Love This
+## ⚡ Shell Commands - Lightning Fast Operations
 
-### ⚡ Lightning-Fast Commands
+Run these in your terminal for instant results:
 
 | Command | What it does | Example |
 |---------|--------------|---------|
@@ -82,17 +114,6 @@ In Claude, type `/` to see your new commands!
 | 📦 `ch ts build` | **Node.js shortcuts** | Build, test, lint with less typing |
 | 📚 `ch m read-many` | **Read multiple files** | Save tokens, get context fast |
 | 🎯 `ch ctx for-task` | **Smart context generation** | `ch ctx for-task "refactor auth"` - instant focus |
-
-### 🎯 Game-Changing Slash Commands
-
-| Type this | Get this magic | Why it's awesome |
-|-----------|----------------|------------------|
-| 🔄 `/commit-and-push` | **Complete git workflow** | Commits, pushes, checks PRs - all automated |
-| 🧠 `/understand-codebase` | **AI code analysis** | Get up to speed on any project in minutes |
-| 🧪 `/tdd` | **Test-driven flow** | Write tests → implement → refactor cycle |
-| 📝 `/update-docs` | **Smart documentation** | Keeps docs in sync with your code |
-| 🎨 `/visual-test` | **UI testing helper** | Screenshot comparisons and visual QA |
-| 📓 `/dev-diary` | **Development notes** | Track decisions and progress |
 
 ## 📦 What Gets Installed (Technical Details)
 
