@@ -1,7 +1,17 @@
 #!/bin/bash
 
-# Docker Quick Operations Script
+# Docker Quick Operations Script - Enhanced with jq
 # Usage: ./docker-quick.sh [command] [args]
+
+# Check for jq when needed
+check_jq() {
+    if ! command -v jq &> /dev/null; then
+        echo "❌ jq is required for enhanced Docker inspection"
+        echo "Install with: brew install jq"
+        return 1
+    fi
+    return 0
+}
 
 case "$1" in
     "ps"|"list")
@@ -36,20 +46,33 @@ case "$1" in
         docker exec -it "$2" $SHELL_CMD || docker exec -it "$2" /bin/sh
         ;;
     
-    "inspect")
+    "inspect"|"i")
         if [ -z "$2" ]; then
             echo "Usage: $0 inspect <container-name>"
             exit 1
         fi
-        docker inspect "$2" | jq '.[0] | {
-            Name: .Name,
-            State: .State.Status,
-            Image: .Config.Image,
-            Ports: .NetworkSettings.Ports,
-            Env: .Config.Env[:5],
-            Mounts: .Mounts,
-            Networks: .NetworkSettings.Networks | keys
-        }'
+        
+        check_jq || exit 1
+        
+        echo "=== CONTAINER: $2 ==="
+        docker inspect "$2" | jq -r '.[0] | 
+            "Name: \(.Name)
+Status: \(.State.Status)
+Started: \(.State.StartedAt)
+Image: \(.Config.Image)
+Command: \(.Config.Cmd | join(" "))
+
+Networks:
+\(.NetworkSettings.Networks | to_entries | map("  \(.key): \(.value.IPAddress)") | join("\n"))
+
+Environment (first 5):
+\(.Config.Env[:5] | map("  \(.)") | join("\n"))
+
+Mounts:
+\(.Mounts | map("  \(.Source) -> \(.Destination)") | join("\n"))
+
+Ports:
+\(.NetworkSettings.Ports | to_entries | map("  \(.key) -> \(.value[0].HostPort // "not mapped")") | join("\n"))"'
         ;;
     
     "clean"|"cleanup")
@@ -94,9 +117,18 @@ case "$1" in
         fi
         ;;
     
-    "volumes")
+    "volumes"|"v")
         echo "=== DOCKER VOLUMES ==="
         docker volume ls --format "table {{.Name}}\t{{.Driver}}"
+        
+        if [ "$2" = "usage" ] && check_jq; then
+            echo ""
+            echo "=== VOLUME USAGE ==="
+            docker volume ls -q | while read -r vol; do
+                SIZE=$(docker run --rm -v "$vol:/data" alpine du -sh /data 2>/dev/null | cut -f1)
+                echo "$vol: $SIZE"
+            done
+        fi
         ;;
     
     "networks")
@@ -124,6 +156,32 @@ case "$1" in
         fi
         echo "Building image with tag: $TAG"
         docker build -t "$TAG" . --progress=plain
+        ;;
+    
+    "health"|"h")
+        # Container health check
+        echo "=== CONTAINER HEALTH STATUS ==="
+        
+        if check_jq; then
+            docker ps --format '{{.Names}}' | while read -r container; do
+                HEALTH=$(docker inspect "$container" | jq -r '.[0].State.Health.Status // "none"')
+                STATUS=$(docker inspect "$container" | jq -r '.[0].State.Status')
+                echo "$container: $STATUS (health: $HEALTH)"
+            done
+        else
+            docker ps --format "table {{.Names}}\t{{.Status}}"
+        fi
+        ;;
+    
+    "port"|"p")
+        # Show port mappings
+        if [ -z "$2" ]; then
+            echo "=== ALL PORT MAPPINGS ==="
+            docker ps --format "table {{.Names}}\t{{.Ports}}"
+        else
+            echo "=== PORTS FOR: $2 ==="
+            docker port "$2"
+        fi
         ;;
     
     *)

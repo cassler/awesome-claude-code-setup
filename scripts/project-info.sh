@@ -1,10 +1,17 @@
 #!/bin/bash
 
-# Project Info Script - Quick project overview
+# Project Info Script - Enhanced project overview with jq
 # Usage: ./project-info.sh [path]
 
 PROJECT_PATH="${1:-.}"
 cd "$PROJECT_PATH"
+
+# Check for jq
+if ! command -v jq &> /dev/null; then
+    echo "❌ jq is required for project analysis"
+    echo "Install with: brew install jq"
+    exit 1
+fi
 
 echo "=== PROJECT OVERVIEW ==="
 echo "Path: $(pwd)"
@@ -53,23 +60,53 @@ echo ""
 if [ "$HAS_NODE" = true ] && [ -f "package.json" ]; then
     echo "=== NODE.JS PROJECT INFO ==="
     
-    # Extract key info from package.json
-    if command -v jq &> /dev/null; then
-        NAME=$(jq -r '.name // "N/A"' package.json)
-        VERSION=$(jq -r '.version // "N/A"' package.json)
-        echo "Name: $NAME"
-        echo "Version: $VERSION"
-        echo ""
-        echo "Scripts:"
-        jq -r '.scripts // {} | to_entries | .[] | "  \(.key): \(.value)"' package.json 2>/dev/null | head -10
-        echo ""
-        echo "Key Dependencies:"
-        jq -r '.dependencies // {} | to_entries | .[] | "  \(.key): \(.value)"' package.json 2>/dev/null | head -5
-        [ -f "package.json" ] && jq -e '.devDependencies' package.json &>/dev/null && echo "  ... and $(jq -r '.devDependencies | length' package.json) dev dependencies"
-    else
-        echo "Install jq for detailed package.json analysis"
-        echo "Scripts: $(grep -A5 '"scripts"' package.json | grep -E '^\s*"' | cut -d'"' -f2 | tr '\n' ', ' | sed 's/,$//')"
+    # Extract comprehensive info from package.json
+    NAME=$(jq -r '.name // "N/A"' package.json)
+    VERSION=$(jq -r '.version // "N/A"' package.json)
+    DESCRIPTION=$(jq -r '.description // ""' package.json)
+    
+    echo "Name: $NAME"
+    echo "Version: $VERSION"
+    [ -n "$DESCRIPTION" ] && echo "Description: $DESCRIPTION"
+    
+    # Detect framework
+    if jq -e '.dependencies.next // .devDependencies.next' package.json &>/dev/null; then
+        echo "Framework: Next.js $(jq -r '.dependencies.next // .devDependencies.next' package.json)"
+    elif jq -e '.dependencies.react // .devDependencies.react' package.json &>/dev/null; then
+        echo "Framework: React $(jq -r '.dependencies.react // .devDependencies.react' package.json)"
+    elif jq -e '.dependencies.vue // .devDependencies.vue' package.json &>/dev/null; then
+        echo "Framework: Vue.js $(jq -r '.dependencies.vue // .devDependencies.vue' package.json)"
+    elif jq -e '.dependencies.express // .devDependencies.express' package.json &>/dev/null; then
+        echo "Framework: Express $(jq -r '.dependencies.express // .devDependencies.express' package.json)"
     fi
+    
+    echo ""
+    echo "Scripts:"
+    jq -r '.scripts // {} | to_entries | .[] | "  \(.key): \(.value)"' package.json | head -10
+    
+    SCRIPT_COUNT=$(jq -r '.scripts // {} | length' package.json)
+    [ $SCRIPT_COUNT -gt 10 ] && echo "  ... and $((SCRIPT_COUNT - 10)) more scripts"
+    
+    echo ""
+    echo "Dependencies Summary:"
+    DEP_COUNT=$(jq -r '.dependencies // {} | length' package.json)
+    DEVDEP_COUNT=$(jq -r '.devDependencies // {} | length' package.json)
+    echo "  Production: $DEP_COUNT packages"
+    echo "  Development: $DEVDEP_COUNT packages"
+    
+    # Show key dependencies
+    echo ""
+    echo "Key Dependencies:"
+    jq -r '.dependencies // {} | to_entries | sort_by(.key) | .[:5] | .[] | "  \(.key): \(.value)"' package.json
+    
+    # Check for common tools
+    echo ""
+    echo "Build Tools:"
+    jq -e '.devDependencies.typescript' package.json &>/dev/null && echo "  ✓ TypeScript"
+    jq -e '.devDependencies."@types/node"' package.json &>/dev/null && echo "  ✓ TypeScript Node types"
+    jq -e '.devDependencies.eslint' package.json &>/dev/null && echo "  ✓ ESLint"
+    jq -e '.devDependencies.prettier' package.json &>/dev/null && echo "  ✓ Prettier"
+    jq -e '.devDependencies.jest // .devDependencies.vitest // .devDependencies.mocha' package.json &>/dev/null && echo "  ✓ Testing framework"
     echo ""
 fi
 

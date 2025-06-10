@@ -1,23 +1,48 @@
 #!/bin/bash
 
-# TypeScript/Node.js Helper Script
+# TypeScript/Node.js Helper Script - Enhanced with jq
 # Usage: ./ts-helper.sh [command] [args]
+
+# Check for jq
+if ! command -v jq &> /dev/null; then
+    echo "❌ jq is required for TypeScript/Node.js analysis"
+    echo "Install with: brew install jq"
+    exit 1
+fi
 
 case "$1" in
     "deps"|"dependencies")
         echo "=== DEPENDENCIES OVERVIEW ==="
         if [ -f "package.json" ]; then
-            if command -v jq &> /dev/null; then
-                DEPS=$(jq -r '.dependencies | length' package.json 2>/dev/null || echo "0")
-                DEV_DEPS=$(jq -r '.devDependencies | length' package.json 2>/dev/null || echo "0")
-                echo "Production dependencies: $DEPS"
-                echo "Dev dependencies: $DEV_DEPS"
+            DEPS=$(jq -r '.dependencies | length' package.json)
+            DEV_DEPS=$(jq -r '.devDependencies | length' package.json)
+            PEER_DEPS=$(jq -r '.peerDependencies | length' package.json 2>/dev/null || echo "0")
+            
+            echo "Production dependencies: $DEPS"
+            echo "Dev dependencies: $DEV_DEPS"
+            [ "$PEER_DEPS" != "0" ] && echo "Peer dependencies: $PEER_DEPS"
+            
+            # Check for outdated packages
+            if command -v npm &> /dev/null; then
                 echo ""
-                echo "Key dependencies:"
-                jq -r '.dependencies | to_entries | .[] | "  \(.key): \(.value)"' package.json 2>/dev/null | head -10
-            else
-                echo "Dependencies:"
-                grep -A20 '"dependencies"' package.json | grep -E '^\s*"' | head -10
+                echo "Checking for outdated packages..."
+                npm outdated --depth=0 2>/dev/null | head -10 || echo "  All packages up to date"
+            fi
+            
+            echo ""
+            echo "Key Production Dependencies:"
+            jq -r '.dependencies | to_entries | sort_by(.key) | .[:10] | .[] | "  \(.key): \(.value)"' package.json
+            
+            # Show security audit summary if available
+            if [ -f "package-lock.json" ] && command -v npm &> /dev/null; then
+                echo ""
+                echo "Security Audit:"
+                npm audit --json 2>/dev/null | jq -r '
+                    if .metadata then
+                        "  Vulnerabilities: \(.metadata.vulnerabilities | to_entries | map("\(.value) \(.key)") | join(", "))"
+                    else
+                        "  No audit data available"
+                    end'
             fi
         else
             echo "No package.json found"
@@ -26,10 +51,28 @@ case "$1" in
     
     "scripts")
         echo "=== AVAILABLE SCRIPTS ==="
-        if [ -f "package.json" ] && command -v jq &> /dev/null; then
-            jq -r '.scripts | to_entries | .[] | "\(.key)\n  \(.value)\n"' package.json 2>/dev/null
+        if [ -f "package.json" ]; then
+            # Group scripts by category
+            echo "Build & Development:"
+            jq -r '.scripts | to_entries | .[] | select(.key | test("^(build|dev|start|serve|watch)")) | "  \(.key): \(.value)"' package.json
+            
+            echo ""
+            echo "Testing & Quality:"
+            jq -r '.scripts | to_entries | .[] | select(.key | test("^(test|lint|format|check|typecheck)")) | "  \(.key): \(.value)"' package.json
+            
+            echo ""
+            echo "Other Scripts:"
+            jq -r '.scripts | to_entries | .[] | select(.key | test("^(build|dev|start|serve|watch|test|lint|format|check|typecheck)") | not) | "  \(.key): \(.value)"' package.json
+            
+            # Show shortcuts
+            echo ""
+            echo "Quick Commands:"
+            jq -e '.scripts.dev' package.json &>/dev/null && echo "  npm run dev     # Start development server"
+            jq -e '.scripts.build' package.json &>/dev/null && echo "  npm run build   # Build for production"
+            jq -e '.scripts.test' package.json &>/dev/null && echo "  npm test        # Run tests"
+            jq -e '.scripts.lint' package.json &>/dev/null && echo "  npm run lint    # Check code quality"
         else
-            grep -A20 '"scripts"' package.json | grep -E '^\s*"' | sed 's/[",]//g'
+            echo "No package.json found"
         fi
         ;;
     
@@ -163,6 +206,69 @@ case "$1" in
             yarn add "$PKG"
         else
             npm install "$PKG"
+        fi
+        ;;
+    
+    "analyze"|"structure")
+        # Analyze project structure
+        echo "=== PROJECT STRUCTURE ANALYSIS ==="
+        if [ -f "package.json" ]; then
+            # Check project type
+            echo "Project Type:"
+            if [ -f "next.config.js" ] || [ -f "next.config.mjs" ]; then
+                echo "  ✓ Next.js Application"
+            elif jq -e '.dependencies.react' package.json &>/dev/null; then
+                echo "  ✓ React Application"
+            elif jq -e '.dependencies.express' package.json &>/dev/null; then
+                echo "  ✓ Express Server"
+            elif jq -e '.type == "module"' package.json &>/dev/null; then
+                echo "  ✓ ES Module Project"
+            else
+                echo "  ✓ Node.js Project"
+            fi
+            
+            # Check configuration files
+            echo ""
+            echo "Configuration:"
+            [ -f "tsconfig.json" ] && echo "  ✓ TypeScript configured" && {
+                TS_TARGET=$(jq -r '.compilerOptions.target // "not set"' tsconfig.json)
+                echo "    Target: $TS_TARGET"
+            }
+            [ -f ".eslintrc.json" ] || [ -f ".eslintrc.js" ] && echo "  ✓ ESLint configured"
+            [ -f ".prettierrc" ] || [ -f "prettier.config.js" ] && echo "  ✓ Prettier configured"
+            [ -f "jest.config.js" ] || [ -f "vitest.config.js" ] && echo "  ✓ Testing configured"
+            
+            # Analyze source structure
+            echo ""
+            echo "Source Structure:"
+            [ -d "src" ] && echo "  ✓ src/ directory" && {
+                find src -type f -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" | wc -l | xargs echo "    Files:"
+            }
+            [ -d "pages" ] && echo "  ✓ pages/ directory (Next.js routing)"
+            [ -d "app" ] && echo "  ✓ app/ directory (Next.js App Router)"
+            [ -d "components" ] && echo "  ✓ components/ directory"
+            [ -d "lib" ] && echo "  ✓ lib/ directory"
+            [ -d "utils" ] && echo "  ✓ utils/ directory"
+            [ -d "tests" ] || [ -d "__tests__" ] && echo "  ✓ tests/ directory"
+            
+            # Module resolution
+            echo ""
+            echo "Module System:"
+            if jq -e '.type == "module"' package.json &>/dev/null; then
+                echo "  Using ES Modules (import/export)"
+            else
+                echo "  Using CommonJS (require/module.exports)"
+            fi
+            
+            # Check for monorepo
+            if [ -f "lerna.json" ] || [ -f "pnpm-workspace.yaml" ] || [ -d "packages" ]; then
+                echo ""
+                echo "Monorepo Structure:"
+                echo "  ✓ Monorepo detected"
+                [ -d "packages" ] && find packages -maxdepth 1 -type d | tail -n +2 | wc -l | xargs echo "    Packages:"
+            fi
+        else
+            echo "No package.json found"
         fi
         ;;
     

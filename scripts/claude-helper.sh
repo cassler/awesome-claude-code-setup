@@ -61,6 +61,16 @@ case "$1" in
         "$SCRIPT_DIR/code-quality.sh" "$@"
         ;;
     
+    "interactive"|"i")
+        shift
+        "$SCRIPT_DIR/interactive-helper.sh" "$@"
+        ;;
+    
+    "api")
+        shift
+        "$SCRIPT_DIR/api-helper.sh" "$@"
+        ;;
+    
     "list"|"help"|"")
         echo "=== CLAUDE HELPER SCRIPTS ==="
         echo ""
@@ -78,6 +88,10 @@ case "$1" in
         echo "  context|ctx   - Claude context generation"
         echo "  code-relationships|cr - Analyze code dependencies"
         echo "  code-quality|cq - Check code quality"
+        echo ""
+        echo "Enhanced Tools (optional):"
+        echo "  interactive|i - Interactive file/branch selection"
+        echo "  api           - API testing with JSON tools"
         echo ""
         echo "Quick Examples:"
         echo "  $0 p                    # Project overview"

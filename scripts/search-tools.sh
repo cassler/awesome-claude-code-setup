@@ -1,47 +1,64 @@
 #!/bin/bash
 
-# Search Tools Script - Efficient code searching
+# Search Tools Script - Enhanced code searching with fzf, bat, and ripgrep
 # Usage: ./search-tools.sh [command] [args]
 
-# Use ripgrep if available, fallback to grep
+# Source common functions
+SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
+source "$SCRIPT_DIR/common-functions.sh"
+
+# Check for ripgrep
 RG_PATH="/Users/darin/.claude/local/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/arm64-darwin/rg"
 if [ -x "$RG_PATH" ]; then
     RG="$RG_PATH"
 elif command -v rg &> /dev/null; then
     RG="rg"
 else
-    RG=""
+    echo "❌ ripgrep (rg) is required for search tools"
+    echo "Install with: brew install ripgrep"
+    exit 1
 fi
 
 case "$1" in
     "find-code"|"fc")
-        # Find code pattern efficiently
+        # Find code pattern with interactive selection
         PATTERN="$2"
         if [ -z "$PATTERN" ]; then
             echo "Usage: $0 find-code <pattern>"
             exit 1
         fi
         
-        if [ -n "$RG" ]; then
-            $RG "$PATTERN" --type-list | head -5
+        if command -v fzf &> /dev/null && command -v bat &> /dev/null; then
+            # Interactive mode with fzf and bat
+            echo "=== INTERACTIVE SEARCH: $PATTERN ==="
+            $RG "$PATTERN" -l | fzf --preview "$RG '$PATTERN' -n --color always {} | bat --color=always --style=plain --language=txt" \
+                --preview-window=right:60%:wrap \
+                --header="Select file to view (ESC to cancel)"
+        else
+            # Basic search output
             echo "=== SEARCHING FOR: $PATTERN ==="
             $RG "$PATTERN" -n --max-count=3 --max-columns=150
-        else
-            echo "=== SEARCHING FOR: $PATTERN ==="
-            grep -rn "$PATTERN" . --exclude-dir={node_modules,.git,dist,build} | head -20
         fi
         ;;
     
     "find-file"|"ff")
-        # Find files by name pattern
+        # Find files by name with interactive selection
         PATTERN="$2"
         if [ -z "$PATTERN" ]; then
             echo "Usage: $0 find-file <pattern>"
             exit 1
         fi
         
-        echo "=== FILES MATCHING: $PATTERN ==="
-        find . -type f -name "*$PATTERN*" -not -path "*/node_modules/*" -not -path "*/.git/*" | head -20
+        if command -v fzf &> /dev/null; then
+            # Interactive file selection
+            find . -type f -name "*$PATTERN*" -not -path "*/node_modules/*" -not -path "*/.git/*" | \
+                fzf --preview 'bat --color=always --style=numbers {} 2>/dev/null || head -50 {}' \
+                    --preview-window=right:60%:wrap \
+                    --header="Files matching: $PATTERN"
+        else
+            echo "=== FILES MATCHING: $PATTERN ==="
+            find . -type f -name "*$PATTERN*" -not -path "*/node_modules/*" -not -path "*/.git/*" | head -20
+        fi
         ;;
     
     "find-type"|"ft")
@@ -74,7 +91,7 @@ case "$1" in
         ;;
     
     "search-function"|"sf")
-        # Search for function definitions
+        # Search for function definitions with context
         FUNC="$2"
         if [ -z "$FUNC" ]; then
             echo "Usage: $0 search-function <function-name>"
@@ -82,11 +99,8 @@ case "$1" in
         fi
         
         echo "=== FUNCTION: $FUNC ==="
-        if [ -n "$RG" ]; then
-            $RG "(function|const|let|var|def|fn).*$FUNC" -n --max-columns=150
-        else
-            grep -rn -E "(function|const|let|var|def|fn).*$FUNC" . --exclude-dir={node_modules,.git}
-        fi
+        # Use ripgrep with context lines for better understanding
+        $RG "(function|const|let|var|def|fn|func)\s+$FUNC" -A 3 -B 1 --max-columns=150
         ;;
     
     "search-class"|"sc")
@@ -127,6 +141,26 @@ case "$1" in
         DAYS="${2:-1}"
         echo "=== FILES MODIFIED IN LAST $DAYS DAY(S) ==="
         find . -type f -mtime -$DAYS -not -path "*/node_modules/*" -not -path "*/.git/*" | head -20
+        ;;
+    
+    "interactive"|"i")
+        # Interactive file search - requires fzf
+        if ! command -v fzf &> /dev/null; then
+            echo "❌ fzf is required for interactive search"
+            echo "Install with: brew install fzf"
+            exit 1
+        fi
+        
+        echo "=== INTERACTIVE FILE SEARCH (ESC to cancel) ==="
+        
+        # Enhanced search with ripgrep for file listing (respects .gitignore)
+        if command -v bat &> /dev/null; then
+            $RG --files | fzf --preview 'bat --style=numbers --color=always --line-range :500 {}' \
+                --preview-window=right:60%:wrap \
+                --bind 'ctrl-/:change-preview-window(hidden|)'
+        else
+            $RG --files | fzf --preview 'head -100 {}' --preview-window=right:60%:wrap
+        fi
         ;;
     
     "count-lines"|"cl")
@@ -179,9 +213,13 @@ case "$1" in
         echo "  $0 recent-files|rf [days]      - Find recently modified"
         echo "  $0 count-lines|cl              - Count lines by file type"
         echo "  $0 search-all|sa <pattern>     - Comprehensive search"
-        if [ -n "$RG" ]; then
-            echo ""
-            echo "✓ Using ripgrep for fast searching"
-        fi
+        echo "  $0 interactive|i               - Interactive file search (requires fzf)"
+        echo ""
+        echo "Optional tool status:"
+        [ -n "$RG" ] && echo "  ✓ ripgrep (fast searching)"
+        [[ "$FZF_AVAILABLE" == "true" ]] && echo "  ✓ fzf (interactive search)"
+        [[ "$BAT_AVAILABLE" == "true" ]] && echo "  ✓ bat (syntax highlighting)"
+        echo ""
+        echo "Install optional tools for enhanced features."
         ;;
 esac

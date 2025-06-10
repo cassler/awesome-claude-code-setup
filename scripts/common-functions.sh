@@ -149,7 +149,126 @@ is_stop_word() {
     return 1
 }
 
+# Optional tools configuration
+export OPTIONAL_TOOLS=(fzf jq bat gum delta rg fd-find httpie tldr)
+
+# Function to detect OS and package manager
+detect_package_manager() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        if check_command brew; then
+            echo "brew"
+        else
+            echo "none"
+        fi
+    elif [[ -f /etc/debian_version ]]; then
+        echo "apt"
+    elif [[ -f /etc/redhat-release ]]; then
+        if check_command dnf; then
+            echo "dnf"
+        else
+            echo "yum"
+        fi
+    elif [[ -f /etc/arch-release ]]; then
+        echo "pacman"
+    else
+        echo "unknown"
+    fi
+}
+
+# Function to suggest tool installation
+suggest_install_tool() {
+    local tool="$1"
+    local pkg_manager
+    pkg_manager=$(detect_package_manager)
+    
+    case "$pkg_manager" in
+        brew)
+            echo "Install with: brew install $tool"
+            ;;
+        apt)
+            echo "Install with: sudo apt install $tool"
+            ;;
+        dnf|yum)
+            echo "Install with: sudo $pkg_manager install $tool"
+            ;;
+        pacman)
+            echo "Install with: sudo pacman -S $tool"
+            ;;
+        none)
+            echo "Install Homebrew first: /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+            ;;
+        *)
+            echo "Please install $tool using your system's package manager"
+            ;;
+    esac
+}
+
+# Function to check and optionally install a tool
+check_optional_tool() {
+    local tool="$1"
+    local prompt="${2:-true}"
+    
+    if check_command "$tool"; then
+        return 0
+    fi
+    
+    if [[ "$prompt" == "true" ]] && [[ -t 0 ]]; then
+        echo -e "${YELLOW}Optional tool '$tool' not found.${NC}"
+        suggest_install_tool "$tool"
+        read -p "Would you like to install it now? (y/N) " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            install_optional_tool "$tool"
+            return $?
+        fi
+    fi
+    
+    return 1
+}
+
+# Function to install an optional tool
+install_optional_tool() {
+    local tool="$1"
+    local pkg_manager
+    pkg_manager=$(detect_package_manager)
+    
+    case "$pkg_manager" in
+        brew)
+            brew install "$tool"
+            ;;
+        apt)
+            sudo apt update && sudo apt install -y "$tool"
+            ;;
+        dnf|yum)
+            sudo "$pkg_manager" install -y "$tool"
+            ;;
+        pacman)
+            sudo pacman -S --noconfirm "$tool"
+            ;;
+        *)
+            warn "Cannot automatically install $tool on this system"
+            return 1
+            ;;
+    esac
+}
+
+# Function to use optional tool with fallback
+use_optional_tool() {
+    local tool="$1"
+    local fallback_cmd="$2"
+    shift 2
+    local args=("$@")
+    
+    if check_command "$tool"; then
+        "$tool" "${args[@]}"
+    else
+        eval "$fallback_cmd"
+    fi
+}
+
 # Export functions so they're available to sourcing scripts
 export -f error_exit warn success check_command check_dependencies
 export -f slugify validate_input quote_path run_command run_optional
 export -f check_git_repo get_current_branch check_file ensure_dir is_stop_word
+export -f detect_package_manager suggest_install_tool check_optional_tool
+export -f install_optional_tool use_optional_tool
