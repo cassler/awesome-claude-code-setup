@@ -1,6 +1,6 @@
 # 🚀 Claude Code Power Tools
 
-<img src="logo.png" alt="Claude Code Power Tools" width="200"/>
+<img src="howdy.png" alt="Claude Code Power Tools" width="200"/>
 
 Supercharge your Claude Code experience with lightning-fast commands and
 intelligent workflows.
