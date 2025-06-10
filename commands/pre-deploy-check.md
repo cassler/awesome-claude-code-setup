@@ -49,14 +49,14 @@ Skip checks: ${SKIP_CHECKS:-none}
 4. **Build verification**:
    ```bash
    # Clean build
-   rm -rf ${BUILD_DIR:-dist build} node_modules/.cache
+   rm -rf "${BUILD_DIR:-dist}" "${BUILD_DIR:-build}" node_modules/.cache
    ch ts build
    
    # Check build output
-   ls -la ${BUILD_DIR:-dist}
+   ls -la "${BUILD_DIR:-dist}"
    
    # Verify no source maps in production
-   find ${BUILD_DIR:-dist} -name "*.map" | grep . && echo "WARNING: Source maps found!"
+   find "${BUILD_DIR:-dist}" -name "*.map" | grep . && echo "WARNING: Source maps found!"
    ```
 
 5. **Test suite**:
@@ -77,7 +77,7 @@ Skip checks: ${SKIP_CHECKS:-none}
    chs find-file "*migration*|*migrate*" --sort-date | tail -5
    
    # Check for migration conflicts
-   git diff ${TARGET_BRANCH:-main} --name-only | grep -i migration
+   git diff "${TARGET_BRANCH:-main}" --name-only | grep -i migration
    
    # Look for schema changes
    chs find-code "CREATE TABLE|ALTER TABLE|DROP TABLE"
@@ -89,10 +89,10 @@ Skip checks: ${SKIP_CHECKS:-none}
    ch ts size
    
    # Find large assets
-   find ${BUILD_DIR:-dist} -type f -size +${MAX_SIZE:-1M} -exec ls -lh {} \;
+   find "${BUILD_DIR:-dist}" -type f -size "+${MAX_SIZE:-1M}" -exec ls -lh {} \;
    
    # Check for unoptimized images
-   find . -name "*.png" -o -name "*.jpg" -size +${IMG_SIZE:-500k}
+   find . -name "*.png" -o -name "*.jpg" -size "+${IMG_SIZE:-500k}"
    ```
 
 8. **Documentation**:
