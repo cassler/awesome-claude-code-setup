@@ -3,34 +3,121 @@
 # Environment Check Script
 # Usage: ./env-check.sh [check-type]
 
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source common functions if available
+if [ -f "$SCRIPT_DIR/common-functions.sh" ]; then
+    source "$SCRIPT_DIR/common-functions.sh"
+fi
+
 case "$1" in
     "tools"|"")
         echo "=== DEVELOPMENT TOOLS CHECK ==="
+        echo ""
+        echo "Essential Tools:"
         
-        # Check common tools
-        TOOLS=(
+        # Check essential tools
+        ESSENTIAL_TOOLS=(
             "git:Version control"
+            "bash:Shell scripting"
+            "grep:Text search"
+            "sed:Stream editor"
+            "awk:Text processing"
+            "find:File search"
+            "curl:HTTP client"
+        )
+        
+        for tool_desc in "${ESSENTIAL_TOOLS[@]}"; do
+            IFS=':' read -r tool desc <<< "$tool_desc"
+            if command -v "$tool" &> /dev/null; then
+                VERSION=$("$tool" --version 2>&1 | head -1 | sed 's/^[^0-9]*\([0-9.]*\).*/\1/' | head -c 20)
+                printf "✅ %-12s %s\n" "$tool" "$desc"
+            else
+                printf "❌ %-12s %s (not found)\n" "$tool" "$desc"
+            fi
+        done
+        
+        echo ""
+        echo "Development Tools:"
+        
+        # Check development tools
+        DEV_TOOLS=(
             "node:Node.js runtime"
             "npm:Node package manager"
-            "docker:Container runtime"
             "python3:Python 3"
+            "docker:Container runtime"
             "make:Build automation"
-            "curl:HTTP client"
-            "jq:JSON processor"
             "gh:GitHub CLI"
             "code:VS Code"
         )
         
-        for tool_desc in "${TOOLS[@]}"; do
+        for tool_desc in "${DEV_TOOLS[@]}"; do
             IFS=':' read -r tool desc <<< "$tool_desc"
             if command -v "$tool" &> /dev/null; then
-                VERSION=$("$tool" --version 2>&1 | head -1)
-                echo "✓ $tool - $desc"
-                echo "  $VERSION"
+                printf "✅ %-12s %s\n" "$tool" "$desc"
             else
-                echo "✗ $tool - $desc (not found)"
+                printf "⚪ %-12s %s (not installed)\n" "$tool" "$desc"
             fi
         done
+        
+        echo ""
+        echo "Optional Enhancement Tools:"
+        
+        # Check optional tools with installation hints
+        OPTIONAL_TOOLS=(
+            "fzf:Interactive fuzzy finder"
+            "jq:JSON processor"
+            "bat:Syntax-highlighted cat"
+            "ripgrep:Fast file search (rg)"
+            "gum:Beautiful CLI prompts"
+            "delta:Enhanced git diffs"
+            "httpie:Modern HTTP client"
+            "tokei:Code statistics"
+            "ast-grep:Semantic code search"
+        )
+        
+        local missing_optional=()
+        for tool_desc in "${OPTIONAL_TOOLS[@]}"; do
+            IFS=':' read -r tool desc <<< "$tool_desc"
+            # Handle ripgrep special case
+            if [ "$tool" = "ripgrep" ]; then
+                tool="rg"
+            fi
+            
+            if command -v "$tool" &> /dev/null; then
+                printf "✅ %-12s %s\n" "$tool" "$desc"
+            else
+                printf "⚪ %-12s %s\n" "$tool" "$desc"
+                missing_optional+=("$tool")
+            fi
+        done
+        
+        if [ ${#missing_optional[@]} -gt 0 ]; then
+            echo ""
+            echo "💡 To install missing optional tools, run:"
+            echo "   ~/.claude/setup.sh --install-tools"
+            echo ""
+            echo "Or install individually:"
+            
+            # Detect package manager and show install commands
+            if [[ -n "$(command -v detect_package_manager 2>/dev/null)" ]]; then
+                detect_package_manager
+                case $PKG_MANAGER in
+                    brew)
+                        echo "   brew install ${missing_optional[*]}"
+                        ;;
+                    apt)
+                        echo "   sudo apt install ${missing_optional[*]}"
+                        ;;
+                    *)
+                        echo "   Use your package manager to install: ${missing_optional[*]}"
+                        ;;
+                esac
+            else
+                echo "   Use your package manager to install: ${missing_optional[*]}"
+            fi
+        fi
         ;;
     
     "node")
