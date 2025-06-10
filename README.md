@@ -241,37 +241,37 @@ Type `/` in Claude to see available commands:
 
 ### 🛠️ Complete Helper Scripts Collection
 
-| Icon | Script | Alias | What it does | Power Feature |
-|------|--------|-------|--------------|---------------|
-| 🎯 | **claude-helper.sh** | `ch` | Command central | Route to any tool with 2 letters |
-| 📊 | **project-info.sh** | `chp` | Instant project X-ray | Languages, deps, structure in 1 command |
-| 🔍 | **search-tools.sh** | `chs` | Code search on steroids | Ripgrep-powered, blazing fast |
-| 🚀 | **git-ops.sh** | `chg` | Git workflow accelerator | Commit, push, PR in seconds |
-| 🐳 | **docker-quick.sh** | `ch d` | Docker without the hassle | One-letter shortcuts for everything |
-| 📦 | **ts-helper.sh** | `ch ts` | Node.js productivity | Build, test, lint, audit in a snap |
-| 📚 | **multi-file.sh** | `ch m` | Batch file wizard | Read 10 files as fast as 1 |
-| 🔧 | **env-check.sh** | `ch env` | Environment doctor | Instant health check for your setup |
-| 🔌 | **mcp-helper.sh** | `ch mcp` | Integration helper | Linear, Notion, browser automation |
-| 🎯 | **claude-context.sh** | `ch ctx` | Context generator | Generate optimal context, save tokens |
+| Script | What it does |
+|--------|--------------|
+| 🎯 **claude-helper.sh** (`ch`) | Main command router - access any tool with 2 letters |
+| 📊 **project-info.sh** (`chp`) | Instant project overview - languages, deps, structure |
+| 🔍 **search-tools.sh** (`chs`) | Lightning-fast code search powered by ripgrep |
+| 🚀 **git-ops.sh** (`chg`) | Git shortcuts - commit, push, PR in seconds |
+| 🐳 **docker-quick.sh** (`ch d`) | Docker management with one-letter shortcuts |
+| 📦 **ts-helper.sh** (`ch ts`) | Node.js/TypeScript - build, test, lint, audit |
+| 📚 **multi-file.sh** (`ch m`) | Read multiple files efficiently, save tokens |
+| 🔧 **env-check.sh** (`ch env`) | Environment health checks and tool verification |
+| 🔌 **mcp-helper.sh** (`ch mcp`) | MCP integrations - Linear, Notion, browser |
+| 🎯 **claude-context.sh** (`ch ctx`) | Generate optimal context, reduce token usage |
 
 ### 🎨 Complete Slash Commands Collection
 
-| Icon | Command | What it does | Perfect for |
-|------|---------|--------------|-------------|
-| 🔄 | `/commit-and-push` | **Git workflow automation** | Review → commit → push → PR check |
-| 🧠 | `/understand-codebase` | **AI-powered code analysis** | New project? Understand it in minutes |
-| 🧪 | `/tdd` | **Test-driven development** | Red → Green → Refactor workflow |
-| 📝 | `/update-docs` | **Smart documentation sync** | Never let docs go stale again |
-| 🎨 | `/visual-test` | **Visual regression testing** | Catch UI bugs before users do |
-| 📓 | `/dev-diary` | **Development journaling** | Track decisions & progress |
-| 📚 | `/gather-tech-docs` | **Doc compilation** | Extract all technical docs |
-| 🚀 | `/post-init-onboarding` | **Project onboarding** | Get productive on day 1 |
-| ✨ | `/start-feature` | **Feature kickstart** | Structure new feature development |
-| 🐛 | `/debug-issue` | **Systematic debugging** | Find and fix issues methodically |
-| ✅ | `/pre-review-check` | **PR quality check** | Ensure code is review-ready |
-| 🔍 | `/explore-module` | **Deep module analysis** | Understand any module completely |
-| 💸 | `/tech-debt-hunt` | **Debt discovery** | Find and prioritize technical debt |
-| 🚢 | `/pre-deploy-check` | **Deployment safety** | Verify production readiness |
+| Command | What it does |
+|---------|--------------|
+| 🔄 **/commit-and-push** | Complete git workflow - review, commit, push, check PRs |
+| 🧠 **/understand-codebase** | AI-powered analysis to understand any project in minutes |
+| 🧪 **/tdd** | Test-driven development workflow - Red → Green → Refactor |
+| 📝 **/update-docs** | Keep documentation in sync with code changes |
+| 🎨 **/visual-test** | Visual regression testing and screenshot comparisons |
+| 📓 **/dev-diary** | Track development decisions and progress |
+| 📚 **/gather-tech-docs** | Extract and compile all technical documentation |
+| 🚀 **/post-init-onboarding** | Systematic project onboarding for productivity |
+| ✨ **/start-feature** | Kickstart features with issue, branch, and draft PR |
+| 🐛 **/debug-issue** | Systematic debugging with error tracing and fix workflow |
+| ✅ **/pre-review-check** | Ensure code is review-ready with quality checks |
+| 🔍 **/explore-module** | Deep dive into any module's structure and dependencies |
+| 💸 **/tech-debt-hunt** | Discover and prioritize technical debt with estimates |
+| 🚢 **/pre-deploy-check** | Verify production readiness with security and build checks |
 
 ## 💡 Usage Examples
 
