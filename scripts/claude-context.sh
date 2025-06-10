@@ -38,7 +38,7 @@ case "$1" in
         
         for word in "${WORDS[@]}"; do
             # Skip common words
-            if [[ "$word" =~ ^(the|and|or|in|on|at|to|for|of|with|a|an)$ ]]; then
+            if is_stop_word "$word"; then
                 continue
             fi
             
@@ -55,7 +55,7 @@ case "$1" in
         echo "=== KEY DIRECTORIES ==="
         # Find directories that might be relevant
         for word in "${WORDS[@]}"; do
-            if [[ "$word" =~ ^(the|and|or|in|on|at|to|for|of|with|a|an)$ ]]; then
+            if is_stop_word "$word"; then
                 continue
             fi
             find . -type d -name "*${word}*" 2>/dev/null | grep -v node_modules | grep -v ".git" | head -5

@@ -134,7 +134,22 @@ ensure_dir() {
     fi
 }
 
+# Common stop words for filtering
+export STOP_WORDS=(the and or in on at to for of with a an is are was were be been being have has had do does did will would could should may might must can)
+
+# Function to check if a word is a stop word
+is_stop_word() {
+    local word="$1"
+    local stop_word
+    for stop_word in "${STOP_WORDS[@]}"; do
+        if [[ "$word" == "$stop_word" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
 # Export functions so they're available to sourcing scripts
 export -f error_exit warn success check_command check_dependencies
 export -f slugify validate_input quote_path run_command run_optional
-export -f check_git_repo get_current_branch check_file ensure_dir
+export -f check_git_repo get_current_branch check_file ensure_dir is_stop_word
