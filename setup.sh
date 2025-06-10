@@ -1,304 +1,511 @@
 #!/bin/bash
 
-# Setup script to add claude-helpers to your shell with optional tool enhancements
+# Claude Helpers Setup Script - Foolproof Edition
+# Just run ./setup.sh and follow the prompts!
+
+# Colors for better output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Disable strict mode for this script to handle errors gracefully
+set +u
+set +e
+
+echo -e "${BLUE}🚀 Claude Helpers Setup${NC}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
 
 # Parse command line arguments
-INSTALL_TOOLS=false
+SKIP_PROMPTS=false
+AUTO_INSTALL=false
 for arg in "$@"; do
     case $arg in
-        --install-tools)
-            INSTALL_TOOLS=true
-            shift
+        --yes|-y)
+            SKIP_PROMPTS=true
+            AUTO_INSTALL=true
             ;;
         --help|-h)
-            echo "Claude Helpers Setup"
-            echo ""
             echo "Usage: ./setup.sh [options]"
             echo ""
             echo "Options:"
-            echo "  --install-tools    Automatically install optional tool enhancements"
-            echo "  --help, -h         Show this help message"
+            echo "  --yes, -y     Auto-confirm all prompts (install everything)"
+            echo "  --help, -h    Show this help message"
             echo ""
-            echo "Optional tools include: fzf, jq, bat, gum, delta, ripgrep"
+            echo "Just run ./setup.sh without options for interactive setup!"
             exit 0
             ;;
     esac
 done
 
-# Source common functions if available
-if [ -f "scripts/common-functions.sh" ]; then
-    source scripts/common-functions.sh
-elif [ -f "$HOME/.claude/scripts/common-functions.sh" ]; then
-    source "$HOME/.claude/scripts/common-functions.sh"
-fi
-
-# If running via curl, clone the repo first
-if [ ! -d "scripts" ]; then
-    echo "Downloading claude-helpers..."
-    git clone https://github.com/cassler/awesome-claude-code-setup.git /tmp/claude-helpers-setup
-    cd /tmp/claude-helpers-setup
-    CLAUDE_HELPERS_DIR="/tmp/claude-helpers-setup"
-else
-    CLAUDE_HELPERS_DIR="$(pwd)"
-fi
+# Set up directories
+CLAUDE_HELPERS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPTS_INSTALL_DIR="$HOME/.claude/scripts"
 COMMANDS_INSTALL_DIR="$HOME/.claude/commands"
 
-echo "Setting up Claude helpers..."
+# If running via curl, clone the repo first
+if [ ! -d "$CLAUDE_HELPERS_DIR/scripts" ]; then
+    echo -e "${YELLOW}📥 Downloading claude-helpers...${NC}"
+    TEMP_DIR="/tmp/claude-helpers-setup-$$"
+    if git clone https://github.com/cassler/awesome-claude-code-setup.git "$TEMP_DIR" 2>/dev/null; then
+        CLAUDE_HELPERS_DIR="$TEMP_DIR"
+        echo -e "${GREEN}✅ Downloaded successfully${NC}"
+    else
+        echo -e "${RED}❌ Failed to download claude-helpers${NC}"
+        echo "Please check your internet connection and try again."
+        exit 1
+    fi
+fi
 
 # Detect OS and package manager
 detect_platform() {
+    local os=""
+    local pkg_manager=""
+    
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        OS="macos"
+        os="macOS"
         if command -v brew &> /dev/null; then
-            PKG_MANAGER="brew"
+            pkg_manager="brew"
         else
-            echo "⚠️  Homebrew not found on macOS"
-            echo "   Install from: https://brew.sh"
-            echo "   Continuing with basic setup..."
-            PKG_MANAGER="none"
+            pkg_manager="none"
         fi
     elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        OS="linux"
+        os="Linux"
         if command -v apt &> /dev/null; then
-            PKG_MANAGER="apt"
+            pkg_manager="apt"
         elif command -v yum &> /dev/null; then
-            PKG_MANAGER="yum"
+            pkg_manager="yum"
         elif command -v dnf &> /dev/null; then
-            PKG_MANAGER="dnf"
+            pkg_manager="dnf"
         elif command -v pacman &> /dev/null; then
-            PKG_MANAGER="pacman"
+            pkg_manager="pacman"
         else
-            PKG_MANAGER="unknown"
+            pkg_manager="unknown"
         fi
     else
-        OS="unknown"
-        PKG_MANAGER="unknown"
+        os="Unknown OS"
+        pkg_manager="unknown"
     fi
     
-    echo "🖥️  Detected: $OS with $PKG_MANAGER package manager"
+    echo -e "${BLUE}🖥️  System:${NC} $os"
+    echo -e "${BLUE}📦 Package Manager:${NC} ${pkg_manager:-Not found}"
+    echo ""
+    
+    OS="$os"
+    PKG_MANAGER="$pkg_manager"
 }
 
-# Check for optional tools
-check_optional_tools() {
-    echo ""
-    echo "🔍 Checking for optional tool enhancements..."
-    
-    # Define optional tools and their benefits
-    declare -A TOOLS=(
-        ["fzf"]="Interactive file/text selection"
-        ["jq"]="JSON parsing and manipulation"
-        ["bat"]="Syntax-highlighted file viewing"
-        ["gum"]="Beautiful interactive prompts"
-        ["delta"]="Enhanced git diffs"
-        ["ripgrep"]="Fast file content searching"
-    )
-    
-    # Track missing tools
-    MISSING_TOOLS=()
-    FOUND_TOOLS=()
-    
-    for tool in "${!TOOLS[@]}"; do
-        if command -v "$tool" &> /dev/null; then
-            echo "✅ $tool - ${TOOLS[$tool]}"
-            FOUND_TOOLS+=("$tool")
+# Install Homebrew on macOS if not present
+install_homebrew() {
+    if [[ "$OS" == "macOS" ]] && [[ "$PKG_MANAGER" == "none" ]]; then
+        echo -e "${YELLOW}Homebrew is not installed on your Mac.${NC}"
+        echo "Homebrew is recommended for installing optional tools."
+        echo ""
+        
+        if [ "$SKIP_PROMPTS" = true ]; then
+            response="y"
         else
-            echo "⚪ $tool - ${TOOLS[$tool]} (not installed)"
-            MISSING_TOOLS+=("$tool")
-        fi
-    done
-    
-    # Offer to install missing tools
-    if [ ${#MISSING_TOOLS[@]} -gt 0 ] && [ "$PKG_MANAGER" != "none" ] && [ "$PKG_MANAGER" != "unknown" ]; then
-        if [ "$INSTALL_TOOLS" = true ]; then
-            echo ""
-            echo "🚀 Installing optional enhancements automatically..."
-            install_optional_tools
-        else
-            echo ""
-            echo "🚀 Would you like to install optional enhancements?"
-            echo "   These tools enable advanced features but are not required."
-            echo ""
-            echo -n "Install missing tools? [y/N] "
+            echo -n "Would you like to install Homebrew now? [Y/n] "
             read -r response
-            
-            if [[ "$response" =~ ^[Yy]$ ]]; then
-                install_optional_tools
+            response=${response:-y}
+        fi
+        
+        if [[ "$response" =~ ^[Yy]$ ]]; then
+            echo -e "${YELLOW}📥 Installing Homebrew...${NC}"
+            if /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
+                # Add Homebrew to PATH for this session
+                if [[ -d "/opt/homebrew" ]]; then
+                    eval "$(/opt/homebrew/bin/brew shellenv)"
+                else
+                    eval "$(/usr/local/bin/brew shellenv)"
+                fi
+                PKG_MANAGER="brew"
+                echo -e "${GREEN}✅ Homebrew installed successfully${NC}"
             else
-                echo "Continuing with basic setup..."
+                echo -e "${RED}❌ Failed to install Homebrew${NC}"
+                echo "Continuing without package manager..."
             fi
         fi
+        echo ""
     fi
 }
 
-# Install optional tools based on package manager
-install_optional_tools() {
-    echo ""
-    echo "📦 Installing optional tools..."
+# Check if we need sudo for package installation
+check_sudo() {
+    if [[ "$PKG_MANAGER" =~ ^(apt|yum|dnf|pacman)$ ]]; then
+        if ! sudo -n true 2>/dev/null; then
+            echo -e "${YELLOW}⚠️  Some tools require administrator access to install.${NC}"
+            echo "You may be prompted for your password."
+            echo ""
+            sudo true || {
+                echo -e "${RED}❌ Cannot get administrator access${NC}"
+                echo "Continuing without installing system packages..."
+                return 1
+            }
+        fi
+    fi
+    return 0
+}
+
+# Install core scripts
+install_core_scripts() {
+    echo -e "${BLUE}📂 Installing core scripts...${NC}"
     
-    for tool in "${MISSING_TOOLS[@]}"; do
+    # Create directories
+    mkdir -p "$SCRIPTS_INSTALL_DIR"
+    mkdir -p "$COMMANDS_INSTALL_DIR"
+    
+    # Copy scripts
+    if cp -f "$CLAUDE_HELPERS_DIR/scripts/"*.sh "$SCRIPTS_INSTALL_DIR/" 2>/dev/null; then
+        chmod +x "$SCRIPTS_INSTALL_DIR/"*.sh
+        echo -e "${GREEN}✅ Scripts installed to $SCRIPTS_INSTALL_DIR${NC}"
+    else
+        echo -e "${RED}❌ Failed to copy scripts${NC}"
+        return 1
+    fi
+    
+    # Copy commands
+    if cp -f "$CLAUDE_HELPERS_DIR/commands/"*.md "$COMMANDS_INSTALL_DIR/" 2>/dev/null; then
+        echo -e "${GREEN}✅ Commands installed to $COMMANDS_INSTALL_DIR${NC}"
+    else
+        echo -e "${RED}❌ Failed to copy commands${NC}"
+        return 1
+    fi
+    
+    echo ""
+    return 0
+}
+
+# Add aliases to shell config
+setup_shell_aliases() {
+    echo -e "${BLUE}🐚 Setting up shell aliases...${NC}"
+    
+    # Detect shell config file
+    local shell_rc=""
+    if [ -n "$BASH_VERSION" ] && [ -f "$HOME/.bashrc" ]; then
+        shell_rc="$HOME/.bashrc"
+    elif [ -n "$ZSH_VERSION" ] && [ -f "$HOME/.zshrc" ]; then
+        shell_rc="$HOME/.zshrc"
+    elif [ -f "$HOME/.zshrc" ]; then
+        shell_rc="$HOME/.zshrc"
+    elif [ -f "$HOME/.bashrc" ]; then
+        shell_rc="$HOME/.bashrc"
+    else
+        # Create .bashrc if no config exists
+        shell_rc="$HOME/.bashrc"
+        touch "$shell_rc"
+    fi
+    
+    # Define the markers
+    local start_marker="# BEGIN CLAUDE HELPER SCRIPTS"
+    local end_marker="# END CLAUDE HELPER SCRIPTS"
+    
+    # First, clean up any old entries without markers (from previous versions)
+    if grep -q "claude-helper.sh" "$shell_rc" 2>/dev/null && ! grep -q "$start_marker" "$shell_rc" 2>/dev/null; then
+        echo -e "${YELLOW}⚠️  Found old claude-helpers configuration${NC}"
+        echo "Cleaning up previous installation..."
+        
+        # Create backup
+        cp "$shell_rc" "${shell_rc}.backup.$(date +%Y%m%d_%H%M%S)"
+        
+        # Remove old entries
+        local temp_file="${shell_rc}.tmp.$$"
+        grep -v "CLAUDE_HELPERS" "$shell_rc" | \
+        grep -v "alias ch=.*claude-helper.sh" | \
+        grep -v "alias chp=.*project-info.sh" | \
+        grep -v "alias chs=.*search-tools.sh" | \
+        grep -v "alias chg=.*git-ops.sh" | \
+        grep -v "^# Claude Helper Scripts$" > "$temp_file"
+        
+        mv "$temp_file" "$shell_rc"
+        echo -e "${GREEN}✅ Cleaned up old entries${NC}"
+    fi
+    
+    # Check if markers exist
+    if grep -q "$start_marker" "$shell_rc" 2>/dev/null; then
+        echo -e "${YELLOW}⚠️  Claude helpers already configured${NC}"
+        echo "Updating to latest version..."
+        
+        # Create a temp file without the claude section
+        local temp_file="${shell_rc}.tmp.$$"
+        awk -v start="$start_marker" -v end="$end_marker" '
+            $0 == start { skip = 1; next }
+            $0 == end { skip = 0; next }
+            !skip { print }
+        ' "$shell_rc" > "$temp_file"
+        
+        # Move temp file back
+        mv "$temp_file" "$shell_rc"
+        echo -e "${GREEN}✅ Removed old configuration${NC}"
+    fi
+    
+    # Add the new configuration with markers
+    {
+        echo ""
+        echo "$start_marker"
+        echo "# Added by claude-helpers setup script on $(date)"
+        echo "# To remove, delete everything between BEGIN and END markers"
+        echo "export CLAUDE_HELPERS=\"$SCRIPTS_INSTALL_DIR\""
+        echo "alias ch='$SCRIPTS_INSTALL_DIR/claude-helper.sh'"
+        echo "alias chp='$SCRIPTS_INSTALL_DIR/project-info.sh'"
+        echo "alias chs='$SCRIPTS_INSTALL_DIR/search-tools.sh'"
+        echo "alias chg='$SCRIPTS_INSTALL_DIR/git-ops.sh'"
+        echo "$end_marker"
+        echo ""
+    } >> "$shell_rc"
+    
+    echo -e "${GREEN}✅ Added aliases to $shell_rc${NC}"
+    
+    # Create template
+    local template_path="$HOME/.claude/CLAUDE_TEMPLATE.md"
+    if cp "$CLAUDE_HELPERS_DIR/CLAUDE_TEMPLATE.md" "$template_path" 2>/dev/null; then
+        echo -e "${GREEN}✅ Created template at $template_path${NC}"
+    else
+        # Create a basic template if copy fails
+        cat > "$template_path" << 'EOF'
+# Project-Specific Claude Instructions
+
+## Helper Scripts Available
+You have access to helper scripts via these aliases:
+- ch  - Main helper menu
+- chp - Project overview
+- chs - Search tools
+- chg - Git operations
+
+## Project Notes
+[Add project-specific instructions here]
+EOF
+        echo -e "${GREEN}✅ Created template at $template_path${NC}"
+    fi
+    
+    echo ""
+    SHELL_RC="$shell_rc"
+}
+
+# Check and install optional tools
+check_optional_tools() {
+    echo -e "${BLUE}🔍 Checking optional tool enhancements...${NC}"
+    echo ""
+    
+    # Check what's installed
+    local missing_tools=()
+    local found_tools=()
+    
+    # Check each tool individually (bash 3 compatible)
+    # fzf
+    if command -v fzf &> /dev/null; then
+        echo -e "${GREEN}✅ fzf${NC} - Interactive file/text selection"
+        found_tools+=("fzf")
+    else
+        echo -e "${YELLOW}⚪ fzf${NC} - Interactive file/text selection (not installed)"
+        missing_tools+=("fzf")
+    fi
+    
+    # jq
+    if command -v jq &> /dev/null; then
+        echo -e "${GREEN}✅ jq${NC} - JSON parsing and manipulation"
+        found_tools+=("jq")
+    else
+        echo -e "${YELLOW}⚪ jq${NC} - JSON parsing and manipulation (not installed)"
+        missing_tools+=("jq")
+    fi
+    
+    # bat
+    if command -v bat &> /dev/null; then
+        echo -e "${GREEN}✅ bat${NC} - Syntax-highlighted file viewing"
+        found_tools+=("bat")
+    else
+        echo -e "${YELLOW}⚪ bat${NC} - Syntax-highlighted file viewing (not installed)"
+        missing_tools+=("bat")
+    fi
+    
+    # gum
+    if command -v gum &> /dev/null; then
+        echo -e "${GREEN}✅ gum${NC} - Beautiful interactive prompts"
+        found_tools+=("gum")
+    else
+        echo -e "${YELLOW}⚪ gum${NC} - Beautiful interactive prompts (not installed)"
+        missing_tools+=("gum")
+    fi
+    
+    # delta
+    if command -v delta &> /dev/null; then
+        echo -e "${GREEN}✅ delta${NC} - Enhanced git diffs"
+        found_tools+=("delta")
+    else
+        echo -e "${YELLOW}⚪ delta${NC} - Enhanced git diffs (not installed)"
+        missing_tools+=("delta")
+    fi
+    
+    # ripgrep
+    if command -v rg &> /dev/null || command -v ripgrep &> /dev/null; then
+        echo -e "${GREEN}✅ ripgrep${NC} - Fast file content searching"
+        found_tools+=("ripgrep")
+    else
+        echo -e "${YELLOW}⚪ ripgrep${NC} - Fast file content searching (not installed)"
+        missing_tools+=("ripgrep")
+    fi
+    
+    # If tools are missing and we have a package manager
+    if [ ${#missing_tools[@]} -gt 0 ] && [ "$PKG_MANAGER" != "none" ] && [ "$PKG_MANAGER" != "unknown" ]; then
+        echo ""
+        echo -e "${YELLOW}📦 Optional tools can enhance your experience!${NC}"
+        echo "These tools enable advanced features like better search,"
+        echo "interactive selection, and syntax highlighting."
+        echo ""
+        
+        if [ "$AUTO_INSTALL" = true ]; then
+            response="y"
+        else
+            echo -n "Would you like to install the missing tools? [Y/n] "
+            read -r response
+            response=${response:-y}
+        fi
+        
+        if [[ "$response" =~ ^[Yy]$ ]]; then
+            install_optional_tools "${missing_tools[@]}"
+        else
+            echo -e "${BLUE}Skipping optional tools.${NC}"
+        fi
+    elif [ ${#missing_tools[@]} -eq 0 ]; then
+        echo ""
+        echo -e "${GREEN}🎉 All optional tools are already installed!${NC}"
+    fi
+    
+    echo ""
+}
+
+# Install optional tools
+install_optional_tools() {
+    local tools=("$@")
+    
+    echo ""
+    echo -e "${BLUE}📦 Installing optional tools...${NC}"
+    
+    # Check sudo if needed
+    if [[ "$PKG_MANAGER" =~ ^(apt|yum|dnf|pacman)$ ]]; then
+        if ! check_sudo; then
+            echo -e "${YELLOW}Skipping tools that require admin access${NC}"
+            return
+        fi
+    fi
+    
+    for tool in "${tools[@]}"; do
         echo -n "Installing $tool... "
-        case $PKG_MANAGER in
-            brew)
+        
+        case "$PKG_MANAGER:$tool" in
+            # macOS with Homebrew
+            brew:*)
                 if brew install "$tool" &> /dev/null; then
-                    echo "✅"
+                    echo -e "${GREEN}✅${NC}"
                 else
-                    echo "❌ Failed"
+                    echo -e "${RED}❌${NC}"
                 fi
                 ;;
-            apt)
-                # Special handling for some tools on apt
-                case $tool in
-                    "ripgrep")
-                        if sudo apt-get update &> /dev/null && sudo apt-get install -y ripgrep &> /dev/null; then
-                            echo "✅"
-                        else
-                            echo "❌ Failed"
-                        fi
-                        ;;
-                    "bat")
-                        if sudo apt-get install -y bat &> /dev/null; then
-                            echo "✅"
-                            # Create alias for batcat -> bat on Ubuntu/Debian
-                            mkdir -p "$HOME/.local/bin"
-                            ln -sf /usr/bin/batcat "$HOME/.local/bin/bat" 2>/dev/null
-                        else
-                            echo "❌ Failed"
-                        fi
-                        ;;
-                    "delta")
-                        echo "❌ (manual install required - see https://github.com/dandavison/delta)"
-                        ;;
-                    "gum")
-                        echo "❌ (manual install required - see https://github.com/charmbracelet/gum)"
-                        ;;
-                    *)
-                        if sudo apt-get install -y "$tool" &> /dev/null; then
-                            echo "✅"
-                        else
-                            echo "❌ Failed"
-                        fi
-                        ;;
+            
+            # Ubuntu/Debian special cases
+            apt:ripgrep)
+                if sudo apt-get update &> /dev/null && sudo apt-get install -y ripgrep &> /dev/null; then
+                    echo -e "${GREEN}✅${NC}"
+                else
+                    echo -e "${RED}❌${NC}"
+                fi
+                ;;
+            apt:bat)
+                if sudo apt-get install -y bat &> /dev/null; then
+                    # Create symlink for batcat -> bat
+                    sudo ln -sf /usr/bin/batcat /usr/local/bin/bat 2>/dev/null
+                    echo -e "${GREEN}✅${NC}"
+                else
+                    echo -e "${RED}❌${NC}"
+                fi
+                ;;
+            apt:fzf|apt:jq)
+                if sudo apt-get install -y "$tool" &> /dev/null; then
+                    echo -e "${GREEN}✅${NC}"
+                else
+                    echo -e "${RED}❌${NC}"
+                fi
+                ;;
+            apt:delta|apt:gum)
+                echo -e "${YELLOW}⚠️  Manual install needed${NC}"
+                case "$tool" in
+                    delta) echo "   Visit: https://github.com/dandavison/delta" ;;
+                    gum) echo "   Visit: https://github.com/charmbracelet/gum" ;;
                 esac
                 ;;
-            yum|dnf)
-                if sudo $PKG_MANAGER install -y "$tool" &> /dev/null; then
-                    echo "✅"
+            
+            # Other package managers
+            yum:*|dnf:*)
+                if sudo "$PKG_MANAGER" install -y "$tool" &> /dev/null; then
+                    echo -e "${GREEN}✅${NC}"
                 else
-                    echo "❌ Failed"
+                    echo -e "${RED}❌${NC}"
                 fi
                 ;;
-            pacman)
+            pacman:*)
                 if sudo pacman -S --noconfirm "$tool" &> /dev/null; then
-                    echo "✅"
+                    echo -e "${GREEN}✅${NC}"
                 else
-                    echo "❌ Failed"
+                    echo -e "${RED}❌${NC}"
                 fi
+                ;;
+            *)
+                echo -e "${YELLOW}⚠️  Cannot auto-install${NC}"
                 ;;
         esac
     done
 }
 
-# Run platform detection
-detect_platform
-
-# Create directories and copy scripts
-echo "Installing bash scripts to $SCRIPTS_INSTALL_DIR..."
-mkdir -p "$SCRIPTS_INSTALL_DIR"
-cp -f "$CLAUDE_HELPERS_DIR/scripts/"*.sh "$SCRIPTS_INSTALL_DIR/"
-chmod +x "$SCRIPTS_INSTALL_DIR/"*.sh
-
-# Copy prompt commands
-echo "Installing prompt commands to $COMMANDS_INSTALL_DIR..."
-mkdir -p "$COMMANDS_INSTALL_DIR"
-cp -f "$CLAUDE_HELPERS_DIR/commands/"*.md "$COMMANDS_INSTALL_DIR/"
-
-# Check for optional tools after basic setup
-check_optional_tools
-
-# Add to ~/.bashrc or ~/.zshrc
-SHELL_RC=""
-if [ -f "$HOME/.zshrc" ]; then
-    SHELL_RC="$HOME/.zshrc"
-elif [ -f "$HOME/.bashrc" ]; then
-    SHELL_RC="$HOME/.bashrc"
-fi
-
-if [ -n "$SHELL_RC" ]; then
-    # Check if already added
-    if ! grep -q "claude-helpers" "$SHELL_RC"; then
-        echo "" >> "$SHELL_RC"
-        echo "# Claude Helper Scripts" >> "$SHELL_RC"
-        echo "export CLAUDE_HELPERS=\"$SCRIPTS_INSTALL_DIR\"" >> "$SHELL_RC"
-        echo "alias ch='$SCRIPTS_INSTALL_DIR/claude-helper.sh'" >> "$SHELL_RC"
-        echo "alias chp='$SCRIPTS_INSTALL_DIR/project-info.sh'" >> "$SHELL_RC"
-        echo "alias chs='$SCRIPTS_INSTALL_DIR/search-tools.sh'" >> "$SHELL_RC"
-        echo "alias chg='$SCRIPTS_INSTALL_DIR/git-ops.sh'" >> "$SHELL_RC"
-        echo "" >> "$SHELL_RC"
-        
-        echo "✓ Added aliases to $SHELL_RC"
-        echo ""
-        echo "Aliases added:"
-        echo "  ch  - Main claude helper"
-        echo "  chp - Project info"
-        echo "  chs - Search tools"
-        echo "  chg - Git operations"
-        echo ""
-        echo "Run: source $SHELL_RC"
-    else
-        echo "Claude helpers already in $SHELL_RC - updating scripts..."
-        # Just update the scripts and commands even if aliases exist
-        cp -f "$CLAUDE_HELPERS_DIR/scripts/"*.sh "$SCRIPTS_INSTALL_DIR/"
-        chmod +x "$SCRIPTS_INSTALL_DIR/"*.sh
-        cp -f "$CLAUDE_HELPERS_DIR/commands/"*.md "$COMMANDS_INSTALL_DIR/"
-        echo "✓ Scripts updated in $SCRIPTS_INSTALL_DIR"
-        echo "✓ Commands updated in $COMMANDS_INSTALL_DIR"
+# Main setup flow
+main() {
+    # Step 1: Detect platform
+    detect_platform
+    
+    # Step 2: Install Homebrew on macOS if needed
+    if [[ "$OS" == "macOS" ]]; then
+        install_homebrew
     fi
-fi
+    
+    # Step 3: Install core scripts
+    if ! install_core_scripts; then
+        echo -e "${RED}❌ Failed to install core scripts${NC}"
+        exit 1
+    fi
+    
+    # Step 4: Setup shell aliases
+    setup_shell_aliases
+    
+    # Step 5: Check and offer to install optional tools
+    check_optional_tools
+    
+    # Final instructions
+    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${GREEN}✨ Setup Complete!${NC}"
+    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+    echo -e "${BLUE}📝 Quick Start:${NC}"
+    echo "1. Reload your shell config:"
+    echo -e "   ${YELLOW}source $SHELL_RC${NC}"
+    echo ""
+    echo "2. Try the main helper:"
+    echo -e "   ${YELLOW}ch${NC}"
+    echo ""
+    echo "3. In any project, create a CLAUDE.md file:"
+    echo -e "   ${YELLOW}cp ~/.claude/CLAUDE_TEMPLATE.md ./CLAUDE.md${NC}"
+    echo ""
+    echo -e "${BLUE}Enjoy your enhanced Claude experience! 🚀${NC}"
+    
+    # Cleanup temp directory if used
+    if [[ "$CLAUDE_HELPERS_DIR" =~ ^/tmp/claude-helpers-setup- ]]; then
+        rm -rf "$CLAUDE_HELPERS_DIR"
+    fi
+}
 
-# Create a global CLAUDE.md template
-TEMPLATE_PATH="$HOME/.claude/CLAUDE_TEMPLATE.md"
-cat > "$TEMPLATE_PATH" << 'EOF'
-# Project-Specific Claude Instructions
+# Run main setup
+main
 
-## Helper Scripts Available
-Claude has access to helper scripts at: ~/.claude/scripts/
-
-Key scripts to use:
-- Start with: `~/.claude/scripts/project-info.sh`
-- Generate context: `~/.claude/scripts/claude-context.sh for-task "your task"`
-- Search code: `~/.claude/scripts/search-tools.sh find-code "pattern"`
-- Git ops: `~/.claude/scripts/git-ops.sh status`
-
-## Project-Specific Notes
-[Add project-specific instructions here]
-
-## Common Commands
-[Add frequently used commands for this project]
-EOF
-
-echo "✓ Created CLAUDE_TEMPLATE.md"
-echo ""
-echo "Setup complete!"
-echo ""
-echo "📁 Bash scripts installed to: $SCRIPTS_INSTALL_DIR/"
-echo "📄 Prompt commands installed to: $COMMANDS_INSTALL_DIR/"
-echo ""
-
-# Show summary of tool availability
-echo "🛠️  Tool Enhancement Status:"
-if [ ${#FOUND_TOOLS[@]} -gt 0 ]; then
-    echo "   Enhanced features available with: ${FOUND_TOOLS[*]}"
-fi
-if [ ${#MISSING_TOOLS[@]} -gt 0 ]; then
-    echo "   Optional tools not installed: ${MISSING_TOOLS[*]}"
-    echo "   Run 'ch env tools' to see installation instructions"
-fi
-
-echo ""
-echo "To use in a project: cp ~/.claude/CLAUDE_TEMPLATE.md ./CLAUDE.md"
-
-# Cleanup temp directory if we used it
-if [ "$CLAUDE_HELPERS_DIR" = "/tmp/claude-helpers-setup" ]; then
-    rm -rf /tmp/claude-helpers-setup
-fi
+# Make sure we exit successfully
+exit 0
