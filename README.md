@@ -140,58 +140,32 @@ Type `/` in Claude to see available commands:
 
 ## 🔧 Available Scripts
 
-### Main Entry Point
-- `claude-helper.sh` - Routes to all other helpers
+### Helper Scripts Reference
 
-### Individual Scripts
+| Script | Alias | Description | Key Features |
+|--------|-------|-------------|--------------|
+| **claude-helper.sh** | `ch` | Main entry point | Routes to all helpers, shows available commands |
+| **project-info.sh** | `chp` | Project overview | Language detection, dependencies, structure, git status |
+| **search-tools.sh** | `chs` | Code searching | Find patterns/files/imports, TODOs, uses ripgrep |
+| **git-ops.sh** | `chg` | Git operations | Quick commits, PR creation, branch management |
+| **docker-quick.sh** | `ch d` | Docker management | Container ops, compose shortcuts, cleanup |
+| **ts-helper.sh** | `ch ts` | TypeScript/Node.js | Dependencies, build/test/lint, package audit |
+| **multi-file.sh** | `ch m` | Batch file ops | Read multiple files, pattern matching, comparison |
+| **env-check.sh** | `ch env` | Environment check | Tool availability, versions, ports, requirements |
+| **mcp-helper.sh** | `ch mcp` | MCP integrations | Linear, Notion, browser automation guides |
 
-1. **project-info.sh** - Project overview
-   - Language detection
-   - Dependencies analysis
-   - Directory structure
-   - Git status
+### Slash Commands Reference
 
-2. **docker-quick.sh** - Docker operations
-   - Container management
-   - Image operations
-   - Docker-compose shortcuts
-   - Cleanup utilities
-
-3. **git-ops.sh** - Git operations
-   - Status overviews
-   - Quick commits
-   - PR creation
-   - Branch management
-
-4. **search-tools.sh** - Code searching
-   - Uses ripgrep when available
-   - Find patterns, files, imports
-   - TODO comment search
-   - Code statistics
-
-5. **ts-helper.sh** - TypeScript/Node.js
-   - Dependency management
-   - Build/test/lint shortcuts
-   - Package auditing
-   - Size analysis
-
-6. **multi-file.sh** - Batch operations
-   - Read multiple files
-   - Pattern-based operations
-   - File comparison
-   - Structure analysis
-
-7. **env-check.sh** - Environment validation
-   - Tool availability checks
-   - Version information
-   - Port status
-   - Project requirements
-
-8. **mcp-helper.sh** - MCP server helpers
-   - Linear integration hints
-   - Notion helpers
-   - Browser automation guides
-   - Documentation lookups
+| Command | Description | Use Case |
+|---------|-------------|----------|
+| `/commit-and-push` | Structured git workflow | Review changes, create commits, push, check PR feedback |
+| `/dev-diary` | Development logging | Document progress, decisions, and blockers |
+| `/gather-tech-docs` | Documentation collection | Compile technical docs from codebase |
+| `/post-init-onboarding` | Project onboarding | Understand new codebases systematically |
+| `/tdd` | Test-driven development | Write tests first, then implementation |
+| `/understand-codebase` | Code analysis | Deep dive into architecture and patterns |
+| `/update-docs` | Documentation updates | Keep docs in sync with code changes |
+| `/visual-test` | Visual testing workflow | UI testing and screenshot comparisons |
 
 ## 💡 Usage Examples
 
