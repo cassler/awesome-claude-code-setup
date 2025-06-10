@@ -34,6 +34,9 @@ Feature type: ${FEATURE_TYPE:-enhancement}
 
 4. **Create feature branch** (linked to issue):
    ```bash
+   # Slugify feature name (lowercase, replace spaces with hyphens)
+   FEATURE_NAME_SLUGIFIED=$(echo "$FEATURE_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd '[:alnum:]-')
+   
    # Branch name includes issue number for automatic linking
    BRANCH_NAME="feature/${ISSUE_NUMBER}-${FEATURE_NAME_SLUGIFIED}"
    git checkout -b "$BRANCH_NAME"

@@ -48,7 +48,7 @@ Thresholds:
    chs find-code "@deprecated|DEPRECATED"
    
    # Old library usage
-   chs find-code "${OLD_PATTERNS:-callback\\(err|var\\s+\\w+\\s*=\\s*require}"
+   chs find-code "${OLD_PATTERNS:-callback\\(err\\)|var\\s+\\w+\\s*=\\s*require}"
    ```
 
 5. **Dependency debt**:

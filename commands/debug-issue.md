@@ -86,6 +86,9 @@ PR causing issue: ${PR_NUMBER:-unknown}
 Once root cause is identified:
 
 ```bash
+# Slugify issue description for branch name
+ISSUE_SLUGIFIED=$(echo "$ISSUE_DESCRIPTION" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd '[:alnum:]-' | cut -c1-50)
+
 # Create fix branch from issue
 git checkout -b "fix/${ISSUE_NUMBER:-bug}-${ISSUE_SLUGIFIED}"
 
