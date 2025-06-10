@@ -33,6 +33,9 @@ All scripts are located at: `~/.claude/scripts/`
 # First, get project overview
 chp
 
+# Generate focused context for your task
+ch ctx for-task "implement user authentication"
+
 # Check environment and tools
 ch env tools
 
@@ -95,6 +98,21 @@ ch ts scripts    # List npm scripts
 ch ts build      # Run build
 ch ts lint       # Run linter
 ch ts typecheck  # Type checking
+```
+
+### Context Generation (NEW!)
+```bash
+# Generate context for specific tasks
+ch ctx for-task "refactor database layer"
+
+# Create and save project summary
+ch ctx summarize --save
+
+# Focus on specific directory
+ch ctx focus src/api 3
+
+# Prepare migration context
+ch ctx prepare-migration "upgrade to next.js 14"
 ```
 
 ## 💡 Key Benefits for Claude
