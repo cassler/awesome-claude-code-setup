@@ -237,41 +237,38 @@ Type `/` in Claude to see available commands:
 2. **Run setup** to clean up: `./setup.sh`
 3. **Remove alias** from `.zshrc`/`.bashrc` if needed
 
-## 🔧 Available Scripts
+## 🔧 Complete Command Reference
 
-### 🛠️ Complete Helper Scripts Collection
-
-| Script | What it does |
-|--------|--------------|
-| 🎯 **claude-helper.sh** (`ch`) | Main command router - access any tool with 2 letters |
-| 📊 **project-info.sh** (`chp`) | Instant project overview - languages, deps, structure |
-| 🔍 **search-tools.sh** (`chs`) | Lightning-fast code search powered by ripgrep |
-| 🚀 **git-ops.sh** (`chg`) | Git shortcuts - commit, push, PR in seconds |
-| 🐳 **docker-quick.sh** (`ch d`) | Docker management with one-letter shortcuts |
-| 📦 **ts-helper.sh** (`ch ts`) | Node.js/TypeScript - build, test, lint, audit |
-| 📚 **multi-file.sh** (`ch m`) | Read multiple files efficiently, save tokens |
-| 🔧 **env-check.sh** (`ch env`) | Environment health checks and tool verification |
-| 🔌 **mcp-helper.sh** (`ch mcp`) | MCP integrations - Linear, Notion, browser |
-| 🎯 **claude-context.sh** (`ch ctx`) | Generate optimal context, reduce token usage |
-
-### 🎨 Complete Slash Commands Collection
+### All Available Commands
 
 | Command | What it does |
 |---------|--------------|
-| 🔄 **/commit-and-push** | Complete git workflow - review, commit, push, check PRs |
-| 🧠 **/understand-codebase** | AI-powered analysis to understand any project in minutes |
-| 🧪 **/tdd** | Test-driven development workflow - Red → Green → Refactor |
-| 📝 **/update-docs** | Keep documentation in sync with code changes |
-| 🎨 **/visual-test** | Visual regression testing and screenshot comparisons |
-| 📓 **/dev-diary** | Track development decisions and progress |
-| 📚 **/gather-tech-docs** | Extract and compile all technical documentation |
-| 🚀 **/post-init-onboarding** | Systematic project onboarding for productivity |
-| ✨ **/start-feature** | Kickstart features with issue, branch, and draft PR |
-| 🐛 **/debug-issue** | Systematic debugging with error tracing and fix workflow |
-| ✅ **/pre-review-check** | Ensure code is review-ready with quality checks |
-| 🔍 **/explore-module** | Deep dive into any module's structure and dependencies |
-| 💸 **/tech-debt-hunt** | Discover and prioritize technical debt with estimates |
-| 🚢 **/pre-deploy-check** | Verify production readiness with security and build checks |
+| **Shell Commands** | |
+| 🎯 `ch` | Main command router - access any tool with 2 letters |
+| 📊 `chp` | Instant project overview - languages, deps, structure |
+| 🔍 `chs` | Lightning-fast code search powered by ripgrep |
+| 🚀 `chg` | Git shortcuts - commit, push, PR in seconds |
+| 🐳 `ch d` | Docker management with one-letter shortcuts |
+| 📦 `ch ts` | Node.js/TypeScript - build, test, lint, audit |
+| 📚 `ch m` | Read multiple files efficiently, save tokens |
+| 🔧 `ch env` | Environment health checks and tool verification |
+| 🔌 `ch mcp` | MCP integrations - Linear, Notion, browser |
+| 🎯 `ch ctx` | Generate optimal context, reduce token usage |
+| **Slash Commands** | |
+| 🔄 `/commit-and-push` | Complete git workflow - review, commit, push, check PRs |
+| 🧠 `/understand-codebase` | AI-powered analysis to understand any project in minutes |
+| 🧪 `/tdd` | Test-driven development workflow - Red → Green → Refactor |
+| 📝 `/update-docs` | Keep documentation in sync with code changes |
+| 🎨 `/visual-test` | Visual regression testing and screenshot comparisons |
+| 📓 `/dev-diary` | Track development decisions and progress |
+| 📚 `/gather-tech-docs` | Extract and compile all technical documentation |
+| 🚀 `/post-init-onboarding` | Systematic project onboarding for productivity |
+| ✨ `/start-feature` | Kickstart features with issue, branch, and draft PR |
+| 🐛 `/debug-issue` | Systematic debugging with error tracing and fix workflow |
+| ✅ `/pre-review-check` | Ensure code is review-ready with quality checks |
+| 🔍 `/explore-module` | Deep dive into any module's structure and dependencies |
+| 💸 `/tech-debt-hunt` | Discover and prioritize technical debt with estimates |
+| 🚢 `/pre-deploy-check` | Verify production readiness with security and build checks |
 
 ## 💡 Usage Examples
 
