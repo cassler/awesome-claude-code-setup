@@ -81,6 +81,7 @@ In Claude, type `/` to see your new commands!
 | 🐳 `ch d ps` | **Docker at your fingertips** | Container status without the typing |
 | 📦 `ch ts build` | **Node.js shortcuts** | Build, test, lint with less typing |
 | 📚 `ch m read-many` | **Read multiple files** | Save tokens, get context fast |
+| 🎯 `ch ctx for-task` | **Smart context generation** | `ch ctx for-task "refactor auth"` - instant focus |
 
 ### 🎯 Game-Changing Slash Commands
 
@@ -230,6 +231,7 @@ Type `/` in Claude to see available commands:
 | 📚 | **multi-file.sh** | `ch m` | Batch file wizard | Read 10 files as fast as 1 |
 | 🔧 | **env-check.sh** | `ch env` | Environment doctor | Instant health check for your setup |
 | 🔌 | **mcp-helper.sh** | `ch mcp` | Integration helper | Linear, Notion, browser automation |
+| 🎯 | **claude-context.sh** | `ch ctx` | Context generator | Generate optimal context, save tokens |
 
 ### 🎨 Complete Slash Commands Collection
 

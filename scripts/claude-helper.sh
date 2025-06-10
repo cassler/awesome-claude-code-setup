@@ -46,6 +46,11 @@ case "$1" in
         "$SCRIPT_DIR/mcp-helper.sh" "$@"
         ;;
     
+    "context"|"ctx")
+        shift
+        "$SCRIPT_DIR/claude-context.sh" "$@"
+        ;;
+    
     "list"|"help"|"")
         echo "=== CLAUDE HELPER SCRIPTS ==="
         echo ""
@@ -60,6 +65,7 @@ case "$1" in
         echo "  multi|m       - Multi-file operations"
         echo "  env|e         - Environment checks"
         echo "  mcp           - MCP server helpers"
+        echo "  context|ctx   - Claude context generation"
         echo ""
         echo "Quick Examples:"
         echo "  $0 p                    # Project overview"
