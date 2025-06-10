@@ -1,7 +1,11 @@
 #!/bin/bash
 
-# Search Tools Script - Efficient code searching
+# Search Tools Script - Efficient code searching with optional tool enhancements
 # Usage: ./search-tools.sh [command] [args]
+
+# Source common functions
+SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
+source "$SCRIPT_DIR/common-functions.sh"
 
 # Use ripgrep if available, fallback to grep
 RG_PATH="/Users/darin/.claude/local/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/arm64-darwin/rg"
@@ -11,7 +15,15 @@ elif command -v rg &> /dev/null; then
     RG="rg"
 else
     RG=""
+    # Suggest installing ripgrep for better performance
+    if [[ -t 0 ]]; then
+        check_optional_tool "rg" "true" > /dev/null 2>&1
+    fi
 fi
+
+# Check for optional tools that enhance search experience
+FZF_AVAILABLE=$(check_command fzf && echo "true" || echo "false")
+BAT_AVAILABLE=$(check_command bat && echo "true" || echo "false")
 
 case "$1" in
     "find-code"|"fc")
@@ -129,6 +141,26 @@ case "$1" in
         find . -type f -mtime -$DAYS -not -path "*/node_modules/*" -not -path "*/.git/*" | head -20
         ;;
     
+    "interactive"|"i")
+        # Interactive file search with fzf
+        if [[ "$FZF_AVAILABLE" == "true" ]]; then
+            echo "=== INTERACTIVE FILE SEARCH (ESC to cancel) ==="
+            if [[ "$BAT_AVAILABLE" == "true" ]]; then
+                # Use bat for preview if available
+                find . -type f -not -path "*/node_modules/*" -not -path "*/.git/*" | \
+                    fzf --preview 'bat --style=numbers --color=always --line-range :500 {}' \
+                        --preview-window=right:60%:wrap
+            else
+                # Fallback to head for preview
+                find . -type f -not -path "*/node_modules/*" -not -path "*/.git/*" | \
+                    fzf --preview 'head -100 {}' --preview-window=right:60%:wrap
+            fi
+        else
+            echo "This feature requires fzf. Install it for interactive search."
+            check_optional_tool "fzf" "true"
+        fi
+        ;;
+    
     "count-lines"|"cl")
         # Count lines of code by file type
         echo "=== LINES OF CODE BY TYPE ==="
@@ -179,9 +211,13 @@ case "$1" in
         echo "  $0 recent-files|rf [days]      - Find recently modified"
         echo "  $0 count-lines|cl              - Count lines by file type"
         echo "  $0 search-all|sa <pattern>     - Comprehensive search"
-        if [ -n "$RG" ]; then
-            echo ""
-            echo "✓ Using ripgrep for fast searching"
-        fi
+        echo "  $0 interactive|i               - Interactive file search (requires fzf)"
+        echo ""
+        echo "Optional tool status:"
+        [ -n "$RG" ] && echo "  ✓ ripgrep (fast searching)"
+        [[ "$FZF_AVAILABLE" == "true" ]] && echo "  ✓ fzf (interactive search)"
+        [[ "$BAT_AVAILABLE" == "true" ]] && echo "  ✓ bat (syntax highlighting)"
+        echo ""
+        echo "Install optional tools for enhanced features."
         ;;
 esac

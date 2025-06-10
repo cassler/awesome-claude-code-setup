@@ -1,7 +1,15 @@
 #!/bin/bash
 
-# Git Operations Script
+# Git Operations Script with optional tool enhancements
 # Usage: ./git-ops.sh [command] [args]
+
+# Source common functions
+SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
+source "$SCRIPT_DIR/common-functions.sh"
+
+# Check for optional tools
+GUM_AVAILABLE=$(check_command gum && echo "true" || echo "false")
+DELTA_AVAILABLE=$(check_command delta && echo "true" || echo "false")
 
 case "$1" in
     "status"|"st")
@@ -39,12 +47,26 @@ case "$1" in
     
     "quick-commit"|"qc")
         if [ -z "$2" ]; then
-            echo "Usage: $0 quick-commit <message>"
-            exit 1
+            if [[ "$GUM_AVAILABLE" == "true" ]]; then
+                # Use gum for interactive commit message
+                echo "Enter commit message:"
+                MESSAGE=$(gum input --placeholder "feat: Add new feature" --width 60)
+                if [ -z "$MESSAGE" ]; then
+                    echo "Commit cancelled."
+                    exit 1
+                fi
+            else
+                echo "Usage: $0 quick-commit <message>"
+                echo "Tip: Install 'gum' for interactive commit messages"
+                check_optional_tool "gum" "false" > /dev/null 2>&1
+                exit 1
+            fi
+        else
+            shift
+            MESSAGE="$*"
         fi
-        shift
         git add -A
-        git commit -m "$*"
+        git commit -m "$MESSAGE"
         ;;
     
     "amend")
@@ -134,6 +156,26 @@ case "$1" in
         git log --pretty=format:"%h - %s (%cr) <%an>" -n "$N"
         ;;
     
+    "diff"|"d")
+        # Enhanced diff with delta if available
+        if [[ "$DELTA_AVAILABLE" == "true" ]]; then
+            if [ -z "$2" ]; then
+                git diff | delta
+            else
+                git diff "$2" | delta
+            fi
+        else
+            if [ -z "$2" ]; then
+                git diff
+            else
+                git diff "$2"
+            fi
+            echo ""
+            echo "Tip: Install 'delta' for enhanced diff visualization"
+            check_optional_tool "delta" "false" > /dev/null 2>&1
+        fi
+        ;;
+    
     "diff-stat")
         if [ -z "$2" ]; then
             git diff --stat
@@ -184,10 +226,15 @@ case "$1" in
         echo "  $0 pr-ready            - Check PR readiness"
         echo "  $0 pr-create <title>   - Create PR with gh"
         echo "  $0 recent [n]          - Show recent commits"
+        echo "  $0 diff|d [ref]        - Show diff (enhanced with delta)"
         echo "  $0 diff-stat [ref]     - Show diff statistics"
         echo "  $0 contributors        - Show top contributors"
         echo "  $0 file-history <file> - Show file history"
         echo "  $0 undo-last           - Undo last commit"
         echo "  $0 remote-sync         - Sync with remote"
+        echo ""
+        echo "Optional tool status:"
+        [[ "$GUM_AVAILABLE" == "true" ]] && echo "  ✓ gum (interactive prompts)"
+        [[ "$DELTA_AVAILABLE" == "true" ]] && echo "  ✓ delta (enhanced diffs)"
         ;;
 esac
