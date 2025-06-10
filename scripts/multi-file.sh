@@ -1,7 +1,18 @@
 #!/bin/bash
 
-# Multi-file Operations Script
+# Multi-file Operations Script - Enhanced with bat
 # Usage: ./multi-file.sh [command] [args]
+
+# Check for bat
+if ! command -v bat &> /dev/null; then
+    echo "❌ bat is required for syntax highlighting"
+    echo "Install with: brew install bat"
+    echo ""
+    echo "Falling back to cat..."
+    BAT="cat -n"
+else
+    BAT="bat --style=numbers --color=always"
+fi
 
 case "$1" in
     "read-many"|"rm")
@@ -15,7 +26,7 @@ case "$1" in
         for file in "$@"; do
             if [ -f "$file" ]; then
                 echo "=== FILE: $file ==="
-                head -50 "$file"
+                $BAT --line-range=:50 "$file" 2>/dev/null || head -50 "$file"
                 echo ""
             else
                 echo "=== FILE: $file (NOT FOUND) ==="
@@ -35,7 +46,7 @@ case "$1" in
         
         find . -type f -name "$PATTERN" -not -path "*/node_modules/*" -not -path "*/.git/*" | while read -r file; do
             echo "=== FILE: $file ==="
-            head -"$LINES" "$file"
+            $BAT --line-range=:"$LINES" "$file" 2>/dev/null || head -"$LINES" "$file"
             echo ""
         done
         ;;
@@ -83,7 +94,11 @@ case "$1" in
         
         if [ -f "$FILE1" ] && [ -f "$FILE2" ]; then
             echo "=== COMPARING: $FILE1 vs $FILE2 ==="
-            diff -u "$FILE1" "$FILE2" | head -50
+            if command -v delta &> /dev/null; then
+                diff -u "$FILE1" "$FILE2" | delta
+            else
+                diff -u "$FILE1" "$FILE2" | $BAT --language=diff --style=plain 2>/dev/null || diff -u "$FILE1" "$FILE2"
+            fi
         else
             echo "Error: Both files must exist"
         fi
@@ -152,6 +167,34 @@ case "$1" in
             ls -la "$DIR" | grep -E "(${BASE}|$(echo $BASE | tr '[:upper:]' '[:lower:]'))" | head -10
         else
             echo "File not found: $FILE"
+        fi
+        ;;
+    
+    "select"|"s")
+        # Interactive multi-file selection with fzf
+        if ! command -v fzf &> /dev/null; then
+            echo "❌ fzf is required for interactive selection"
+            echo "Install with: brew install fzf"
+            exit 1
+        fi
+        
+        echo "📁 Select files to view (Tab to select multiple, Enter when done)"
+        
+        # Use ripgrep for file listing if available (respects .gitignore)
+        if command -v rg &> /dev/null; then
+            FILES=$(rg --files | fzf --multi --preview "$BAT --style=numbers --color=always {}" --preview-window=right:60%)
+        else
+            FILES=$(find . -type f -not -path "*/node_modules/*" -not -path "*/.git/*" | \
+                   fzf --multi --preview "$BAT --style=numbers --color=always {}" --preview-window=right:60%)
+        fi
+        
+        # Display selected files
+        if [ -n "$FILES" ]; then
+            echo "$FILES" | while IFS= read -r file; do
+                echo "=== FILE: $file ==="
+                $BAT "$file" 2>/dev/null || cat "$file"
+                echo ""
+            done
         fi
         ;;
     

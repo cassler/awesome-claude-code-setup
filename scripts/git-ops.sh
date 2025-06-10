@@ -45,6 +45,28 @@ case "$1" in
         git branch -r | head -10
         ;;
     
+    "switch"|"sw")
+        # Interactive branch switching with fzf
+        if command -v fzf &> /dev/null; then
+            echo "🌿 Interactive Branch Switch"
+            local branch=$(git branch -a | sed 's/^[* ]*//' | grep -v 'HEAD ->' | sort -u | fzf --header="Select branch to switch to")
+            if [ -n "$branch" ]; then
+                # Handle remote branches
+                if [[ "$branch" == remotes/* ]]; then
+                    local branch_name=$(echo "$branch" | sed 's|remotes/[^/]*/||')
+                    git checkout -b "$branch_name" "$branch" 2>/dev/null || git checkout "$branch_name"
+                else
+                    git checkout "$branch"
+                fi
+            fi
+        else
+            echo "❌ fzf is required for interactive branch switching"
+            echo "Install with: brew install fzf"
+            echo ""
+            echo "Use: git checkout <branch-name>"
+        fi
+        ;;
+    
     "quick-commit"|"qc")
         if [ -z "$2" ]; then
             if [[ "$GUM_AVAILABLE" == "true" ]]; then
@@ -157,22 +179,25 @@ case "$1" in
         ;;
     
     "diff"|"d")
-        # Enhanced diff with delta if available
-        if [[ "$DELTA_AVAILABLE" == "true" ]]; then
-            if [ -z "$2" ]; then
-                git diff | delta
-            else
-                git diff "$2" | delta
-            fi
+        shift
+        if command -v delta &> /dev/null; then
+            # Enhanced diff with delta
+            git diff "$@" | delta
         else
-            if [ -z "$2" ]; then
-                git diff
-            else
-                git diff "$2"
-            fi
+            echo "❌ delta is required for enhanced diffs"
+            echo "Install with: brew install git-delta"
             echo ""
-            echo "Tip: Install 'delta' for enhanced diff visualization"
-            check_optional_tool "delta" "false" > /dev/null 2>&1
+            echo "Falling back to standard git diff..."
+            git diff "$@"
+        fi
+        ;;
+    
+    "diff-staged"|"ds")
+        shift
+        if command -v delta &> /dev/null; then
+            git diff --staged "$@" | delta
+        else
+            git diff --staged "$@"
         fi
         ;;
     
