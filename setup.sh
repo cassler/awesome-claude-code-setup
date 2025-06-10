@@ -2,7 +2,15 @@
 
 # Setup script to add claude-helpers to your shell
 
-CLAUDE_HELPERS_DIR="/Users/darin/Code/claude-helpers"
+# If running via curl, clone the repo first
+if [ ! -d "scripts" ]; then
+    echo "Downloading claude-helpers..."
+    git clone https://github.com/cassler/awesome-claude-code-setup.git /tmp/claude-helpers-setup
+    cd /tmp/claude-helpers-setup
+    CLAUDE_HELPERS_DIR="/tmp/claude-helpers-setup"
+else
+    CLAUDE_HELPERS_DIR="$(pwd)"
+fi
 SCRIPTS_INSTALL_DIR="$HOME/.claude/scripts"
 COMMANDS_INSTALL_DIR="$HOME/.claude/commands"
 
@@ -60,7 +68,8 @@ if [ -n "$SHELL_RC" ]; then
 fi
 
 # Create a global CLAUDE.md template
-cat > "$CLAUDE_HELPERS_DIR/CLAUDE_TEMPLATE.md" << 'EOF'
+TEMPLATE_PATH="$HOME/.claude/CLAUDE_TEMPLATE.md"
+cat > "$TEMPLATE_PATH" << 'EOF'
 # Project-Specific Claude Instructions
 
 ## Helper Scripts Available
@@ -85,4 +94,9 @@ echo ""
 echo "📁 Bash scripts installed to: $SCRIPTS_INSTALL_DIR/"
 echo "📄 Prompt commands installed to: $COMMANDS_INSTALL_DIR/"
 echo ""
-echo "To use in a project: cp $CLAUDE_HELPERS_DIR/CLAUDE_TEMPLATE.md ./CLAUDE.md"
+echo "To use in a project: cp ~/.claude/CLAUDE_TEMPLATE.md ./CLAUDE.md"
+
+# Cleanup temp directory if we used it
+if [ "$CLAUDE_HELPERS_DIR" = "/tmp/claude-helpers-setup" ]; then
+    rm -rf /tmp/claude-helpers-setup
+fi

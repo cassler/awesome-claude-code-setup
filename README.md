@@ -1,22 +1,58 @@
 # Claude Helper Scripts
 
-A comprehensive collection of bash scripts and commands designed to enhance Claude Code's efficiency with common development tasks.
+Supercharge your Claude Code experience with helpful bash scripts and slash commands.
 
-## 🚀 Installation
+## 🚀 Quick Install (30 seconds)
 
 ```bash
-# Clone the repository
-git clone git@github.com:cassler/awesome-claude-code-setup.git
-cd awesome-claude-code-setup
+# One-line install
+curl -sSL https://raw.githubusercontent.com/cassler/awesome-claude-code-setup/main/setup.sh | bash && source ~/.zshrc
 
-# Run the setup script
-./setup.sh
-
-# Reload your shell configuration
-source ~/.zshrc  # or ~/.bashrc
+# Or if you prefer to review first:
+git clone https://github.com/cassler/awesome-claude-code-setup.git && cd awesome-claude-code-setup && ./setup.sh && source ~/.zshrc
 ```
 
-## 📦 What Gets Installed
+That's it! You now have:
+- ✅ Helper commands like `chp` (project info) and `chs` (search)
+- ✅ Slash commands in Claude like `/commit-and-push`
+- ✅ Everything installed to `~/.claude/`
+
+## 🎯 Try It Now!
+
+In any project directory:
+```bash
+# Get instant project overview
+chp
+
+# Search for TODOs
+chs find-code "TODO"
+
+# Quick commit
+chg quick-commit "Fixed the thing"
+```
+
+In Claude, type `/` to see your new commands!
+
+## 📋 Quick Reference
+
+### Most Used Commands
+
+| Command | What it does |
+|---------|--------------|
+| `chp` | Project overview - languages, structure, dependencies |
+| `chs find-code "pattern"` | Search code (super fast) |
+| `chg quick-commit "msg"` | Stage all & commit |
+| `ch help` | See all available commands |
+
+### Top Slash Commands
+
+| Type this | To do this |
+|-----------|------------|
+| `/commit-and-push` | Full git workflow with PR checks |
+| `/understand-codebase` | Analyze a new project |
+| `/tdd` | Test-driven development flow |
+
+## 📦 What Gets Installed (Technical Details)
 
 Running `setup.sh` will:
 
