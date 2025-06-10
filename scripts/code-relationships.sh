@@ -69,7 +69,7 @@ case "$1" in
             grep -r -l "${MODULE_NAME}" . \
                 --include="*.js" --include="*.jsx" --include="*.ts" --include="*.tsx" \
                 --include="*.py" --include="*.go" 2>/dev/null | \
-                xargs grep -l "import.*${MODULE_NAME}|from.*${MODULE_NAME}|require.*${MODULE_NAME}" 2>/dev/null | head -20
+                xargs grep -E -l "import.*${MODULE_NAME}|from.*${MODULE_NAME}|require.*${MODULE_NAME}" 2>/dev/null | head -20
         fi
         ;;
     
