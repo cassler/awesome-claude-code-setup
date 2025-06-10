@@ -245,6 +245,12 @@ Type `/` in Claude to see available commands:
 | 📓 | `/dev-diary` | **Development journaling** | Track decisions & progress |
 | 📚 | `/gather-tech-docs` | **Doc compilation** | Extract all technical docs |
 | 🚀 | `/post-init-onboarding` | **Project onboarding** | Get productive on day 1 |
+| ✨ | `/start-feature` | **Feature kickstart** | Structure new feature development |
+| 🐛 | `/debug-issue` | **Systematic debugging** | Find and fix issues methodically |
+| ✅ | `/pre-review-check` | **PR quality check** | Ensure code is review-ready |
+| 🔍 | `/explore-module` | **Deep module analysis** | Understand any module completely |
+| 💸 | `/tech-debt-hunt` | **Debt discovery** | Find and prioritize technical debt |
+| 🚢 | `/pre-deploy-check` | **Deployment safety** | Verify production readiness |
 
 ## 💡 Usage Examples
 
