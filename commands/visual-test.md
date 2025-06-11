@@ -1,6 +1,16 @@
 # Visual Testing with Playwright
 
-Use Playwright to visually test your recent UI changes:
+Use Playwright to visually test your recent UI changes.
+
+## MCP Server Integration
+
+If you have the Playwright MCP server configured (via .mcp.json), Claude Code can:
+- Navigate to your app and take screenshots
+- Interact with elements directly
+- Generate Playwright test code
+- Run visual comparisons
+
+To use: Simply describe what you want to test and Claude Code will use the Playwright MCP server if available.
 
 ## Testing Tasks
 

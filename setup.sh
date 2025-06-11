@@ -637,6 +637,59 @@ EOF
     fi
 }
 
+# Setup MCP servers at user level
+setup_mcp_servers() {
+    echo -e "${BLUE}🤖 MCP Server Setup${NC}"
+    
+    # Check if claude command exists
+    if ! command -v claude &> /dev/null; then
+        echo -e "${YELLOW}⚠️  Claude Code CLI not found${NC}"
+        echo "Install Claude Code to use MCP servers: https://docs.anthropic.com/claude-code"
+        echo ""
+        return
+    fi
+    
+    # Check if user wants MCP servers
+    if [ "$SKIP_PROMPTS" = true ]; then
+        response="y"
+    else
+        echo ""
+        echo "MCP servers enhance Claude Code with:"
+        echo "  • Playwright - Browser automation and visual testing"
+        echo "  • Context7 - Up-to-date library documentation"
+        echo ""
+        echo -n "Would you like instructions to set up these MCP servers? [Y/n] "
+        read -r response
+        response=${response:-y}
+    fi
+    
+    if [[ "$response" =~ ^[Yy]$ ]]; then
+        echo ""
+        echo -e "${BLUE}📋 To add MCP servers at user level:${NC}"
+        echo ""
+        echo "1. Playwright (browser automation):"
+        echo -e "   ${YELLOW}claude mcp add playwright -s user npx -y @antropic/playwright-mcp-server${NC}"
+        echo ""
+        echo "2. Context7 (library documentation):"
+        echo -e "   ${YELLOW}claude mcp add context7 -s user npx -y @context7/mcp-server -e DEFAULT_MINIMUM_TOKENS=6000${NC}"
+        echo ""
+        echo -e "${BLUE}ℹ️  These servers will be available in all your projects${NC}"
+        echo -e "${BLUE}ℹ️  Run 'claude mcp list' to see all configured servers${NC}"
+        
+        # Copy .mcp.json to current directory for project-level option
+        if [ -f "$CLAUDE_HELPERS_DIR/.mcp.json" ] && [ "$PWD" != "$CLAUDE_HELPERS_DIR" ]; then
+            echo ""
+            echo -e "${YELLOW}Alternative: Project-level configuration${NC}"
+            echo "The .mcp.json file is available in claude-helpers"
+            echo "Copy it to any project root for project-specific MCP servers"
+        fi
+    else
+        echo -e "${BLUE}Skipping MCP server setup${NC}"
+    fi
+    
+    echo ""
+}
+
 # Main setup flow
 main() {
     # Step 1: Detect platform
@@ -659,7 +712,10 @@ main() {
     # Step 5: Create/update global CLAUDE.md
     setup_global_claude_md
     
-    # Step 6: Check and offer to install optional tools
+    # Step 6: Setup MCP servers
+    setup_mcp_servers
+    
+    # Step 7: Check and offer to install optional tools
     check_optional_tools
     
     # Final instructions

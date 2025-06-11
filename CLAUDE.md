@@ -60,4 +60,9 @@ This is the claude-helpers project itself. Key points:
 - Commands in commands/ directory
 - Use bash best practices
 - Maintain backwards compatibility
+
+## MCP Servers
+Project includes .mcp.json with:
+- Playwright: For visual testing demos
+- Context7: For documentation lookups
 </ch:user-customizations>
