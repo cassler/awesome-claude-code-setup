@@ -25,7 +25,7 @@ detect_python_tools() {
 
 # Detect Python test framework
 detect_test_framework() {
-    if [[ -f "pytest.ini" ]] || [[ -f "pyproject.toml" ]] && grep -q "pytest" "pyproject.toml" 2>/dev/null; then
+    if [[ -f "pytest.ini" ]] || ([[ -f "pyproject.toml" ]] && grep -q "pytest" "pyproject.toml" 2>/dev/null); then
         echo "pytest"
     elif find . -name "test_*.py" -o -name "*_test.py" | head -1 | grep -q .; then
         echo "pytest"
