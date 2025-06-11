@@ -10,7 +10,7 @@ source "${SCRIPT_DIR}/common-functions.sh"
 
 # Detect Python package manager
 detect_python_tools() {
-    if [[ -f "poetry.lock" ]] || [[ -f "pyproject.toml" ]] && command -v poetry &> /dev/null; then
+    if [[ -f "poetry.lock" ]] || ([[ -f "pyproject.toml" ]] && command -v poetry &> /dev/null); then
         echo "poetry"
     elif [[ -f "Pipfile" ]] && command -v pipenv &> /dev/null; then
         echo "pipenv"
