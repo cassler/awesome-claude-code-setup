@@ -4,7 +4,7 @@
 
 Supercharge your Claude Code experience with lightning-fast commands and intelligent workflows.
 
-**🎯 14 Slash Commands** | **⚡ 15 Shell Tools** | **💰 50-80% Token Savings**
+**🎯 19 Slash Commands** | **⚡ 15 Shell Tools** | **💰 50-80% Token Savings**
 
 ## 🪶 Ultra-Light Context Footprint
 
@@ -50,11 +50,16 @@ Type `/` in Claude to access these complete workflows:
 - 📝 `/update-docs` - Keep documentation in sync with code
 - 📚 `/gather-tech-docs` - Extract all technical documentation
 - 🔍 `/explore-module` - Deep dive into module dependencies
+- 📦 `/analyze-dependencies` - Comprehensive dependency audit
+- 🌐 `/api-documenter` - Auto-generate API documentation
+- 🔧 `/refactor-assistant` - Systematic refactoring workflow
 
 ### Testing & Quality
 - 🧪 `/tdd` - Test-driven development workflow
 - 🎨 `/visual-test` - Visual regression testing
 - 💸 `/tech-debt-hunt` - Find and prioritize technical debt
+- 🔒 `/security-audit` - Comprehensive security vulnerability scan
+- ⚡ `/performance-check` - Find performance bottlenecks
 
 ### Process & Tracking
 - 🔄 `/commit-and-push` - Complete git workflow with PR checks
