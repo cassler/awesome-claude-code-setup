@@ -41,16 +41,16 @@ Create a step-by-step plan:
 ## 5. Execute Changes
 For each file:
 - Make the change
-- Verify with `ch ts typecheck` or appropriate linter
+- Verify with your project's linter/type checker
 - Run related tests
-- Commit with `chg quick-commit "refactor: description"`
+- Commit changes with meaningful messages
 
 ## 6. Verification
 After all changes:
-- Run full test suite: `ch ts test`
-- Check for type errors: `ch ts typecheck`
-- Verify no broken imports: `chs search-imports "old-name"`
-- Review changes: `chg diff-stat`
+- Run full test suite
+- Check for type/lint errors
+- Verify no broken imports
+- Review all changes
 
 ## 7. Documentation
 Update any affected:

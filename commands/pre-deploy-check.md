@@ -49,26 +49,24 @@ Skip checks: ${SKIP_CHECKS:-none}
 4. **Build verification**:
    ```bash
    # Clean build
-   rm -rf "${BUILD_DIR:-dist}" "${BUILD_DIR:-build}" node_modules/.cache
-   ch ts build
+   # Remove any build artifacts (adjust paths for your project)
+   # Examples: dist/, build/, target/, out/, _site/
    
-   # Check build output
-   ls -la "${BUILD_DIR:-dist}"
+   # Run your project's build command
+   # Examples: npm run build, make build, gradle build, etc.
    
-   # Verify no source maps in production
-   find "${BUILD_DIR:-dist}" -name "*.map" | grep . && echo "WARNING: Source maps found!"
+   # Verify no source maps or debug files in production
+   # Check your build output directory for .map files or debug symbols
    ```
 
 5. **Test suite**:
    ```bash
-   # Run all tests
-   ch ts test
+   # Run your project's test suite
+   # Examples: npm test, pytest, go test, mvn test, etc.
    
-   # Run E2E tests if available
-   ch ts test:e2e || echo "No E2E tests found"
+   # Run E2E/integration tests if available
    
-   # Check test coverage
-   ch ts test:coverage || echo "No coverage reports"
+   # Check test coverage if configured
    ```
 
 6. **Database checks**:
@@ -85,11 +83,11 @@ Skip checks: ${SKIP_CHECKS:-none}
 
 7. **Performance checks**:
    ```bash
-   # Check bundle size
-   ch ts size
+   # Check build size (if applicable)
+   # Look for unexpectedly large files in your build output
    
-   # Find large assets
-   find "${BUILD_DIR:-dist}" -type f -size "+${MAX_SIZE:-1M}" -exec ls -lh {} \;
+   # Find large assets in your build directory
+   # Adjust the path to match your build output location
    
    # Check for unoptimized images
    find . -name "*.png" -o -name "*.jpg" -size "+${IMG_SIZE:-500k}"
