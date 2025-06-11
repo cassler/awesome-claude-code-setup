@@ -284,8 +284,10 @@ The scripts now include intelligent support for optional tools that enhance func
 | **gum** | Beautiful CLI prompts | Interactive tools, API helper | `brew install gum` |
 | **delta** | Enhanced diffs | Git operations, file comparison | `brew install git-delta` |
 | **httpie** | Better HTTP client | API testing | `brew install httpie` |
-| **jq** | JSON processor | API helper, project info | `brew install jq` |
+| **jq** ⚠️ | JSON processor | API helper, project info | `brew install jq` |
 | **ripgrep** | Fast searching | Search tools | `brew install ripgrep` |
+
+⚠️ **Note**: `jq` is currently required for several scripts to function properly. Please install it using the command shown above. We're working on adding fallbacks in [issue #22](https://github.com/cassler/awesome-claude-code-setup/issues/22).
 
 ### How It Works
 

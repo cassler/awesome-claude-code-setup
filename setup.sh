@@ -459,6 +459,87 @@ install_optional_tools() {
     done
 }
 
+# Create or update global CLAUDE.md with XML formatting
+setup_global_claude_md() {
+    local claude_md="$HOME/.claude/CLAUDE.md"
+    local backup_file="$HOME/.claude/CLAUDE.md.backup.$(date +%Y%m%d_%H%M%S)"
+    
+    echo -e "${BLUE}📝 Setting up global CLAUDE.md...${NC}"
+    
+    # Backup existing file if it exists
+    if [ -f "$claude_md" ]; then
+        cp "$claude_md" "$backup_file"
+        echo -e "${YELLOW}⚠️  Backed up existing CLAUDE.md to $backup_file${NC}"
+    fi
+    
+    # Create the new global CLAUDE.md with XML sections - CONCISE version
+    cat > "$claude_md" << 'EOF'
+# Claude Helper Scripts
+
+<aliases>
+ch   → Main helper: ch [category] [command]
+chp  → Project overview (run first in new projects)
+chs  → Search tools: find-code, find-file, search-imports
+chg  → Git ops: quick-commit, pr-ready, diff
+</aliases>
+
+<categories>
+project|p         → Project analysis
+docker|d          → Container ops: ps, logs, shell, inspect
+git|g             → Git workflows
+search|s          → Code search (needs: ripgrep)
+ts|node           → TypeScript/Node.js (needs: jq)
+multi|m           → Multi-file ops (uses: bat)
+env|e             → Environment checks
+api               → API testing (needs: jq, httpie)
+interactive|i     → Interactive tools (needs: fzf, gum)
+context|ctx       → Context generation
+code-relationships|cr → Dependency analysis
+code-quality|cq   → Quality checks
+</categories>
+
+<key-commands>
+# Start with project overview
+chp
+
+# Use helpers not raw commands
+chs find-code "pattern"      # not grep
+ch m read-many f1 f2 f3      # not multiple cats
+chg quick-commit "msg"       # not git add && commit
+ch i select-file             # interactive file picker
+ch ctx for-task "desc"       # generate focused context
+ch api test /endpoint        # test APIs
+</key-commands>
+
+<required-tools>
+ripgrep → search-tools.sh
+jq      → project-info.sh, ts-helper.sh, api-helper.sh
+fzf     → interactive selections
+bat     → syntax highlighting
+gum     → interactive prompts
+delta   → enhanced diffs
+</required-tools>
+
+<paths>
+Scripts: ~/.claude/scripts/
+Commands: ~/.claude/commands/
+</paths>
+
+<user-customizations>
+<!-- User additions preserved here -->
+</user-customizations>
+EOF
+    
+    echo -e "${GREEN}✅ Created global CLAUDE.md at $claude_md${NC}"
+    
+    # If there was an existing file, offer to show diff
+    if [ -f "$backup_file" ]; then
+        echo ""
+        echo -e "${YELLOW}Your previous CLAUDE.md was backed up.${NC}"
+        echo "You may want to review it and move any custom content to the <user-customizations> section."
+    fi
+}
+
 # Main setup flow
 main() {
     # Step 1: Detect platform
@@ -478,7 +559,10 @@ main() {
     # Step 4: Setup shell aliases
     setup_shell_aliases
     
-    # Step 5: Check and offer to install optional tools
+    # Step 5: Create/update global CLAUDE.md
+    setup_global_claude_md
+    
+    # Step 6: Check and offer to install optional tools
     check_optional_tools
     
     # Final instructions
