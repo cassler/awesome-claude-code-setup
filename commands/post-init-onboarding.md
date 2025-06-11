@@ -24,22 +24,21 @@ Complete the onboarding process for this codebase:
 
 - **Import initial data**
   ```bash
-  node scripts/import-prompts-to-langfuse.js
-  ./scripts/setup-langfuse.sh
+  # Run any data import or setup scripts found in the project
+  # Examples: ./scripts/setup.sh, npm run setup, make init
   ```
 
 ## 3. Verify Core Functionality
 
 - **Access all services**
-  - n8n: http://localhost:5678 (admin/admin123)
-  - Prompt Playground: http://localhost:3003
-  - Langfuse: http://localhost:3000
-  - Management Portal: http://localhost:8000
+  - Check README or documentation for service URLs
+  - Verify each service is accessible
+  - Test authentication if required
 
 - **Test key workflows**
-  - Create a test prompt in playground
-  - Run a simple n8n workflow
-  - Check Langfuse trace capture
+  - Execute main functionality
+  - Verify data flows correctly
+  - Check monitoring/logging systems
 
 ## 4. Q&A Session
 
@@ -47,13 +46,13 @@ Answer these questions to ensure understanding:
 
 1. **Architecture Questions**
    - How do services communicate?
-   - What's the data flow for AI requests?
-   - Where are prompts stored and versioned?
+   - What's the main data flow through the system?
+   - Where are key resources stored and managed?
 
 2. **Development Questions**
    - What's the typical development workflow?
-   - How do you add a new AI persona?
-   - Where do you add new API endpoints?
+   - How do you extend core functionality?
+   - Where do you add new API endpoints or features?
 
 3. **Deployment Questions**
    - How does CI/CD work?
