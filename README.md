@@ -4,7 +4,7 @@
 
 Supercharge your Claude Code experience with lightning-fast commands and intelligent workflows.
 
-**🎯 19 Slash Commands** | **⚡ 17 Shell Tools** | **🐍 Python Support** | **🐹 Go Support** | **💰 50-80% Token Savings**
+**🎯 19 Slash Commands** | **⚡ 17 Shell Tools** | **🐍 Python Support** | **🐹 Go Support** | **💰 50-80% Token Savings** | **🤖 MCP Servers**
 
 ## 🪶 Ultra-Light Context Footprint
 
@@ -34,6 +34,33 @@ git clone https://github.com/cassler/awesome-claude-code-setup.git && cd awesome
 ```
 
 **That's it!** You now have instant access to powerful commands and workflows.
+
+## 🤖 NEW: MCP Server Integration
+
+**Unlock Claude Code's full potential with MCP (Model Context Protocol) servers!**
+
+During setup, you'll get easy instructions to enable:
+
+### 🎭 Playwright MCP Server
+- **Visual testing made real** - Claude can navigate to your app and take screenshots
+- **Interactive debugging** - Click elements, fill forms, run tests directly
+- **Test generation** - Describe what to test, get working Playwright code
+- **Cross-browser testing** - Test in Chromium, Firefox, and WebKit
+
+### 📚 Context7 MCP Server  
+- **Always-current documentation** - No more outdated examples
+- **Library expertise** - Get accurate API usage for React, Vue, Next.js, and more
+- **Smart suggestions** - Claude knows the latest best practices
+- **6000 tokens of context** - Deep, comprehensive documentation
+
+**Setup is as simple as:**
+```bash
+# After running setup.sh, just copy and paste these commands:
+claude mcp add playwright -s user npx -y @antropic/playwright-mcp-server
+claude mcp add context7 -s user npx -y @context7/mcp-server -e DEFAULT_MINIMUM_TOKENS=6000
+```
+
+These servers work seamlessly with our slash commands - especially `/visual-test` for UI testing!
 
 ## 📝 Slash Commands - What You'll Actually Use
 

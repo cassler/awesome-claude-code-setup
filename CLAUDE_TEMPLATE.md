@@ -30,3 +30,15 @@ You have helper scripts at `~/.claude/scripts/` with these aliases:
 - `ch go test` - Go testing and development
 
 Run `ch help` for all available commands.
+
+## MCP Servers (User Level)
+
+You have these MCP servers configured globally:
+- **Playwright**: Browser automation for visual testing and UI interactions
+- **Context7**: Up-to-date documentation for libraries and frameworks
+
+Use these servers when:
+- Testing UI changes (Playwright can navigate, screenshot, and interact)
+- Researching library APIs (Context7 provides current documentation)
+
+Note: These are user-level servers available in all your projects.

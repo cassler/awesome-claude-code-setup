@@ -45,6 +45,13 @@ CLAUDE_HELPERS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPTS_INSTALL_DIR="$HOME/.claude/scripts"
 COMMANDS_INSTALL_DIR="$HOME/.claude/commands"
 
+# Validate CLAUDE_HELPERS_DIR is set and exists
+if [ -z "$CLAUDE_HELPERS_DIR" ]; then
+    echo -e "${RED}❌ Error: Could not determine script directory${NC}"
+    echo "Please run this script directly, not through a pipe or source command."
+    exit 1
+fi
+
 # If running via curl, clone the repo first
 if [ ! -d "$CLAUDE_HELPERS_DIR/scripts" ]; then
     echo -e "${YELLOW}📥 Downloading claude-helpers...${NC}"
@@ -153,6 +160,12 @@ check_sudo() {
 install_core_scripts() {
     echo -e "${BLUE}📂 Installing core scripts...${NC}"
     
+    # Validate CLAUDE_HELPERS_DIR
+    if [ -z "$CLAUDE_HELPERS_DIR" ] || [ ! -d "$CLAUDE_HELPERS_DIR" ]; then
+        echo -e "${RED}❌ Error: CLAUDE_HELPERS_DIR is not set or doesn't exist${NC}"
+        return 1
+    fi
+    
     # Create directories
     mkdir -p "$SCRIPTS_INSTALL_DIR"
     mkdir -p "$COMMANDS_INSTALL_DIR"
@@ -260,7 +273,7 @@ setup_shell_aliases() {
     
     # Create template
     local template_path="$HOME/.claude/CLAUDE_TEMPLATE.md"
-    if cp "$CLAUDE_HELPERS_DIR/CLAUDE_TEMPLATE.md" "$template_path" 2>/dev/null; then
+    if [ -n "$CLAUDE_HELPERS_DIR" ] && [ -f "$CLAUDE_HELPERS_DIR/CLAUDE_TEMPLATE.md" ] && cp "$CLAUDE_HELPERS_DIR/CLAUDE_TEMPLATE.md" "$template_path" 2>/dev/null; then
         echo -e "${GREEN}✅ Created template at $template_path${NC}"
     else
         # Create a basic template if copy fails
@@ -637,6 +650,97 @@ EOF
     fi
 }
 
+# Setup MCP servers at user level
+setup_mcp_servers() {
+    echo -e "${BLUE}🤖 MCP Server Setup${NC}"
+    
+    # Check if claude command exists (check both command and common install locations)
+    local claude_cmd=""
+    if command -v claude &> /dev/null; then
+        claude_cmd="claude"
+    elif [ -x "$HOME/.claude/local/claude" ]; then
+        claude_cmd="$HOME/.claude/local/claude"
+    else
+        echo -e "${YELLOW}⚠️  Claude Code CLI not found${NC}"
+        echo "Install Claude Code to use MCP servers: https://docs.anthropic.com/claude-code"
+        echo ""
+        return
+    fi
+    
+    # Check existing MCP servers
+    echo -e "${BLUE}🔍 Checking existing MCP servers...${NC}"
+    local has_playwright=false
+    local has_context7=false
+    
+    if $claude_cmd mcp list 2>/dev/null | grep -q "playwright"; then
+        has_playwright=true
+        echo -e "${GREEN}✅ Playwright MCP server already configured${NC}"
+    fi
+    
+    if $claude_cmd mcp list 2>/dev/null | grep -q "context7"; then
+        has_context7=true
+        echo -e "${GREEN}✅ Context7 MCP server already configured${NC}"
+    fi
+    
+    # If both are already installed, we're done
+    if [ "$has_playwright" = true ] && [ "$has_context7" = true ]; then
+        echo -e "${GREEN}✨ All recommended MCP servers are already set up!${NC}"
+        echo ""
+        return
+    fi
+    
+    # Check if user wants to add missing MCP servers
+    if [ "$SKIP_PROMPTS" = true ]; then
+        response="y"
+    else
+        echo ""
+        echo "MCP servers enhance Claude Code with:"
+        if [ "$has_playwright" = false ]; then
+            echo "  • Playwright - Browser automation and visual testing"
+        fi
+        if [ "$has_context7" = false ]; then
+            echo "  • Context7 - Up-to-date library documentation"
+        fi
+        echo ""
+        echo -n "Would you like instructions to set up missing MCP servers? [Y/n] "
+        read -r response
+        response=${response:-y}
+    fi
+    
+    if [[ "$response" =~ ^[Yy]$ ]]; then
+        echo ""
+        echo -e "${BLUE}📋 To add missing MCP servers at user level:${NC}"
+        echo ""
+        
+        if [ "$has_playwright" = false ]; then
+            echo "1. Playwright (browser automation):"
+            echo -e "   ${YELLOW}claude mcp add playwright -s user npx -y @antropic/playwright-mcp-server${NC}"
+            echo ""
+        fi
+        
+        if [ "$has_context7" = false ]; then
+            echo "2. Context7 (library documentation):"
+            echo -e "   ${YELLOW}claude mcp add context7 -s user npx -y @context7/mcp-server -e DEFAULT_MINIMUM_TOKENS=6000${NC}"
+            echo ""
+        fi
+        
+        echo -e "${BLUE}ℹ️  These servers will be available in all your projects${NC}"
+        echo -e "${BLUE}ℹ️  Run 'claude mcp list' to see all configured servers${NC}"
+        
+        # Copy .mcp.json to current directory for project-level option
+        if [ -n "$CLAUDE_HELPERS_DIR" ] && [ -f "$CLAUDE_HELPERS_DIR/.mcp.json" ] && [ "$PWD" != "$CLAUDE_HELPERS_DIR" ]; then
+            echo ""
+            echo -e "${YELLOW}Alternative: Project-level configuration${NC}"
+            echo "The .mcp.json file is available in claude-helpers"
+            echo "Copy it to any project root for project-specific MCP servers"
+        fi
+    else
+        echo -e "${BLUE}Skipping MCP server setup${NC}"
+    fi
+    
+    echo ""
+}
+
 # Main setup flow
 main() {
     # Step 1: Detect platform
@@ -659,7 +763,10 @@ main() {
     # Step 5: Create/update global CLAUDE.md
     setup_global_claude_md
     
-    # Step 6: Check and offer to install optional tools
+    # Step 6: Setup MCP servers
+    setup_mcp_servers
+    
+    # Step 7: Check and offer to install optional tools
     check_optional_tools
     
     # Final instructions
@@ -680,7 +787,7 @@ main() {
     echo -e "${BLUE}Enjoy your enhanced Claude experience! 🚀${NC}"
     
     # Cleanup temp directory if used
-    if [[ "$CLAUDE_HELPERS_DIR" =~ ^/tmp/claude-helpers-setup- ]]; then
+    if [ -n "$CLAUDE_HELPERS_DIR" ] && [[ "$CLAUDE_HELPERS_DIR" =~ ^/tmp/claude-helpers-setup- ]]; then
         rm -rf "$CLAUDE_HELPERS_DIR"
     fi
 }
