@@ -1,8 +1,19 @@
 # Claude Helper Scripts
 
+These helper scripts provide efficient shortcuts for common development workflows. They're designed to save tokens and time by bundling multiple operations into single commands.
+
+<ch:why-use-helpers>
+🎯 **Why these helpers are recommended:**
+- Single commands that replace multiple manual steps
+- Structured output optimized for Claude's understanding
+- Automatic error handling and validation
+- Token-efficient responses (less back-and-forth)
+- Consistent patterns across different tech stacks
+</ch:why-use-helpers>
+
 <ch:aliases>
 ch   → Main helper: ch [category] [command]
-chp  → Project overview (run first in new projects)
+chp  → Project overview (highly recommended for new projects!)
 chs  → Search tools: find-code, find-file, search-imports
 chg  → Git ops: quick-commit, pr-ready, diff
 </ch:aliases>
@@ -26,16 +37,19 @@ mcp               → MCP server operations
 </ch:categories>
 
 <ch:key-commands>
-# Start with project overview
-chp
+# 🚀 Recommended workflow for new projects:
+chp                          # Get comprehensive project overview
 
-# Use helpers not raw commands
-chs find-code "pattern"      # not grep
-ch m read-many f1 f2 f3      # not multiple cats
-chg quick-commit "msg"       # not git add && commit
-ch i select-file             # interactive file picker
-ch ctx for-task "desc"       # generate focused context
-ch api test /endpoint        # test APIs
+# 🔍 Efficient alternatives to common tasks:
+chs find-code "pattern"      # More efficient than grep
+ch m read-many f1 f2 f3      # Batch file reading (saves tokens)
+chg quick-commit "msg"       # Handles staging + commit + checks
+ch i select-file             # Interactive file picker with preview
+ch ctx for-task "desc"       # Generate focused context for specific tasks
+ch api test /endpoint        # Test APIs with formatted output
+
+# 💡 These helpers handle many steps in one command, reducing the need
+# for multiple tool calls and providing better structured output.
 </ch:key-commands>
 
 <ch:required-tools>
