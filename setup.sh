@@ -45,6 +45,13 @@ CLAUDE_HELPERS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPTS_INSTALL_DIR="$HOME/.claude/scripts"
 COMMANDS_INSTALL_DIR="$HOME/.claude/commands"
 
+# Validate CLAUDE_HELPERS_DIR is set and exists
+if [ -z "$CLAUDE_HELPERS_DIR" ]; then
+    echo -e "${RED}❌ Error: Could not determine script directory${NC}"
+    echo "Please run this script directly, not through a pipe or source command."
+    exit 1
+fi
+
 # If running via curl, clone the repo first
 if [ ! -d "$CLAUDE_HELPERS_DIR/scripts" ]; then
     echo -e "${YELLOW}📥 Downloading claude-helpers...${NC}"
@@ -153,6 +160,12 @@ check_sudo() {
 install_core_scripts() {
     echo -e "${BLUE}📂 Installing core scripts...${NC}"
     
+    # Validate CLAUDE_HELPERS_DIR
+    if [ -z "$CLAUDE_HELPERS_DIR" ] || [ ! -d "$CLAUDE_HELPERS_DIR" ]; then
+        echo -e "${RED}❌ Error: CLAUDE_HELPERS_DIR is not set or doesn't exist${NC}"
+        return 1
+    fi
+    
     # Create directories
     mkdir -p "$SCRIPTS_INSTALL_DIR"
     mkdir -p "$COMMANDS_INSTALL_DIR"
@@ -260,7 +273,7 @@ setup_shell_aliases() {
     
     # Create template
     local template_path="$HOME/.claude/CLAUDE_TEMPLATE.md"
-    if cp "$CLAUDE_HELPERS_DIR/CLAUDE_TEMPLATE.md" "$template_path" 2>/dev/null; then
+    if [ -n "$CLAUDE_HELPERS_DIR" ] && [ -f "$CLAUDE_HELPERS_DIR/CLAUDE_TEMPLATE.md" ] && cp "$CLAUDE_HELPERS_DIR/CLAUDE_TEMPLATE.md" "$template_path" 2>/dev/null; then
         echo -e "${GREEN}✅ Created template at $template_path${NC}"
     else
         # Create a basic template if copy fails
@@ -715,7 +728,7 @@ setup_mcp_servers() {
         echo -e "${BLUE}ℹ️  Run 'claude mcp list' to see all configured servers${NC}"
         
         # Copy .mcp.json to current directory for project-level option
-        if [ -f "$CLAUDE_HELPERS_DIR/.mcp.json" ] && [ "$PWD" != "$CLAUDE_HELPERS_DIR" ]; then
+        if [ -n "$CLAUDE_HELPERS_DIR" ] && [ -f "$CLAUDE_HELPERS_DIR/.mcp.json" ] && [ "$PWD" != "$CLAUDE_HELPERS_DIR" ]; then
             echo ""
             echo -e "${YELLOW}Alternative: Project-level configuration${NC}"
             echo "The .mcp.json file is available in claude-helpers"
@@ -774,7 +787,7 @@ main() {
     echo -e "${BLUE}Enjoy your enhanced Claude experience! 🚀${NC}"
     
     # Cleanup temp directory if used
-    if [[ "$CLAUDE_HELPERS_DIR" =~ ^/tmp/claude-helpers-setup- ]]; then
+    if [ -n "$CLAUDE_HELPERS_DIR" ] && [[ "$CLAUDE_HELPERS_DIR" =~ ^/tmp/claude-helpers-setup- ]]; then
         rm -rf "$CLAUDE_HELPERS_DIR"
     fi
 }
