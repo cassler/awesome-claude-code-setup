@@ -61,6 +61,16 @@ case "$1" in
         "$SCRIPT_DIR/code-quality.sh" "$@"
         ;;
     
+    "python"|"py")
+        shift
+        "$SCRIPT_DIR/python-helper.sh" "$@"
+        ;;
+    
+    "go"|"golang")
+        shift
+        "$SCRIPT_DIR/go-helper.sh" "$@"
+        ;;
+    
     "interactive"|"i")
         shift
         "$SCRIPT_DIR/interactive-helper.sh" "$@"
@@ -82,6 +92,8 @@ case "$1" in
         echo "  git|g         - Git operations"
         echo "  search|s      - Code searching tools"
         echo "  ts|node       - TypeScript/Node.js helpers"
+        echo "  python|py     - Python development tools"
+        echo "  go|golang     - Go development tools"
         echo "  multi|m       - Multi-file operations"
         echo "  env|e         - Environment checks"
         echo "  mcp           - MCP server helpers"

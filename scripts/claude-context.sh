@@ -104,6 +104,70 @@ case "$1" in
             2>/dev/null
         ;;
     
+    "markdown-outline"|"md-outline"|"mdout")
+        # Extract markdown outlines (headers only)
+        echo -e "${GREEN}=== MARKDOWN OUTLINES ===${NC}"
+        echo ""
+        
+        # Find all markdown files
+        find . -name "*.md" -o -name "*.mdx" -not -path "*/node_modules/*" -not -path "*/.git/*" | while read -r file; do
+            if [ -f "$file" ]; then
+                # Extract headers and frontmatter
+                echo -e "${YELLOW}=== $file ===${NC}"
+                
+                # Check for frontmatter
+                if head -1 "$file" | grep -q "^---"; then
+                    echo "Frontmatter:"
+                    awk '/^---$/{if(++count==2)exit}1' "$file" | tail -n +2 | head -n -1 | sed 's/^/  /'
+                    echo ""
+                fi
+                
+                # Extract headers
+                echo "Outline:"
+                grep -E "^#+" "$file" | sed 's/^#/  #/' || echo "  (no headers found)"
+                echo ""
+            fi
+        done
+        ;;
+    
+    "markdown-frontmatter"|"md-fm"|"mdfm")
+        # Extract only frontmatter from markdown files
+        echo -e "${GREEN}=== MARKDOWN FRONTMATTER ===${NC}"
+        echo ""
+        
+        find . -name "*.md" -o -name "*.mdx" -not -path "*/node_modules/*" -not -path "*/.git/*" | while read -r file; do
+            if [ -f "$file" ] && head -1 "$file" | grep -q "^---"; then
+                echo -e "${YELLOW}$file:${NC}"
+                awk '/^---$/{if(++count==2)exit}1' "$file" | tail -n +2 | head -n -1 | sed 's/^/  /'
+                echo ""
+            fi
+        done
+        ;;
+    
+    "markdown-headers"|"md-headers"|"mdh")
+        # Extract headers at specific level
+        LEVEL="${2:-}"
+        echo -e "${GREEN}=== MARKDOWN HEADERS${NC}"
+        
+        if [ -z "$LEVEL" ]; then
+            echo "Showing all headers (use $0 md-headers <level> for specific level)"
+            PATTERN="^#+"
+        else
+            echo "Showing level $LEVEL headers"
+            PATTERN="^#{$LEVEL} "
+        fi
+        echo ""
+        
+        find . -name "*.md" -o -name "*.mdx" -not -path "*/node_modules/*" -not -path "*/.git/*" | while read -r file; do
+            headers=$(grep -E "$PATTERN" "$file" 2>/dev/null)
+            if [ -n "$headers" ]; then
+                echo -e "${YELLOW}$file:${NC}"
+                echo "$headers" | sed 's/^/  /'
+                echo ""
+            fi
+        done
+        ;;
+    
     "prepare-migration")
         # Prepare context for migration
         MIGRATION="${2:-}"
@@ -157,11 +221,18 @@ case "$1" in
         echo "  focus <dir> [depth]       - Focus on specific directory"
         echo "  prepare-migration <desc>  - Prepare context for migration"
         echo ""
+        echo "Markdown Commands:"
+        echo "  mdout                     - Extract outlines from all .md files"
+        echo "  mdfm                      - Extract frontmatter from .md files"
+        echo "  mdh [level]               - Extract headers (optionally by level)"
+        echo ""
         echo "Examples:"
         echo "  $0 for-task 'refactor authentication'"
         echo "  $0 summarize --save"
         echo "  $0 focus src/api 3"
         echo "  $0 prepare-migration 'upgrade to react 18'"
+        echo "  $0 mdout                   # Show all markdown outlines"
+        echo "  $0 mdh 2                   # Show only ## headers"
         ;;
     
     *)
