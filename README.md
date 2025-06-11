@@ -77,45 +77,23 @@ These aliases are primarily for Claude to efficiently execute tasks without load
 - `ch` - **Main helper** - Access any tool with `ch [category] [command]`
 
 ### Command Categories
-| Category | Alias | Purpose | Example |
-|----------|-------|---------|---------|
-| **project** | `p` | Project analysis | `ch p` or `chp` |
-| **search** | `s` | Code searching | `ch s find-code "TODO"` |
-| **git** | `g` | Git operations | `ch g quick-commit "fix"` |
-| **docker** | `d` | Container management | `ch d ps` |
-| **typescript** | `ts` | Node.js/TypeScript | `ch ts build` |
-| **python** | `py` | Python development | `ch py test` |
-| **go** | `go` | Go development | `ch go build` |
-| **multi** | `m` | Multi-file operations | `ch m read-many f1 f2` |
-| **context** | `ctx` | Claude context generation | `ch ctx for-task "refactor auth"` |
-| **api** | - | API testing toolkit | `ch api test /endpoint` |
-| **interactive** | `i` | Interactive tools (fzf/gum) | `ch i select-file` |
 
-### 🐍 Python Development
-Full support for Python workflows:
-- `ch py deps` - Show dependencies (pip/poetry/pipenv)
-- `ch py test` - Run tests (pytest/unittest)
-- `ch py lint` - Linting (ruff/flake8/mypy)
-- `ch py format` - Formatting (black/autopep8)
-- `ch py venv` - Virtual environment management
-- `ch py audit` - Security vulnerability scanning
-- `ch py run` - Execute scripts or start Django server
+| Category | Alias | Key Commands | Purpose |
+|----------|-------|--------------|---------|
+| **project** | `p` | `chp` → full project overview | Instant codebase analysis |
+| **search** | `s` | `find-code`, `find-file`, `search-imports` | Lightning-fast code search |
+| **git** | `g` | `quick-commit`, `pr-ready`, `status` | Streamlined git workflows |
+| **docker** | `d` | `ps`, `logs`, `shell`, `inspect` | Container management |
+| **typescript** | `ts` | `deps`, `build`, `test`, `outdated` | Node.js/TypeScript tools |
+| **python** | `py` | `deps`, `test`, `lint`, `venv`, `audit` | Complete Python toolkit |
+| **go** | `go` | `deps`, `test`, `build`, `mod`, `audit` | Full Go development |
+| **context** | `ctx` | `for-task`, `mdout`, `mdfm`, `mdh` | Smart context generation |
+| **multi** | `m` | `read-many`, `read-pattern` | Batch file operations |
+| **api** | - | `test`, `watch`, `benchmark` | API testing & monitoring |
+| **interactive** | `i` | `select-file`, `select-branch` | Interactive selections |
 
-### 🐹 Go Development
-Complete Go development toolkit:
-- `ch go deps` - Module dependency management
-- `ch go test` - Run tests with coverage
-- `ch go lint` - Linting (golangci-lint/go vet)
-- `ch go build` - Build with intelligent defaults
-- `ch go mod tidy` - Module maintenance
-- `ch go audit` - Security scanning (nancy/gosec)
-- `ch go bench` - Run benchmarks
-
-### 📄 Markdown Context Extraction
-Quick documentation analysis:
-- `ch ctx mdout` - Extract all markdown outlines + frontmatter
-- `ch ctx mdfm` - Extract only frontmatter from .md files
-- `ch ctx mdh 2` - Extract headers by level (e.g., all ## headers)
+> 💡 **Usage:** `ch [category] [command]` or use shortcuts like `chp`, `chs`, `chg`  
+> 📚 **Full docs:** Run `ch [category] help` to see all commands for any category
 
 ## 💡 Why Use This?
 
