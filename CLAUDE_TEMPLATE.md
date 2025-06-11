@@ -1,16 +1,30 @@
 # Project-Specific Claude Instructions
 
+<ch:project-context>
+<!-- Add project-specific context here -->
+- Project type: 
+- Main technologies: 
+- Key patterns to follow: 
+</ch:project-context>
+
+<ch:project-commands>
+# Frequently used commands for this project
+# Examples:
+# npm run dev
+# docker-compose up
+# pytest tests/
+</ch:project-commands>
+
+<ch:project-notes>
+<!-- Add important notes, gotchas, or special instructions -->
+</ch:project-notes>
+
 ## Helper Scripts Available
-Claude has access to helper scripts at: ~/.claude/scripts/
 
-Key scripts to use:
-- Start with: `~/.claude/scripts/project-info.sh`
-- Generate context: `~/.claude/scripts/claude-context.sh for-task "your task"`
-- Search code: `~/.claude/scripts/search-tools.sh find-code "pattern"`
-- Git ops: `~/.claude/scripts/git-ops.sh status`
+You have helper scripts at `~/.claude/scripts/` with these aliases:
+- `chp` - Project overview (run this first!)
+- `chs find-code "pattern"` - Fast code search
+- `chg quick-commit "msg"` - Git operations
+- `ch ctx for-task "description"` - Generate focused context
 
-## Project-Specific Notes
-[Add project-specific instructions here]
-
-## Common Commands
-[Add frequently used commands for this project]
+Run `ch help` for all available commands.
