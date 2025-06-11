@@ -39,7 +39,7 @@ git clone https://github.com/cassler/awesome-claude-code-setup.git && cd awesome
 
 **Unlock Claude Code's full potential with MCP (Model Context Protocol) servers!**
 
-During setup, you'll get easy instructions to enable:
+During setup, these servers are **automatically configured** for you:
 
 ### 🎭 Playwright MCP Server
 - **Visual testing made real** - Claude can navigate to your app and take screenshots
@@ -53,12 +53,11 @@ During setup, you'll get easy instructions to enable:
 - **Smart suggestions** - Claude knows the latest best practices
 - **6000 tokens of context** - Deep, comprehensive documentation
 
-**Setup is as simple as:**
-```bash
-# After running setup.sh, just copy and paste these commands:
-claude mcp add playwright -s user npx -y @antropic/playwright-mcp-server
-claude mcp add context7 -s user npx -y @context7/mcp-server -e DEFAULT_MINIMUM_TOKENS=6000
-```
+**Setup handles everything automatically!** 
+- Detects existing servers to avoid duplicates
+- Installs only what you need
+- Works at user level - available in all projects
+- Falls back to manual instructions if needed
 
 These servers work seamlessly with our slash commands - especially `/visual-test` for UI testing!
 
