@@ -3,12 +3,12 @@
 # Project Info Script - Enhanced project overview with jq
 # Usage: ./project-info.sh [path]
 
-PROJECT_PATH="${1:-.}"
-cd "$PROJECT_PATH"
-
-# Source common functions
+# Source common functions first (before changing directory)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/common-functions.sh"
+
+PROJECT_PATH="${1:-.}"
+cd "$PROJECT_PATH"
 
 # Function to detect nested projects
 find_nested_projects() {
@@ -67,13 +67,10 @@ if ! command -v jq &> /dev/null; then
     exit 1
 fi
 
-echo -e "${BLUE}=== PROJECT OVERVIEW ===${NC}"
-echo "Path: $(pwd)"
-echo "Name: $(basename "$(pwd)")"
-echo ""
+echo -e "${BLUE}PROJECT:${NC} $(basename "$(pwd)") @ $(pwd)"
 
 # Detect if this is a monorepo
-echo -e "${BLUE}=== MONOREPO DETECTION ===${NC}"
+echo -e "\n${BLUE}MONOREPO:${NC}"
 MONOREPO_TYPE=""
 MONOREPO_DETECTED=false
 
@@ -103,8 +100,7 @@ if [ "$MONOREPO_DETECTED" = false ]; then
     echo "Not a monorepo"
 else
     # List workspaces/packages in the monorepo
-    echo ""
-    echo "Workspaces/Packages:"
+    echo "Workspaces:"
     
     case "$MONOREPO_TYPE" in
         "lerna")
@@ -163,10 +159,9 @@ else
             ;;
     esac
 fi
-echo ""
 
 # Detect nested projects
-echo -e "${BLUE}=== NESTED PROJECTS ===${NC}"
+echo -e "\n${BLUE}NESTED PROJECTS:${NC}"
 NESTED_PROJECTS=$(find_nested_projects 3)
 if [ -n "$NESTED_PROJECTS" ]; then
     echo "Found nested projects:"
@@ -193,10 +188,9 @@ if [ -n "$NESTED_PROJECTS" ]; then
 else
     echo "No nested projects detected"
 fi
-echo ""
 
 # Detect primary languages with file counts
-echo -e "${BLUE}=== LANGUAGES & FRAMEWORKS ===${NC}"
+echo -e "\n${BLUE}LANGUAGES:${NC}"
 LANG_DETECTED=false
 
 # Initialize language flags
@@ -294,10 +288,8 @@ if [ "$LANG_DETECTED" = false ]; then
     echo "No standard project files detected"
 fi
 
-echo ""
-
 # Show package managers and key files
-echo -e "${BLUE}=== CONFIGURATION FILES ===${NC}"
+echo -e "\n${BLUE}CONFIG FILES:${NC}"
 [ -f "package.json" ] && echo "✓ package.json"
 [ -f "package-lock.json" ] && echo "✓ package-lock.json"
 [ -f "yarn.lock" ] && echo "✓ yarn.lock"
@@ -325,11 +317,10 @@ echo -e "${BLUE}=== CONFIGURATION FILES ===${NC}"
 [ -f "go.sum" ] && echo "✓ go.sum"
 [ -f "Cargo.toml" ] && echo "✓ Cargo.toml"
 [ -f "Cargo.lock" ] && echo "✓ Cargo.lock"
-echo ""
 
 # Node.js specific info
 if [ "$HAS_NODE" = true ] && [ -f "package.json" ]; then
-    echo -e "${BLUE}=== NODE.JS PROJECT DETAILS ===${NC}"
+    echo -e "\n${BLUE}NODE.JS:${NC}"
     
     # Extract comprehensive info from package.json
     NAME=$(jq -r '.name // "N/A"' package.json)
@@ -351,61 +342,43 @@ if [ "$HAS_NODE" = true ] && [ -f "package.json" ]; then
         echo "Framework: Express $(jq -r '.dependencies.express // .devDependencies.express' package.json)"
     fi
     
-    echo ""
-    echo "Scripts:"
-    jq -r '.scripts // {} | to_entries | .[] | "  \(.key): \(.value)"' package.json | head -10
-    
+    SCRIPTS=$(jq -r '.scripts // {} | keys | .[0:8] | join(", ")' package.json 2>/dev/null)
     SCRIPT_COUNT=$(jq -r '.scripts // {} | length' package.json)
-    [ $SCRIPT_COUNT -gt 10 ] && echo "  ... and $((SCRIPT_COUNT - 10)) more scripts"
-    
-    echo ""
-    echo "Dependencies Summary:"
+    echo "Scripts ($SCRIPT_COUNT): $SCRIPTS$([ $SCRIPT_COUNT -gt 8 ] && echo ", ...")"
+    echo "Dependencies:"
     DEP_COUNT=$(jq -r '.dependencies // {} | length' package.json)
     DEVDEP_COUNT=$(jq -r '.devDependencies // {} | length' package.json)
-    echo "  Production: $DEP_COUNT packages"
-    echo "  Development: $DEVDEP_COUNT packages"
-    
-    # Show key dependencies
-    echo ""
-    echo "Key Dependencies:"
-    jq -r '.dependencies // {} | to_entries | sort_by(.key) | .[:5] | .[] | "  \(.key): \(.value)"' package.json
-    
-    # Check for common tools
-    echo ""
-    echo "Build Tools:"
-    jq -e '.devDependencies.typescript' package.json &>/dev/null && echo "  ✓ TypeScript"
-    jq -e '.devDependencies."@types/node"' package.json &>/dev/null && echo "  ✓ TypeScript Node types"
-    jq -e '.devDependencies.eslint' package.json &>/dev/null && echo "  ✓ ESLint"
-    jq -e '.devDependencies.prettier' package.json &>/dev/null && echo "  ✓ Prettier"
-    jq -e '.devDependencies.jest // .devDependencies.vitest // .devDependencies.mocha' package.json &>/dev/null && echo "  ✓ Testing framework"
+    echo "  Production: $DEP_COUNT, Development: $DEVDEP_COUNT"
+    echo "Key deps: $(jq -r '.dependencies // {} | keys | .[0:5] | join(", ")' package.json 2>/dev/null || echo "none")"
+    echo -n "Build tools:"
+    jq -e '.devDependencies.typescript' package.json &>/dev/null && echo -n " TypeScript"
+    jq -e '.devDependencies.eslint' package.json &>/dev/null && echo -n " ESLint"
+    jq -e '.devDependencies.prettier' package.json &>/dev/null && echo -n " Prettier"
+    jq -e '.devDependencies.jest // .devDependencies.vitest // .devDependencies.mocha' package.json &>/dev/null && echo -n " Testing"
     echo ""
 fi
 
 # Docker info
 if [ -f "Dockerfile" ] || [ -f "docker-compose.yml" ]; then
-    echo -e "${BLUE}=== DOCKER CONFIGURATION ===${NC}"
+    echo -e "\n${BLUE}DOCKER:${NC}"
     [ -f "Dockerfile" ] && echo "✓ Dockerfile present"
     [ -f "docker-compose.yml" ] && echo "✓ docker-compose.yml present"
     if [ -f "docker-compose.yml" ]; then
         echo "Services: $(grep -E '^\s*[a-zA-Z0-9_-]+:$' docker-compose.yml | sed 's/://g' | tr '\n' ', ' | sed 's/,$//')"
     fi
-    echo ""
 fi
 
 # Quick directory structure
-echo -e "${BLUE}=== DIRECTORY STRUCTURE ===${NC}"
-
-# Show top-level directories with indicators for nested projects
-echo "Top-level directories:"
+echo -ne "\n${BLUE}STRUCTURE:${NC} "
 find . -maxdepth 1 -type d -not -path "." -not -path "./.git" -not -path "./node_modules" -not -path "./vendor" -not -path "./venv" | sort | while read -r dir; do
     dir_name=$(basename "$dir")
-    # Check if this directory contains a nested project
     if [ -f "$dir/package.json" ] || [ -f "$dir/go.mod" ] || [ -f "$dir/Cargo.toml" ] || [ -f "$dir/requirements.txt" ] || [ -f "$dir/setup.py" ] || [ -f "$dir/pyproject.toml" ]; then
-        echo "  $dir_name/ 📦"  # Package indicator
+        echo -n "$dir_name📦 "
     else
-        echo "  $dir_name/"
+        echo -n "$dir_name/ "
     fi
 done
+echo ""
 
 # If it's a monorepo, show the workspace structure
 if [ "$MONOREPO_DETECTED" = true ]; then
@@ -425,22 +398,20 @@ if [ "$MONOREPO_DETECTED" = true ]; then
             ;;
     esac
 fi
-echo ""
 
 # Git info
 if [ -d ".git" ]; then
-    echo -e "${BLUE}=== GIT REPOSITORY ===${NC}"
+    echo -e "\n${BLUE}GIT:${NC}"
     BRANCH=$(git branch --show-current 2>/dev/null)
     echo "Current branch: ${BRANCH:-unknown}"
     REMOTE=$(git remote -v | head -1 | awk '{print $2}' 2>/dev/null)
     [ -n "$REMOTE" ] && echo "Remote: $REMOTE"
     echo "Status: $(git status --porcelain | wc -l) changes"
-    echo ""
 fi
 
 # Python specific info
 if [ "$HAS_PYTHON" = true ]; then
-    echo -e "${BLUE}=== PYTHON PROJECT DETAILS ===${NC}"
+    echo -e "\n${BLUE}PYTHON:${NC}"
     
     # Package manager detection
     if [ -f "poetry.lock" ] || [ -f "pyproject.toml" ]; then
@@ -463,13 +434,11 @@ if [ "$HAS_PYTHON" = true ]; then
     elif find . -name "test_*.py" -o -name "*_test.py" | head -1 | grep -q .; then
         echo "Test Framework: detected (test files found)"
     fi
-    
-    echo ""
 fi
 
 # Go specific info
 if [ "$HAS_GO" = true ] && [ -f "go.mod" ]; then
-    echo -e "${BLUE}=== GO PROJECT DETAILS ===${NC}"
+    echo -e "\n${BLUE}GO:${NC}"
     
     MODULE=$(grep "^module " go.mod | awk '{print $2}')
     echo "Module: $MODULE"
@@ -479,13 +448,11 @@ if [ "$HAS_GO" = true ] && [ -f "go.mod" ]; then
         DEP_COUNT=$(grep -c "^[^[:space:]]" go.sum)
         echo "Dependencies: ~$((DEP_COUNT / 2)) packages"
     fi
-    
-    echo ""
 fi
 
 # Rust specific info
 if [ "$HAS_RUST" = true ] && [ -f "Cargo.toml" ]; then
-    echo -e "${BLUE}=== RUST PROJECT DETAILS ===${NC}"
+    echo -e "\n${BLUE}RUST:${NC}"
     
     # Basic cargo info
     if command -v cargo &> /dev/null; then
@@ -493,12 +460,10 @@ if [ "$HAS_RUST" = true ] && [ -f "Cargo.toml" ]; then
         CARGO_VERSION=$(grep '^version' Cargo.toml | head -1 | cut -d'"' -f2)
         echo "Package: $CARGO_NAME v$CARGO_VERSION"
     fi
-    
-    echo ""
 fi
 
 # Testing & CI/CD
-echo -e "${BLUE}=== TESTING & CI/CD ===${NC}"
+echo -e "\n${BLUE}TESTING/CI:${NC}"
 TEST_FOUND=false
 
 # GitHub Actions
@@ -524,10 +489,9 @@ fi
 [ -d "__tests__" ] && echo "✓ __tests__/ directory" && TEST_FOUND=true
 
 [ "$TEST_FOUND" = false ] && echo "No test configuration detected"
-echo ""
 
 # Documentation
-echo -e "${BLUE}=== DOCUMENTATION ===${NC}"
+echo -e "\n${BLUE}DOCS:${NC}"
 DOC_FOUND=false
 
 [ -f "README.md" ] && echo "✓ README.md" && DOC_FOUND=true
@@ -540,10 +504,9 @@ DOC_FOUND=false
 [ -d "documentation" ] && echo "✓ documentation/ directory" && DOC_FOUND=true
 
 [ "$DOC_FOUND" = false ] && echo "No documentation files found"
-echo ""
 
 # Quick size info
-echo -e "${BLUE}=== PROJECT METRICS ===${NC}"
+echo -e "\n${BLUE}METRICS:${NC}"
 echo "Total files: $(find . -type f -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/vendor/*" -not -path "*/venv/*" | wc -l | tr -d ' ')"
 echo "Total size: $(du -sh . 2>/dev/null | cut -f1)"
 [ -d "node_modules" ] && echo "node_modules size: $(du -sh node_modules 2>/dev/null | cut -f1)"
@@ -551,7 +514,6 @@ echo "Total size: $(du -sh . 2>/dev/null | cut -f1)"
 [ -d "venv" ] && echo "venv size: $(du -sh venv 2>/dev/null | cut -f1)"
 
 # Line count by language
-echo ""
 echo "Lines of code:"
 if command -v cloc &> /dev/null; then
     cloc . --quiet --exclude-dir=node_modules,vendor,venv,.git,dist,build 2>/dev/null | tail -n +6
@@ -559,8 +521,7 @@ else
     echo "  (install 'cloc' for detailed code statistics)"
 fi
 
-echo ""
-echo -e "${GREEN}=== QUICK START SUGGESTIONS ===${NC}"
+echo -e "\n${GREEN}QUICK START:${NC}"
 
 # Monorepo-specific suggestions
 if [ "$MONOREPO_DETECTED" = true ]; then
@@ -598,7 +559,6 @@ if [ "$MONOREPO_DETECTED" = true ]; then
             echo "  rush list              # List all projects"
             ;;
     esac
-    echo ""
 fi
 
 # Suggest commands based on detected environment
@@ -625,5 +585,4 @@ if [ -f "Makefile" ]; then
     echo "  make"
 fi
 
-echo ""
-echo -e "${YELLOW}Tip: Run 'ch ctx for-task \"your task\"' to generate focused context${NC}"
+echo -e "\n${YELLOW}💡 ch ctx for-task \"your task\" → focused context${NC}"
