@@ -1,180 +1,61 @@
-# Claude Helper Scripts - Quick Reference
+# Claude Helper Scripts
 
-You have helper scripts available with shell aliases for quick access!
+<ch:aliases>
+ch   → Main helper: ch [category] [command]
+chp  → Project overview (run first in new projects)
+chs  → Search tools: find-code, find-file, search-imports
+chg  → Git ops: quick-commit, pr-ready, diff
+</ch:aliases>
 
-## 🚀 Quick Access (Shell Aliases)
+<ch:categories>
+project|p         → Project analysis
+docker|d          → Container ops: ps, logs, shell, inspect
+git|g             → Git workflows
+search|s          → Code search (needs: ripgrep)
+ts|node           → TypeScript/Node.js (needs: jq)
+multi|m           → Multi-file ops (uses: bat)
+env|e             → Environment checks
+api               → API testing (needs: jq, httpie)
+interactive|i     → Interactive tools (needs: fzf, gum)
+context|ctx       → Context generation
+code-relationships|cr → Dependency analysis
+code-quality|cq   → Quality checks
+mcp               → MCP server operations
+</ch:categories>
 
-```bash
-# Main helper (shows all categories)
-ch
-
-# Project overview - ALWAYS run this first in new projects!
+<ch:key-commands>
+# Start with project overview
 chp
 
-# Search tools - Use this instead of grep/find
-chs find-code "pattern"
-chs find-file "*.ts"
-chs search-function "functionName"
+# Use helpers not raw commands
+chs find-code "pattern"      # not grep
+ch m read-many f1 f2 f3      # not multiple cats
+chg quick-commit "msg"       # not git add && commit
+ch i select-file             # interactive file picker
+ch ctx for-task "desc"       # generate focused context
+ch api test /endpoint        # test APIs
+</ch:key-commands>
 
-# Git operations
-chg status
-chg quick-commit "your commit message"
-chg pr-ready
-```
+<ch:required-tools>
+ripgrep → search-tools.sh
+jq      → project-info.sh, ts-helper.sh, api-helper.sh
+fzf     → interactive selections
+bat     → syntax highlighting
+gum     → interactive prompts
+delta   → enhanced diffs
+</ch:required-tools>
 
-## 📁 Full Paths (if aliases aren't available)
+<ch:paths>
+Scripts: ~/.claude/scripts/
+Commands: ~/.claude/commands/
+</ch:paths>
 
-All scripts are located at: `~/.claude/scripts/`
-
-## 🎯 Common Workflows
-
-### Starting a new project
-```bash
-# First, get project overview
-chp
-
-# Generate focused context for your task
-ch ctx for-task "implement user authentication"
-
-# Check environment and tools
-ch env tools
-
-# See available npm scripts
-ch ts scripts
-```
-
-### Searching code efficiently
-```bash
-# Find code patterns (uses ripgrep for speed)
-chs find-code "TODO"
-chs search-imports "express"
-chs search-function "handleRequest"
-chs search-class "UserModel"
-
-# Find files
-chs find-file "*.test.ts"
-chs find-type "tsx"
-```
-
-### Git operations
-```bash
-# Quick status
-chg status
-
-# Quick commit (stages all and commits)
-chg quick-commit "Fix: resolved type errors"
-
-# Check if ready for PR
-chg pr-ready
-
-# Create PR
-chg pr-create "Add new feature"
-```
-
-### Docker operations
-```bash
-ch d ps          # List containers
-ch d logs app    # View logs
-ch d clean       # Cleanup
-ch d shell app   # Get shell in container
-```
-
-### Multi-file operations
-```bash
-# Read multiple files at once (saves tokens!)
-ch m read-many src/index.ts src/app.ts src/config.ts
-
-# Read all files matching pattern
-ch m read-pattern "*.config.js"
-
-# Compare files
-ch m compare file1.ts file2.ts
-```
-
-### TypeScript/Node.js
-```bash
-ch ts deps       # Show dependencies
-ch ts scripts    # List npm scripts
-ch ts build      # Run build
-ch ts lint       # Run linter
-ch ts typecheck  # Type checking
-```
-
-### Context Generation
-```bash
-# Generate context for specific tasks
-ch ctx for-task "refactor database layer"
-
-# Create and save project summary
-ch ctx summarize --save
-
-# Focus on specific directory
-ch ctx focus src/api 3
-
-# Prepare migration context
-ch ctx prepare-migration "upgrade to next.js 14"
-```
-
-### API Testing (NEW!)
-```bash
-# Test REST APIs quickly
-ch api test /users --base-url https://api.example.com
-
-# Parse and analyze JSON responses
-ch api parse response.json
-ch api extract response.json '.data.users'
-
-# Compare API responses
-ch api compare old-response.json new-response.json
-
-# Save reusable headers
-ch api save-headers auth-headers.json
-```
-
-### Interactive Tools (NEW!)
-```bash
-# Interactive file selection with preview
-ch i select-file
-
-# Select multiple files at once
-ch i select-files
-
-# Run npm scripts interactively
-ch i select-script
-
-# Switch git branches with preview
-ch i select-branch
-```
-
-## 💡 Key Benefits for Claude
-
-1. **Token Efficiency** - These scripts consolidate multiple operations
-2. **Speed** - Uses fast tools like ripgrep when available
-3. **Consistency** - Standardized output format
-4. **Context** - Provides relevant context in one command
-
-## 📋 All Available Commands
-
-Run `ch help` to see all categories, or:
-- `ch project` - Project analysis
-- `ch docker` - Docker operations
-- `ch git` - Git helpers
-- `ch search` - Code searching
-- `ch ts` - TypeScript/Node.js
-- `ch multi` - Multi-file operations
-- `ch env` - Environment checks
-- `ch mcp` - MCP server helpers
-- `ch api` - API testing toolkit
-- `ch i` - Interactive tools
-- `ch ctx` - Context generation
-- `ch cr` - Code relationships
-- `ch cq` - Code quality checks
-
-## 🔧 Setup for New Projects
-
-When starting a new project, copy the template:
-```bash
-cp /Users/darin/Code/claude-helpers/CLAUDE_TEMPLATE.md ./CLAUDE.md
-```
-
-Then customize it with project-specific instructions.
+<ch:user-customizations>
+<!-- Project-specific for claude-helpers -->
+This is the claude-helpers project itself. Key points:
+- Main entry: setup.sh
+- Scripts in scripts/ directory
+- Commands in commands/ directory
+- Use bash best practices
+- Maintain backwards compatibility
+</ch:user-customizations>
