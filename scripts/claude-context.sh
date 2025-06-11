@@ -13,56 +13,9 @@ check_dependencies rg tree jq
 
 case "$1" in
     "for-task"|"task")
-        # Generate context for a specific task
-        TASK="${2:-}"
-        if [ -z "$TASK" ]; then
-            error_exit "Usage: $0 for-task <task-description>"
-        fi
-        
-        # Validate input
-        if ! validate_input "$TASK"; then
-            error_exit "Invalid task description. Use only alphanumeric characters, spaces, and basic punctuation."
-        fi
-        
-        echo -e "${GREEN}=== GENERATING CONTEXT FOR: $TASK ===${NC}"
-        echo ""
-        
-        # Find files related to the task keywords
-        echo "=== RELATED FILES ==="
-        
-        # Save and modify IFS for word splitting
-        OLD_IFS="$IFS"
-        IFS=' '
-        read -ra WORDS <<< "$TASK"
-        IFS="$OLD_IFS"
-        
-        for word in "${WORDS[@]}"; do
-            # Skip common words
-            if is_stop_word "$word"; then
-                continue
-            fi
-            
-            echo "Files containing '$word':"
-            if check_command rg; then
-                rg -l "$word" --type-add 'code:*.{js,jsx,ts,tsx,py,go,java,c,cpp,rs,rb,php}' -tcode 2>/dev/null | head -10
-            else
-                grep -r -l "$word" . --include="*.js" --include="*.jsx" --include="*.ts" --include="*.tsx" \
-                    --include="*.py" --include="*.go" --include="*.java" 2>/dev/null | head -10
-            fi
-            echo ""
-        done
-        
-        echo "=== KEY DIRECTORIES ==="
-        # Find directories that might be relevant
-        for word in "${WORDS[@]}"; do
-            if is_stop_word "$word"; then
-                continue
-            fi
-            find . -type d -name "*${word}*" 2>/dev/null | grep -v node_modules | grep -v ".git" | head -5
-        done
-        
-        echo ""
-        echo -e "${YELLOW}TIP: Use 'ch m read-many <files>' to read multiple files efficiently${NC}"
+        # Use the new smart context generator
+        shift
+        exec "$SCRIPT_DIR/smart-context.sh" for-task "$@"
         ;;
     
     "summarize")
