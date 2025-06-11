@@ -4,7 +4,7 @@
 
 Supercharge your Claude Code experience with lightning-fast commands and intelligent workflows.
 
-**🎯 19 Slash Commands** | **⚡ 15 Shell Tools** | **💰 50-80% Token Savings**
+**🎯 19 Slash Commands** | **⚡ 17 Shell Tools** | **🐍 Python Support** | **🐹 Go Support** | **💰 50-80% Token Savings**
 
 ## 🪶 Ultra-Light Context Footprint
 
@@ -84,10 +84,38 @@ These aliases are primarily for Claude to efficiently execute tasks without load
 | **git** | `g` | Git operations | `ch g quick-commit "fix"` |
 | **docker** | `d` | Container management | `ch d ps` |
 | **typescript** | `ts` | Node.js/TypeScript | `ch ts build` |
+| **python** | `py` | Python development | `ch py test` |
+| **go** | `go` | Go development | `ch go build` |
 | **multi** | `m` | Multi-file operations | `ch m read-many f1 f2` |
 | **context** | `ctx` | Claude context generation | `ch ctx for-task "refactor auth"` |
 | **api** | - | API testing toolkit | `ch api test /endpoint` |
 | **interactive** | `i` | Interactive tools (fzf/gum) | `ch i select-file` |
+
+### 🐍 Python Development
+Full support for Python workflows:
+- `ch py deps` - Show dependencies (pip/poetry/pipenv)
+- `ch py test` - Run tests (pytest/unittest)
+- `ch py lint` - Linting (ruff/flake8/mypy)
+- `ch py format` - Formatting (black/autopep8)
+- `ch py venv` - Virtual environment management
+- `ch py audit` - Security vulnerability scanning
+- `ch py run` - Execute scripts or start Django server
+
+### 🐹 Go Development
+Complete Go development toolkit:
+- `ch go deps` - Module dependency management
+- `ch go test` - Run tests with coverage
+- `ch go lint` - Linting (golangci-lint/go vet)
+- `ch go build` - Build with intelligent defaults
+- `ch go mod tidy` - Module maintenance
+- `ch go audit` - Security scanning (nancy/gosec)
+- `ch go bench` - Run benchmarks
+
+### 📄 Markdown Context Extraction
+Quick documentation analysis:
+- `ch ctx mdout` - Extract all markdown outlines + frontmatter
+- `ch ctx mdfm` - Extract only frontmatter from .md files
+- `ch ctx mdh 2` - Extract headers by level (e.g., all ## headers)
 
 ## 💡 Why Use This?
 
