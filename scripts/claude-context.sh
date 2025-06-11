@@ -15,6 +15,16 @@ case "$1" in
     "for-task"|"task")
         # Use the new smart context generator
         shift
+        
+        # Check if smart-context.sh exists and is executable
+        if [ ! -f "$SCRIPT_DIR/smart-context.sh" ]; then
+            error_exit "Smart context generator not found. Please ensure smart-context.sh is installed in: $SCRIPT_DIR"
+        fi
+        
+        if [ ! -x "$SCRIPT_DIR/smart-context.sh" ]; then
+            error_exit "Smart context generator is not executable. Run: chmod +x $SCRIPT_DIR/smart-context.sh"
+        fi
+        
         exec "$SCRIPT_DIR/smart-context.sh" for-task "$@"
         ;;
     
