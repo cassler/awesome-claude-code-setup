@@ -6,12 +6,22 @@ Supercharge your Claude Code experience with lightning-fast commands and intelli
 
 **🎯 14 Slash Commands** | **⚡ 15 Shell Tools** | **💰 50-80% Token Savings**
 
+## 🪶 Ultra-Light Context Footprint
+
+**We add only ~300 tokens to Claude's context** - that's it! Unlike other tools that bloat your context window with thousands of lines of documentation, our approach is surgically precise:
+
+- ✅ **~300 tokens** added to your CLAUDE.md file
+- ✅ **Everything else is environmental** - scripts live on your system, not in context
+- ✅ **No context pollution** - Claude calls scripts as needed, not reads documentation
+- ✅ **Maximum efficiency** - More room for your actual code and conversations
+
 > 📚 **Based on [Anthropic's Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)**
 >
 > This toolkit implements Anthropic's recommended patterns for working with Claude Code, focusing on:
 > - 🚀 **Reducing token usage** through batched operations
 > - ⚡ **Improving speed** by scripting repetitive tasks
 > - 🎯 **Ensuring consistency** with standardized workflows
+> - 🪶 **Minimal context overhead** - just a few hundred tokens!
 
 ## 🚀 Quick Install (30 seconds)
 
@@ -74,6 +84,14 @@ Type `/` in Claude to access complete workflows:
 
 ## 💡 Why Use This?
 
+### Token Usage Comparison
+
+| Approach | Context Tokens | Example |
+|----------|---------------|---------|
+| **Other tools** | 5,000-15,000 tokens | Full documentation loaded in context |
+| **Manual work** | 1,000+ tokens per task | Multiple file reads, repeated commands |
+| **Claude Helpers** | **~300 tokens total** | Tiny config + environmental scripts |
+
 ### Without these tools:
 - Claude makes multiple tool calls to gather project info
 - You type long commands repeatedly
@@ -85,6 +103,7 @@ Type `/` in Claude to access complete workflows:
 - Shortcuts for everything (`chg quick-commit "msg"`)
 - Batched operations save 50-80% on tokens
 - Consistent, reproducible workflows
+- **Your context stays clean for actual work**
 
 ## 📦 What Gets Installed
 
