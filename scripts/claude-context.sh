@@ -124,7 +124,7 @@ case "$1" in
                 
                 # Extract headers
                 echo "Outline:"
-                grep "^#\+" "$file" | sed 's/^#/  #/' || echo "  (no headers found)"
+                grep -E "^#+" "$file" | sed 's/^#/  #/' || echo "  (no headers found)"
                 echo ""
             fi
         done
@@ -151,7 +151,7 @@ case "$1" in
         
         if [ -z "$LEVEL" ]; then
             echo "Showing all headers (use $0 md-headers <level> for specific level)"
-            PATTERN="^#\+"
+            PATTERN="^#+"
         else
             echo "Showing level $LEVEL headers"
             PATTERN="^#{$LEVEL} "
@@ -159,7 +159,7 @@ case "$1" in
         echo ""
         
         find . -name "*.md" -o -name "*.mdx" -not -path "*/node_modules/*" -not -path "*/.git/*" | while read -r file; do
-            headers=$(grep "$PATTERN" "$file" 2>/dev/null)
+            headers=$(grep -E "$PATTERN" "$file" 2>/dev/null)
             if [ -n "$headers" ]; then
                 echo -e "${YELLOW}$file:${NC}"
                 echo "$headers" | sed 's/^/  /'
