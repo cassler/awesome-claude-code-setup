@@ -476,14 +476,14 @@ setup_global_claude_md() {
     cat > "$claude_md" << 'EOF'
 # Claude Helper Scripts
 
-<aliases>
+<ch:aliases>
 ch   → Main helper: ch [category] [command]
 chp  → Project overview (run first in new projects)
 chs  → Search tools: find-code, find-file, search-imports
 chg  → Git ops: quick-commit, pr-ready, diff
-</aliases>
+</ch:aliases>
 
-<categories>
+<ch:categories>
 project|p         → Project analysis
 docker|d          → Container ops: ps, logs, shell, inspect
 git|g             → Git workflows
@@ -496,9 +496,9 @@ interactive|i     → Interactive tools (needs: fzf, gum)
 context|ctx       → Context generation
 code-relationships|cr → Dependency analysis
 code-quality|cq   → Quality checks
-</categories>
+</ch:categories>
 
-<key-commands>
+<ch:key-commands>
 # Start with project overview
 chp
 
@@ -509,25 +509,25 @@ chg quick-commit "msg"       # not git add && commit
 ch i select-file             # interactive file picker
 ch ctx for-task "desc"       # generate focused context
 ch api test /endpoint        # test APIs
-</key-commands>
+</ch:key-commands>
 
-<required-tools>
+<ch:required-tools>
 ripgrep → search-tools.sh
 jq      → project-info.sh, ts-helper.sh, api-helper.sh
 fzf     → interactive selections
 bat     → syntax highlighting
 gum     → interactive prompts
 delta   → enhanced diffs
-</required-tools>
+</ch:required-tools>
 
-<paths>
+<ch:paths>
 Scripts: ~/.claude/scripts/
 Commands: ~/.claude/commands/
-</paths>
+</ch:paths>
 
-<user-customizations>
+<ch:user-customizations>
 <!-- User additions preserved here -->
-</user-customizations>
+</ch:user-customizations>
 EOF
     
     echo -e "${GREEN}✅ Created global CLAUDE.md at $claude_md${NC}"
@@ -536,7 +536,7 @@ EOF
     if [ -f "$backup_file" ]; then
         echo ""
         echo -e "${YELLOW}Your previous CLAUDE.md was backed up.${NC}"
-        echo "You may want to review it and move any custom content to the <user-customizations> section."
+        echo "You may want to review it and move any custom content to the <ch:user-customizations> section."
     fi
 }
 
