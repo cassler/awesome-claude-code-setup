@@ -34,6 +34,7 @@ context|ctx       → Context generation
 code-relationships|cr → Dependency analysis
 code-quality|cq   → Quality checks
 mcp               → MCP server operations
+nlp|text          → Text analysis (tokens, sentiment, keywords)
 </ch:categories>
 
 <ch:key-commands>
@@ -47,6 +48,9 @@ chg quick-commit "msg"       # Handles staging + commit + checks
 ch i select-file             # Interactive file picker with preview
 ch ctx for-task "desc"       # Generate focused context for specific tasks
 ch api test /endpoint        # Test APIs with formatted output
+ch nlp tokens README.md      # Count tokens before adding to context
+ch nlp todos                 # Find all TODO/FIXME comments
+ch nlp sentiment "text"      # Quick sentiment analysis
 
 # 💡 These helpers handle many steps in one command, reducing the need
 # for multiple tool calls and providing better structured output.

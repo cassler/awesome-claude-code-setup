@@ -46,6 +46,11 @@ case "$1" in
         "$SCRIPT_DIR/mcp-helper.sh" "$@"
         ;;
     
+    "nlp"|"text")
+        shift
+        "$SCRIPT_DIR/nlp-helper.sh" "$@"
+        ;;
+    
     "context"|"ctx")
         shift
         "$SCRIPT_DIR/claude-context.sh" "$@"
@@ -97,6 +102,7 @@ case "$1" in
         echo "  multi|m       - Multi-file operations"
         echo "  env|e         - Environment checks"
         echo "  mcp           - MCP server helpers"
+        echo "  nlp|text      - Text analysis & NLP operations"
         echo "  context|ctx   - Claude context generation"
         echo "  code-relationships|cr - Analyze code dependencies"
         echo "  code-quality|cq - Check code quality"
