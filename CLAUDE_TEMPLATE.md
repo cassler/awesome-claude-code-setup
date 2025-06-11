@@ -26,5 +26,7 @@ You have helper scripts at `~/.claude/scripts/` with these aliases:
 - `chs find-code "pattern"` - Fast code search
 - `chg quick-commit "msg"` - Git operations
 - `ch ctx for-task "description"` - Generate focused context
+- `ch py deps` - Python dependencies and tools
+- `ch go test` - Go testing and development
 
 Run `ch help` for all available commands.

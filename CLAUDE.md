@@ -13,6 +13,8 @@ docker|d          → Container ops: ps, logs, shell, inspect
 git|g             → Git workflows
 search|s          → Code search (needs: ripgrep)
 ts|node           → TypeScript/Node.js (needs: jq)
+python|py         → Python development (pip, poetry, pytest)
+go|golang         → Go development (modules, testing, linting)
 multi|m           → Multi-file ops (uses: bat)
 env|e             → Environment checks
 api               → API testing (needs: jq, httpie)
