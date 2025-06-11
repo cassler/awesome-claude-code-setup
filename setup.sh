@@ -641,38 +641,76 @@ EOF
 setup_mcp_servers() {
     echo -e "${BLUE}🤖 MCP Server Setup${NC}"
     
-    # Check if claude command exists
-    if ! command -v claude &> /dev/null; then
+    # Check if claude command exists (check both command and common install locations)
+    local claude_cmd=""
+    if command -v claude &> /dev/null; then
+        claude_cmd="claude"
+    elif [ -x "$HOME/.claude/local/claude" ]; then
+        claude_cmd="$HOME/.claude/local/claude"
+    else
         echo -e "${YELLOW}⚠️  Claude Code CLI not found${NC}"
         echo "Install Claude Code to use MCP servers: https://docs.anthropic.com/claude-code"
         echo ""
         return
     fi
     
-    # Check if user wants MCP servers
+    # Check existing MCP servers
+    echo -e "${BLUE}🔍 Checking existing MCP servers...${NC}"
+    local has_playwright=false
+    local has_context7=false
+    
+    if $claude_cmd mcp list 2>/dev/null | grep -q "playwright"; then
+        has_playwright=true
+        echo -e "${GREEN}✅ Playwright MCP server already configured${NC}"
+    fi
+    
+    if $claude_cmd mcp list 2>/dev/null | grep -q "context7"; then
+        has_context7=true
+        echo -e "${GREEN}✅ Context7 MCP server already configured${NC}"
+    fi
+    
+    # If both are already installed, we're done
+    if [ "$has_playwright" = true ] && [ "$has_context7" = true ]; then
+        echo -e "${GREEN}✨ All recommended MCP servers are already set up!${NC}"
+        echo ""
+        return
+    fi
+    
+    # Check if user wants to add missing MCP servers
     if [ "$SKIP_PROMPTS" = true ]; then
         response="y"
     else
         echo ""
         echo "MCP servers enhance Claude Code with:"
-        echo "  • Playwright - Browser automation and visual testing"
-        echo "  • Context7 - Up-to-date library documentation"
+        if [ "$has_playwright" = false ]; then
+            echo "  • Playwright - Browser automation and visual testing"
+        fi
+        if [ "$has_context7" = false ]; then
+            echo "  • Context7 - Up-to-date library documentation"
+        fi
         echo ""
-        echo -n "Would you like instructions to set up these MCP servers? [Y/n] "
+        echo -n "Would you like instructions to set up missing MCP servers? [Y/n] "
         read -r response
         response=${response:-y}
     fi
     
     if [[ "$response" =~ ^[Yy]$ ]]; then
         echo ""
-        echo -e "${BLUE}📋 To add MCP servers at user level:${NC}"
+        echo -e "${BLUE}📋 To add missing MCP servers at user level:${NC}"
         echo ""
-        echo "1. Playwright (browser automation):"
-        echo -e "   ${YELLOW}claude mcp add playwright -s user npx -y @antropic/playwright-mcp-server${NC}"
-        echo ""
-        echo "2. Context7 (library documentation):"
-        echo -e "   ${YELLOW}claude mcp add context7 -s user npx -y @context7/mcp-server -e DEFAULT_MINIMUM_TOKENS=6000${NC}"
-        echo ""
+        
+        if [ "$has_playwright" = false ]; then
+            echo "1. Playwright (browser automation):"
+            echo -e "   ${YELLOW}claude mcp add playwright -s user npx -y @antropic/playwright-mcp-server${NC}"
+            echo ""
+        fi
+        
+        if [ "$has_context7" = false ]; then
+            echo "2. Context7 (library documentation):"
+            echo -e "   ${YELLOW}claude mcp add context7 -s user npx -y @context7/mcp-server -e DEFAULT_MINIMUM_TOKENS=6000${NC}"
+            echo ""
+        fi
+        
         echo -e "${BLUE}ℹ️  These servers will be available in all your projects${NC}"
         echo -e "${BLUE}ℹ️  Run 'claude mcp list' to see all configured servers${NC}"
         
