@@ -187,8 +187,8 @@ case "$1" in
     "ports")
         echo "=== COMMON PORTS STATUS ==="
         PORTS=(
-            "3000:React/Next.js dev"
-            "8000:Django/Python"
+            "3000:Web dev server"
+            "8000:Web/API server"
             "8080:Common web"
             "5432:PostgreSQL"
             "3306:MySQL"

@@ -44,18 +44,20 @@ To use: Simply describe what you want to test and Claude Code will use the Playw
 
 ## Commands to use
 
+Check your project's test scripts and documentation. Common patterns include:
+
 ```bash
-# Run specific visual tests
-npm run test:visual
+# Examples - adapt to your project's setup:
+# npm run test:visual
+# yarn test:e2e
+# pnpm test:playwright
+# python -m pytest tests/visual
+# bundle exec rspec spec/features
+# ./gradlew test
 
-# Run with UI mode for debugging
-npm run test:playwright:ui
-
-# Run in headed mode to watch tests
-npm run test:playwright:headed
-
-# Generate new baseline screenshots
-npx playwright test --update-snapshots
+# For Playwright specifically (if using):
+# npx playwright test --update-snapshots
+# playwright test --ui
 ```
 
 ## What to look for

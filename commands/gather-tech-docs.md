@@ -4,31 +4,26 @@ Use Context7 to gather comprehensive documentation about the technologies used i
 
 ## Technologies to Research
 
-### Core Frameworks
-- **Next.js 15** - Latest features, app router, server components
-- **n8n** - Workflow automation, custom nodes, webhook handling
-- **Tailwind CSS v4** - New syntax, differences from v3
-- **shadcn/ui** - Component patterns, customization
+Identify and research the main technologies in use:
 
-### AI/ML Stack
-- **OpenAI API** - Best practices, token optimization
-- **Langfuse** - Tracing, observability, prompt management
-- **AI SDK** - Streaming, tool calling, providers
+### Suggested Categories
+- **Frontend Frameworks** - React, Vue, Angular, Next.js, etc.
+- **Backend Frameworks** - Express, Django, Rails, Spring, etc.
+- **Databases** - PostgreSQL, MySQL, MongoDB, Redis, etc.
+- **Cloud Services** - AWS, GCP, Azure services
+- **DevOps Tools** - Docker, Kubernetes, CI/CD pipelines
+- **Testing Frameworks** - Unit, integration, E2E testing tools
+- **Build Tools** - Webpack, Vite, esbuild, etc.
+- **API Technologies** - REST, GraphQL, gRPC, WebSockets
+- **Authentication** - OAuth, JWT, session management
+- **Monitoring** - Logging, metrics, APM tools
 
-### Infrastructure
-- **Docker Compose** - Multi-service orchestration, health checks
-- **PostgreSQL 15** - JSON operations, performance tuning
-- **Redis 7** - Caching strategies, pub/sub patterns
-
-### Development Tools
-- **Playwright** - E2E testing, visual regression
-- **TypeScript** - Strict mode, type generation
-- **Mastra** - Agents, tools, workflows
-
-### Integration Technologies
-- **MCP (Model Context Protocol)** - Server implementation, tool creation
-- **Twilio** - SMS automation, webhook handling
-- **Linear SDK** - API integration patterns
+### Project-Specific Technologies
+Search the codebase to identify:
+- Package dependencies (package.json, requirements.txt, go.mod, etc.)
+- Configuration files that reveal tech stack
+- Import statements showing libraries in use
+- Docker or deployment configs showing services
 
 ## Documentation Goals
 

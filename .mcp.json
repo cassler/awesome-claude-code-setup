@@ -2,14 +2,16 @@
   "mcpServers": {
     "playwright": {
       "command": "npx",
-      "args": ["-y", "@antropic/playwright-mcp-server"]
+      "args": [
+        "@playwright/mcp@latest"
+      ]
     },
     "context7": {
       "command": "npx",
-      "args": ["-y", "@context7/mcp-server"],
-      "env": {
-        "DEFAULT_MINIMUM_TOKENS": "6000"
-      }
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ]
     }
   }
 }

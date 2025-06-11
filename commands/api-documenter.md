@@ -18,11 +18,18 @@ chs find-code "@(Get\|Post\|Put\|Delete\|Patch)\|@Controller\|@Route"
 
 ### Other Frameworks
 ```bash
-# FastAPI/Python
-chs find-code "@app\.(get\|post\|put\|delete)\|@router"
+# Python (FastAPI, Flask, Django)
+chs find-code "@app\.(get\|post\|put\|delete)\|@router\|@route"
+chs find-code "path\(\|urlpatterns\s*=\|views\."
 
-# Rails
+# Rails/Ruby
 chs find-code "resources\s\|get\s['\"]\/\|post\s['\"]\/\|match\s['\"]\/"
+
+# Java/Spring
+chs find-code "@(Get\|Post\|Put\|Delete\|Request)Mapping\|@RestController"
+
+# Go
+chs find-code "HandleFunc\|Handle\(.*\"\/"
 ```
 
 ## 2. Document Each Endpoint

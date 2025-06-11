@@ -3,14 +3,14 @@
 Please perform a comprehensive dependency analysis of this codebase:
 
 ## 1. Dependency Overview
-First, use the helper scripts to gather dependency information:
-- For Node.js: `ch ts deps` and `ch ts outdated`
-- For Python: `ch env python` and check requirements files
-- For other languages: Check relevant package files
+First, gather dependency information from your project:
+- Check package files (package.json, requirements.txt, go.mod, pom.xml, etc.)
+- List all direct and transitive dependencies
+- Identify dependency management tools used
 
 ## 2. Security Audit
 Run security checks on dependencies:
-- Node.js: `ch ts audit`
+- Use your language's security audit tools
 - Check for known vulnerabilities in dependencies
 - Identify packages with security advisories
 

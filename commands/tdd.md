@@ -23,17 +23,15 @@ Please provide:
    - Performance requirements
 
 3. **Test framework preferences:**
-   - Which testing framework to use (Jest, Pytest, etc.)?
+   - Which testing framework does your project use?
    - Any specific test patterns to follow?
 
 ## Important Notes
 
 - I will **NOT** write any implementation code until tests are written and failing
 - I will **NOT** modify tests once we start implementation (unless there's a bug in the test itself)
-- I will use the helper scripts to run tests efficiently:
-  - `ch ts test` for Node.js projects
-  - `ch ts test:watch` for continuous testing
-  - Or project-specific test commands
+- I will use your project's test commands to run tests efficiently
+- I'll identify the appropriate test command from your project setup
 
 ## Process I'll Follow
 

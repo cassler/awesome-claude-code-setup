@@ -11,16 +11,16 @@ Take a step back and deeply understand this codebase by exploring these question
    - How is state managed across different components?
 
 2. **Integration Points**
-   - How does the AI prompt system connect to Langfuse?
-   - What's the relationship between n8n workflows and the prompt playground?
-   - How do MCP servers integrate with the main application?
+   - How do external services and APIs integrate with the application?
+   - What's the relationship between different modules and components?
+   - How do third-party libraries or services connect to the system?
    - Where are the boundaries between services?
 
 3. **Data Flow**
-   - How does customer data flow from input to AI processing to output?
-   - What gets stored in PostgreSQL vs Redis?
-   - How are AI responses tracked and analyzed?
-   - What's the lifecycle of a collection workflow?
+   - How does data flow from input to processing to output?
+   - What data storage solutions are used and for what purposes?
+   - How are requests tracked, logged, or monitored?
+   - What's the lifecycle of key workflows or processes?
 
 4. **Hidden Complexity**
    - What assumptions are baked into the code?
