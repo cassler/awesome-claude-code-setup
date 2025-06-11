@@ -540,7 +540,12 @@ EOF
         # File exists - update only the specific sections
         echo -e "${YELLOW}Updating existing CLAUDE.md...${NC}"
         
-        # Copy original file to temp
+        # Create a backup before making any changes
+        local backup_file="$claude_md.backup.$(date +%Y%m%d_%H%M%S)"
+        cp "$claude_md" "$backup_file"
+        echo -e "${BLUE}📋 Created backup at $backup_file${NC}"
+        
+        # Copy original file to temp for editing
         cp "$claude_md" "$temp_file"
         
         # Function to update or add a section
@@ -615,8 +620,17 @@ EOF
         if [ -s "$temp_file" ]; then
             mv "$temp_file" "$claude_md"
             echo -e "${GREEN}✅ Updated sections in global CLAUDE.md${NC}"
+            echo -e "${BLUE}💾 Backup saved at: $backup_file${NC}"
+            
+            # Clean up old backups (keep only the 5 most recent)
+            local backup_count=$(ls -1 "$HOME/.claude/CLAUDE.md.backup."* 2>/dev/null | wc -l)
+            if [ "$backup_count" -gt 5 ]; then
+                echo -e "${YELLOW}🧹 Cleaning up old backups (keeping 5 most recent)...${NC}"
+                ls -1t "$HOME/.claude/CLAUDE.md.backup."* | tail -n +6 | xargs rm -f
+            fi
         else
             echo -e "${RED}❌ Failed to update CLAUDE.md${NC}"
+            echo -e "${YELLOW}↩️  Original file preserved. Backup available at: $backup_file${NC}"
             rm -f "$temp_file"
             return 1
         fi
