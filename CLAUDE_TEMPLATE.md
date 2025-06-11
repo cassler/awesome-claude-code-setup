@@ -21,15 +21,31 @@
 
 ## Helper Scripts Available
 
-You have helper scripts at `~/.claude/scripts/` with these aliases:
-- `chp` - Project overview (run this first!)
-- `chs find-code "pattern"` - Fast code search
-- `chg quick-commit "msg"` - Git operations
-- `ch ctx for-task "description"` - Generate focused context
-- `ch py deps` - Python dependencies and tools
-- `ch go test` - Go testing and development
+You have access to efficient helper scripts that streamline common development tasks:
 
-Run `ch help` for all available commands.
+**🚀 Quick Start:**
+```bash
+chp  # Run this first! Provides comprehensive project analysis
+```
+
+**🔍 Common Tasks (more efficient than manual commands):**
+- `chs find-code "pattern"` - Fast code search (better than grep)
+- `ch m read-many file1 file2` - Batch file reading (saves tokens)
+- `chg quick-commit "msg"` - Complete git workflow in one command
+- `ch ctx for-task "description"` - Generate focused context for specific tasks
+
+**📊 Language-Specific Helpers:**
+- `ch ts deps` - Node.js/TypeScript analysis
+- `ch py deps` - Python dependencies and environment
+- `ch go test` - Go modules and testing
+
+These helpers bundle multiple operations into single commands, providing:
+✅ Structured output optimized for analysis
+✅ Automatic error handling
+✅ Token-efficient responses
+✅ Consistent patterns across tech stacks
+
+Run `ch help` to see all available commands and categories.
 
 ## MCP Servers (User Level)
 
