@@ -5,7 +5,7 @@
 Supercharge your Claude Code experience with lightning-fast commands and
 intelligent workflows.
 
-**🎯 14 Slash Commands** | **⚡ 11 Shell Tools** | **💰 50-80% Token Savings**
+**🎯 14 Slash Commands** | **⚡ 13 Shell Tools** | **💰 50-80% Token Savings**
 
 > 📚 **Based on
 > [Anthropic's Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)**
@@ -25,6 +25,10 @@ intelligent workflows.
 > "The `/understand-codebase` command saved me hours on my new project"
 
 > "`chp` gives me instant project context - it's the first thing I run now"
+
+> "The API testing tools replaced my need for Postman in most cases"
+
+> "Interactive file selection with `ch i select-file` is a game changer"
 
 ## 🚀 Quick Install (30 seconds)
 
@@ -132,6 +136,8 @@ Run these in your terminal for instant results:
 | 🎯 `ch ctx for-task`  | **Smart context generation**  | `ch ctx for-task "refactor auth"` - instant focus |
 | 🔗 `ch cr imports-of` | **Code relationships**        | Trace dependencies and imports                    |
 | ✅ `ch cq todos`      | **Code quality checks**       | Find TODOs, debug code, complexity                |
+| 🌐 `ch api test`      | **API testing toolkit**       | Test REST APIs with httpie/curl                   |
+| 🎨 `ch i select-file` | **Interactive selection**     | Use fzf/gum for beautiful file picking            |
 
 ## 📦 What Gets Installed (Technical Details)
 
@@ -265,6 +271,40 @@ Type `/` in Claude to see available commands:
 2. **Run setup** to clean up: `./setup.sh`
 3. **Remove alias** from `.zshrc`/`.bashrc` if needed
 
+## 🎯 Optional Tools Enhancement
+
+The scripts now include intelligent support for optional tools that enhance functionality while maintaining fallback options:
+
+### Enhanced Experience Tools
+
+| Tool | Purpose | Scripts That Use It | Install Command |
+| ---- | ------- | ------------------- | --------------- |
+| **fzf** | Interactive fuzzy finder | Interactive helper, search tools | `brew install fzf` |
+| **bat** | Syntax highlighting | File viewing, interactive selection | `brew install bat` |
+| **gum** | Beautiful CLI prompts | Interactive tools, API helper | `brew install gum` |
+| **delta** | Enhanced diffs | Git operations, file comparison | `brew install git-delta` |
+| **httpie** | Better HTTP client | API testing | `brew install httpie` |
+| **jq** ⚠️ | JSON processor | API helper, project info | `brew install jq` |
+| **ripgrep** | Fast searching | Search tools | `brew install ripgrep` |
+
+⚠️ **Note**: `jq` is currently required for several scripts to function properly. Please install it using the command shown above. We're working on adding fallbacks in [issue #22](https://github.com/cassler/awesome-claude-code-setup/issues/22).
+
+### How It Works
+
+1. **Automatic Detection** - Scripts check for optional tools at runtime
+2. **Graceful Degradation** - Falls back to basic alternatives if not installed
+3. **Install Suggestions** - Prompts with install commands when beneficial
+4. **Cross-Platform** - Works on macOS, Linux, and WSL
+
+Example behavior:
+```bash
+# With fzf installed
+ch i select-file  # Beautiful interactive file picker with preview
+
+# Without fzf
+ch i select-file  # Falls back to numbered list selection
+```
+
 ## 🔧 Complete Command Reference
 
 ### All Available Commands
@@ -284,6 +324,8 @@ Type `/` in Claude to see available commands:
 | 🎯 `ch ctx`                | Generate optimal context, reduce token usage               |
 | 🔗 `ch cr`                 | Analyze code relationships and dependencies                |
 | ✅ `ch cq`                 | Check code quality - TODOs, complexity, secrets            |
+| 🌐 `ch api`                | API testing toolkit - test, parse, compare responses       |
+| 🎨 `ch i`                  | Interactive tools - file selection with fzf/gum            |
 | **Slash Commands**         |                                                            |
 | 🔄 `/commit-and-push`      | Complete git workflow - review, commit, push, check PRs    |
 | 🧠 `/understand-codebase`  | AI-powered analysis to understand any project in minutes   |
@@ -772,6 +814,81 @@ ch mcp notion-search "API documentation"
 ch mcp browser-open "https://example.com"
 ch mcp mastra-docs agents
 ```
+
+---
+
+### 🌐 API Testing Tools
+
+#### **api-helper.sh** (`ch api`)
+
+Comprehensive API testing and development toolkit with JSON manipulation.
+
+**Usage**: `ch api <command> [args] [options]`
+
+**Commands**:
+
+- `test <endpoint>` - Send HTTP request to endpoint
+- `parse <file>` - Parse and pretty-print JSON
+- `compare <file1> <file2>` - Compare two API responses
+- `extract <file> <path>` - Extract data using jq path
+- `validate <file>` - Validate JSON structure
+- `save-headers <file>` - Save reusable headers
+
+**Options**:
+
+- `--base-url URL` - Set base URL for requests
+- `--headers FILE` - Use headers from JSON file
+- `--method METHOD` - HTTP method (GET, POST, etc.)
+- `--data DATA` - Request body data
+- `--save` - Save response to timestamped file
+
+**Examples**:
+
+```bash
+ch api test /users --base-url https://api.example.com
+ch api test /users --method POST --data '{"name":"John"}' --save
+ch api parse response.json
+ch api extract response.json '.data.users[0]'
+ch api compare response1.json response2.json
+ch api validate data.json
+ch api save-headers auth-headers.json
+```
+
+---
+
+### 🎨 Interactive Tools
+
+#### **interactive-helper.sh** (`ch i`)
+
+Enhanced interactive selection and workflow tools using fzf and gum.
+
+**Usage**: `ch i <command> [args]`
+
+**Commands**:
+
+- `select-file` - Interactive file selection with preview
+- `select-files` - Select multiple files (requires fzf)
+- `select-script` - Choose and run npm/yarn script
+- `select-branch` - Switch git branch interactively
+- `search-and-edit` - Search code and edit files
+- `quick-commit` - Interactive commit with preview
+
+**Examples**:
+
+```bash
+ch i select-file           # Pick a file with preview
+ch i select-files          # Select multiple files
+ch i select-script         # Run npm script interactively
+ch i select-branch         # Switch branches with preview
+ch i search-and-edit       # Find and edit code
+ch i quick-commit          # Commit with interactive staging
+```
+
+**Tool Support**:
+- Works best with `fzf` for fuzzy finding
+- Uses `bat` for syntax highlighting
+- Falls back to `gum` for prompts
+- Degrades gracefully to basic selection
 
 ---
 

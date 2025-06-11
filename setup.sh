@@ -459,6 +459,184 @@ install_optional_tools() {
     done
 }
 
+# Create or update global CLAUDE.md with XML formatting
+setup_global_claude_md() {
+    local claude_md="$HOME/.claude/CLAUDE.md"
+    local temp_file="$HOME/.claude/CLAUDE.md.tmp.$$"
+    
+    echo -e "${BLUE}📝 Setting up global CLAUDE.md...${NC}"
+    
+    # Define the content for each section
+    local aliases_content="ch   → Main helper: ch [category] [command]
+chp  → Project overview (run first in new projects)
+chs  → Search tools: find-code, find-file, search-imports
+chg  → Git ops: quick-commit, pr-ready, diff"
+    
+    local categories_content="project|p         → Project analysis
+docker|d          → Container ops: ps, logs, shell, inspect
+git|g             → Git workflows
+search|s          → Code search (needs: ripgrep)
+ts|node           → TypeScript/Node.js (needs: jq)
+multi|m           → Multi-file ops (uses: bat)
+env|e             → Environment checks
+api               → API testing (needs: jq, httpie)
+interactive|i     → Interactive tools (needs: fzf, gum)
+context|ctx       → Context generation
+code-relationships|cr → Dependency analysis
+code-quality|cq   → Quality checks"
+    
+    local key_commands_content="# Start with project overview
+chp
+
+# Use helpers not raw commands
+chs find-code \"pattern\"      # not grep
+ch m read-many f1 f2 f3      # not multiple cats
+chg quick-commit \"msg\"       # not git add && commit
+ch i select-file             # interactive file picker
+ch ctx for-task \"desc\"       # generate focused context
+ch api test /endpoint        # test APIs"
+    
+    local required_tools_content="ripgrep → search-tools.sh
+jq      → project-info.sh, ts-helper.sh, api-helper.sh
+fzf     → interactive selections
+bat     → syntax highlighting
+gum     → interactive prompts
+delta   → enhanced diffs"
+    
+    local paths_content="Scripts: ~/.claude/scripts/
+Commands: ~/.claude/commands/"
+    
+    # If file doesn't exist, create it with full structure
+    if [ ! -f "$claude_md" ]; then
+        cat > "$claude_md" << EOF
+# Claude Helper Scripts
+
+<ch:aliases>
+$aliases_content
+</ch:aliases>
+
+<ch:categories>
+$categories_content
+</ch:categories>
+
+<ch:key-commands>
+$key_commands_content
+</ch:key-commands>
+
+<ch:required-tools>
+$required_tools_content
+</ch:required-tools>
+
+<ch:paths>
+$paths_content
+</ch:paths>
+
+<ch:user-customizations>
+<!-- User additions preserved here -->
+</ch:user-customizations>
+EOF
+        echo -e "${GREEN}✅ Created global CLAUDE.md at $claude_md${NC}"
+    else
+        # File exists - update only the specific sections
+        echo -e "${YELLOW}Updating existing CLAUDE.md...${NC}"
+        
+        # Create a backup before making any changes
+        local backup_file="$claude_md.backup.$(date +%Y%m%d_%H%M%S)"
+        cp "$claude_md" "$backup_file"
+        echo -e "${BLUE}📋 Created backup at $backup_file${NC}"
+        
+        # Copy original file to temp for editing
+        cp "$claude_md" "$temp_file"
+        
+        # Function to update or add a section
+        update_or_add_section() {
+            local tag="$1"
+            local content="$2"
+            local file="$3"
+            
+            # Check if the tag exists
+            if grep -q "<${tag}>" "$file"; then
+                # Update existing section - create a temp file with the new content
+                local before_file="${file}.before"
+                local after_file="${file}.after"
+                local content_file="${file}.content"
+                
+                # Save the new content
+                echo "$content" > "$content_file"
+                
+                # Get everything before the opening tag (inclusive)
+                sed -n "1,/<${tag}>/p" "$file" > "$before_file"
+                
+                # Get everything after the closing tag (inclusive)
+                sed -n "/<\/${tag}>/,\$p" "$file" > "$after_file"
+                
+                # Combine them with new content
+                cat "$before_file" > "$file.new"
+                cat "$content_file" >> "$file.new"
+                echo "" >> "$file.new"
+                cat "$after_file" >> "$file.new"
+                
+                # Replace original
+                mv "$file.new" "$file"
+                
+                # Clean up
+                rm -f "$before_file" "$after_file" "$content_file"
+            else
+                # Add new section - check if we should add before user-customizations
+                if grep -q "<ch:user-customizations>" "$file"; then
+                    # Create a file with everything up to user-customizations
+                    local line_num=$(grep -n "<ch:user-customizations>" "$file" | head -1 | cut -d: -f1)
+                    local before_line=$((line_num - 1))
+                    
+                    # Split the file
+                    head -n "$before_line" "$file" > "$file.new"
+                    echo "" >> "$file.new"
+                    echo "<${tag}>" >> "$file.new"
+                    echo "$content" >> "$file.new"
+                    echo "</${tag}>" >> "$file.new"
+                    echo "" >> "$file.new"
+                    tail -n +"$line_num" "$file" >> "$file.new"
+                    
+                    # Replace original
+                    mv "$file.new" "$file"
+                else
+                    # Just append to end
+                    echo "" >> "$file"
+                    echo "<${tag}>" >> "$file"
+                    echo "$content" >> "$file"
+                    echo "</${tag}>" >> "$file"
+                fi
+            fi
+        }
+        
+        # Update each section
+        update_or_add_section "ch:aliases" "$aliases_content" "$temp_file"
+        update_or_add_section "ch:categories" "$categories_content" "$temp_file"
+        update_or_add_section "ch:key-commands" "$key_commands_content" "$temp_file"
+        update_or_add_section "ch:required-tools" "$required_tools_content" "$temp_file"
+        update_or_add_section "ch:paths" "$paths_content" "$temp_file"
+        
+        # Only replace if temp file exists and is not empty
+        if [ -s "$temp_file" ]; then
+            mv "$temp_file" "$claude_md"
+            echo -e "${GREEN}✅ Updated sections in global CLAUDE.md${NC}"
+            echo -e "${BLUE}💾 Backup saved at: $backup_file${NC}"
+            
+            # Clean up old backups (keep only the 5 most recent)
+            local backup_count=$(ls -1 "$HOME/.claude/CLAUDE.md.backup."* 2>/dev/null | wc -l)
+            if [ "$backup_count" -gt 5 ]; then
+                echo -e "${YELLOW}🧹 Cleaning up old backups (keeping 5 most recent)...${NC}"
+                ls -1t "$HOME/.claude/CLAUDE.md.backup."* | tail -n +6 | xargs rm -f
+            fi
+        else
+            echo -e "${RED}❌ Failed to update CLAUDE.md${NC}"
+            echo -e "${YELLOW}↩️  Original file preserved. Backup available at: $backup_file${NC}"
+            rm -f "$temp_file"
+            return 1
+        fi
+    fi
+}
+
 # Main setup flow
 main() {
     # Step 1: Detect platform
@@ -478,7 +656,10 @@ main() {
     # Step 4: Setup shell aliases
     setup_shell_aliases
     
-    # Step 5: Check and offer to install optional tools
+    # Step 5: Create/update global CLAUDE.md
+    setup_global_claude_md
+    
+    # Step 6: Check and offer to install optional tools
     check_optional_tools
     
     # Final instructions

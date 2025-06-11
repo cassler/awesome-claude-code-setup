@@ -100,7 +100,7 @@ ch ts lint       # Run linter
 ch ts typecheck  # Type checking
 ```
 
-### Context Generation (NEW!)
+### Context Generation
 ```bash
 # Generate context for specific tasks
 ch ctx for-task "refactor database layer"
@@ -113,6 +113,37 @@ ch ctx focus src/api 3
 
 # Prepare migration context
 ch ctx prepare-migration "upgrade to next.js 14"
+```
+
+### API Testing (NEW!)
+```bash
+# Test REST APIs quickly
+ch api test /users --base-url https://api.example.com
+
+# Parse and analyze JSON responses
+ch api parse response.json
+ch api extract response.json '.data.users'
+
+# Compare API responses
+ch api compare old-response.json new-response.json
+
+# Save reusable headers
+ch api save-headers auth-headers.json
+```
+
+### Interactive Tools (NEW!)
+```bash
+# Interactive file selection with preview
+ch i select-file
+
+# Select multiple files at once
+ch i select-files
+
+# Run npm scripts interactively
+ch i select-script
+
+# Switch git branches with preview
+ch i select-branch
 ```
 
 ## 💡 Key Benefits for Claude
@@ -133,6 +164,11 @@ Run `ch help` to see all categories, or:
 - `ch multi` - Multi-file operations
 - `ch env` - Environment checks
 - `ch mcp` - MCP server helpers
+- `ch api` - API testing toolkit
+- `ch i` - Interactive tools
+- `ch ctx` - Context generation
+- `ch cr` - Code relationships
+- `ch cq` - Code quality checks
 
 ## 🔧 Setup for New Projects
 
