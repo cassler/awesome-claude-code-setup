@@ -35,30 +35,9 @@ git clone https://github.com/cassler/awesome-claude-code-setup.git && cd awesome
 
 **That's it!** You now have instant access to powerful commands and workflows.
 
-## 🎯 Core Commands
+## 📝 Slash Commands - What You'll Actually Use
 
-### Essential Shortcuts
-- `chp` - **Project overview** - Get instant context about any codebase
-- `chs find-code "pattern"` - **Lightning-fast search** using ripgrep
-- `chg quick-commit "msg"` - **Git in 5 keystrokes** - stage, commit, push
-- `ch` - **Main helper** - Access any tool with `ch [category] [command]`
-
-### Command Categories
-| Category | Alias | Purpose | Example |
-|----------|-------|---------|---------|
-| **project** | `p` | Project analysis | `ch p` or `chp` |
-| **search** | `s` | Code searching | `ch s find-code "TODO"` |
-| **git** | `g` | Git operations | `ch g quick-commit "fix"` |
-| **docker** | `d` | Container management | `ch d ps` |
-| **typescript** | `ts` | Node.js/TypeScript | `ch ts build` |
-| **multi** | `m` | Multi-file operations | `ch m read-many f1 f2` |
-| **context** | `ctx` | Claude context generation | `ch ctx for-task "refactor auth"` |
-| **api** | - | API testing toolkit | `ch api test /endpoint` |
-| **interactive** | `i` | Interactive tools (fzf/gum) | `ch i select-file` |
-
-## 📝 Slash Commands for Claude
-
-Type `/` in Claude to access complete workflows:
+Type `/` in Claude to access these complete workflows:
 
 ### Development Workflows
 - ✨ `/start-feature` - Create issue, branch, and draft PR automatically
@@ -81,6 +60,29 @@ Type `/` in Claude to access complete workflows:
 - 🔄 `/commit-and-push` - Complete git workflow with PR checks
 - 📓 `/dev-diary` - Track development decisions
 - 🚀 `/post-init-onboarding` - Systematic project onboarding
+
+## 🎯 Shell Commands (How Claude Saves You Tokens)
+
+These aliases are primarily for Claude to efficiently execute tasks without loading documentation into context, but you can use them directly too:
+
+### Essential Shortcuts
+- `chp` - **Project overview** - Get instant context about any codebase
+- `chs find-code "pattern"` - **Lightning-fast search** using ripgrep
+- `chg quick-commit "msg"` - **Git in 5 keystrokes** - stage, commit, push
+- `ch` - **Main helper** - Access any tool with `ch [category] [command]`
+
+### Command Categories
+| Category | Alias | Purpose | Example |
+|----------|-------|---------|---------|
+| **project** | `p` | Project analysis | `ch p` or `chp` |
+| **search** | `s` | Code searching | `ch s find-code "TODO"` |
+| **git** | `g` | Git operations | `ch g quick-commit "fix"` |
+| **docker** | `d` | Container management | `ch d ps` |
+| **typescript** | `ts` | Node.js/TypeScript | `ch ts build` |
+| **multi** | `m` | Multi-file operations | `ch m read-many f1 f2` |
+| **context** | `ctx` | Claude context generation | `ch ctx for-task "refactor auth"` |
+| **api** | - | API testing toolkit | `ch api test /endpoint` |
+| **interactive** | `i` | Interactive tools (fzf/gum) | `ch i select-file` |
 
 ## 💡 Why Use This?
 
