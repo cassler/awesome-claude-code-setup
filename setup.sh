@@ -702,29 +702,45 @@ setup_mcp_servers() {
             echo "  • Context7 - Up-to-date library documentation"
         fi
         echo ""
-        echo -n "Would you like instructions to set up missing MCP servers? [Y/n] "
+        echo -n "Would you like to install the missing MCP servers? [Y/n] "
         read -r response
         response=${response:-y}
     fi
     
     if [[ "$response" =~ ^[Yy]$ ]]; then
         echo ""
-        echo -e "${BLUE}📋 To add missing MCP servers at user level:${NC}"
+        echo -e "${BLUE}📦 Installing MCP servers...${NC}"
         echo ""
         
+        # Helper function to install an MCP server
+        install_mcp_server() {
+            local server_name="$1"
+            local display_name="$2"
+            local command_args="$3"
+            
+            echo -n "Installing $display_name MCP server... "
+            if $claude_cmd mcp add $server_name -s user $command_args &>/dev/null; then
+                echo -e "${GREEN}✅${NC}"
+                return 0
+            else
+                echo -e "${RED}❌ Failed${NC}"
+                echo -e "${YELLOW}  Manual command: claude mcp add $server_name -s user $command_args${NC}"
+                return 1
+            fi
+        }
+        
+        # Install missing servers
         if [ "$has_playwright" = false ]; then
-            echo "1. Playwright (browser automation):"
-            echo -e "   ${YELLOW}claude mcp add playwright -s user npx -y @antropic/playwright-mcp-server${NC}"
-            echo ""
+            install_mcp_server "playwright" "Playwright" "npx -y @antropic/playwright-mcp-server"
         fi
         
         if [ "$has_context7" = false ]; then
-            echo "2. Context7 (library documentation):"
-            echo -e "   ${YELLOW}claude mcp add context7 -s user npx -y @context7/mcp-server -e DEFAULT_MINIMUM_TOKENS=6000${NC}"
-            echo ""
+            install_mcp_server "context7" "Context7" "npx -y @context7/mcp-server -e DEFAULT_MINIMUM_TOKENS=6000"
         fi
         
-        echo -e "${BLUE}ℹ️  These servers will be available in all your projects${NC}"
+        echo ""
+        echo -e "${GREEN}✨ MCP servers configured!${NC}"
+        echo -e "${BLUE}ℹ️  These servers are now available in all your projects${NC}"
         echo -e "${BLUE}ℹ️  Run 'claude mcp list' to see all configured servers${NC}"
         
         # Copy .mcp.json to current directory for project-level option
