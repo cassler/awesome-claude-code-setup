@@ -23,7 +23,7 @@ show_shell_dependencies() {
     local scripts=$(find "$dir" -maxdepth "$depth" -name "*.sh" -type f | sort)
     
     # Create temp file to track which scripts are sourced
-    local temp_sourced=$(mktemp)
+    local temp_sourced=$(mktemp -t ch_deps.XXXXXX || mktemp)
     # Don't use trap in a function - clean up manually
     
     # Build dependency information
