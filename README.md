@@ -1,427 +1,141 @@
 # 🚀 Claude Code Power Tools
 
+**TLDR:** `curl -sSL https://raw.githubusercontent.com/cassler/awesome-claude-code-setup/main/setup.sh | bash && source ~/.zshrc`
+
 <img src="howdy.png" alt="Claude Code Power Tools" width="200"/>
 
-Supercharge your Claude Code experience with lightning-fast commands and intelligent workflows.
+## What, Why, and How
 
-**🎯 19 Slash Commands** | **⚡ 17 Shell Tools** | **🐍 Python Support** | **🐹 Go Support** | **💰 50-80% Token Savings** | **🤖 MCP Servers**
+### 🎯 What
+A collection of power tools that supercharge Claude Code with instant commands for common development tasks. Instead of typing the same commands repeatedly or having Claude make multiple tool calls, you get lightning-fast shortcuts that save 50-80% of your context tokens.
 
-## 🪶 Ultra-Light Context Footprint
+### 🤔 Why
+**The Problem:** Claude wastes tokens on repetitive tasks. Reading 5 files? That's 5 separate tool calls. Running git status, then diff, then log? More wasted tokens. Other tools "solve" this by loading thousands of tokens of documentation into your context.
 
-**We add only ~300 tokens to Claude's context** - that's it! Unlike other tools that bloat your context window with thousands of lines of documentation, our approach is surgically precise:
+**Our Solution:** Ultra-light scripts (~300 tokens total) that live in your environment, not your context. Claude calls them as needed, keeping your conversation focused on actual work.
 
-- ✅ **~300 tokens** added to your CLAUDE.md file
-- ✅ **Everything else is environmental** - scripts live on your system, not in context
-- ✅ **No context pollution** - Claude calls scripts as needed, not reads documentation
-- ✅ **Maximum efficiency** - More room for your actual code and conversations
+### 🛠️ How
+Based on [Anthropic's official best practices](https://www.anthropic.com/engineering/claude-code-best-practices), we use:
+- **Batched operations** - One command instead of many
+- **Structured output** - Optimized for Claude's parsing
+- **Environmental scripts** - Tools live on your system, not in context
+- **Smart shortcuts** - Common workflows in 5 keystrokes or less
 
-> 📚 **Based on [Anthropic's Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)**
->
-> This toolkit implements Anthropic's recommended patterns for working with Claude Code, focusing on:
-> - 🚀 **Reducing token usage** through batched operations
-> - ⚡ **Improving speed** by scripting repetitive tasks
-> - 🎯 **Ensuring consistency** with standardized workflows
-> - 🪶 **Minimal context overhead** - just a few hundred tokens!
-
-## 🚀 Quick Install (30 seconds)
+## 🚀 Quick Install
 
 ```bash
-# One-line install
+# One-line install (30 seconds)
 curl -sSL https://raw.githubusercontent.com/cassler/awesome-claude-code-setup/main/setup.sh | bash && source ~/.zshrc
 
-# Or if you prefer to review first:
-git clone https://github.com/cassler/awesome-claude-code-setup.git && cd awesome-claude-code-setup && ./setup.sh && source ~/.zshrc
+# Or clone and review first:
+git clone https://github.com/cassler/awesome-claude-code-setup.git
+cd awesome-claude-code-setup
+./setup.sh
+source ~/.zshrc
 ```
 
-**That's it!** You now have instant access to powerful commands and workflows.
-
-## 🤖 NEW: MCP Server Integration
-
-**Unlock Claude Code's full potential with MCP (Model Context Protocol) servers!**
-
-During setup, these servers are **automatically configured** for you:
-
-### 🎭 Playwright MCP Server
-- **Visual testing made real** - Claude can navigate to your app and take screenshots
-- **Interactive debugging** - Click elements, fill forms, run tests directly
-- **Test generation** - Describe what to test, get working Playwright code
-- **Cross-browser testing** - Test in Chromium, Firefox, and WebKit
-
-### 📚 Context7 MCP Server  
-- **Always-current documentation** - No more outdated examples
-- **Library expertise** - Get accurate API usage for React, Vue, Next.js, and more
-- **Smart suggestions** - Claude knows the latest best practices
-- **6000 tokens of context** - Deep, comprehensive documentation
-
-**Setup handles everything automatically!** 
-- Detects existing servers to avoid duplicates
-- Installs only what you need
-- Works at user level - available in all projects
-- Falls back to manual instructions if needed
-
-These servers work seamlessly with our slash commands - especially `/visual-test` for UI testing!
-
-## 📝 Slash Commands - What You'll Actually Use
-
-Type `/` in Claude to access these complete workflows:
-
-### Development Workflows
-- ✨ `/start-feature` - Create issue, branch, and draft PR automatically
-- 🐛 `/debug-issue` - Systematic debugging with root cause analysis
-- ✅ `/pre-review-check` - Ensure code is review-ready
-- 🚢 `/pre-deploy-check` - Production readiness verification
-
-### Analysis & Documentation
-- 🧠 `/understand-codebase` - Get up to speed on any project quickly
-- 📝 `/update-docs` - Keep documentation in sync with code
-- 📚 `/gather-tech-docs` - Extract all technical documentation
-- 🔍 `/explore-module` - Deep dive into module dependencies
-- 📦 `/analyze-dependencies` - Comprehensive dependency audit
-- 🌐 `/api-documenter` - Auto-generate API documentation
-- 🔧 `/refactor-assistant` - Systematic refactoring workflow
-
-### Testing & Quality
-- 🧪 `/tdd` - Test-driven development workflow
-- 🎨 `/visual-test` - Visual regression testing
-- 💸 `/tech-debt-hunt` - Find and prioritize technical debt
-- 🔒 `/security-audit` - Comprehensive security vulnerability scan
-- ⚡ `/performance-check` - Find performance bottlenecks
-
-### Process & Tracking
-- 🔄 `/commit-and-push` - Complete git workflow with PR checks
-- 📓 `/dev-diary` - Track development decisions
-- 🚀 `/post-init-onboarding` - Systematic project onboarding
-
-## 🎯 Shell Commands (How Claude Saves You Tokens)
-
-These aliases are primarily for Claude to efficiently execute tasks without loading documentation into context, but you can use them directly too:
-
-### Essential Shortcuts
-- `chp` - **Project overview** - Get instant context about any codebase
-- `chs find-code "pattern"` - **Lightning-fast search** using ripgrep
-- `chg quick-commit "msg"` - **Git in 5 keystrokes** - stage, commit, push
-- `ch` - **Main helper** - Access any tool with `ch [category] [command]`
-
-### Command Categories
-
-| Category | Alias | Key Commands | Purpose |
-|----------|-------|--------------|---------|
-| **project** | `p` | `chp` → full project overview | Instant codebase analysis |
-| **search** | `s` | `find-code`, `find-file`, `search-imports` | Lightning-fast code search |
-| **git** | `g` | `quick-commit`, `pr-ready`, `status` | Streamlined git workflows |
-| **docker** | `d` | `ps`, `logs`, `shell`, `inspect` | Container management |
-| **typescript** | `ts` | `deps`, `build`, `test`, `outdated` | Node.js/TypeScript tools |
-| **python** | `py` | `deps`, `test`, `lint`, `venv`, `audit` | Complete Python toolkit |
-| **go** | `go` | `deps`, `test`, `build`, `mod`, `audit` | Full Go development |
-| **context** | `ctx` | `for-task`, `mdout`, `mdfm`, `mdh` | Smart context generation |
-| **multi** | `m` | `read-many`, `read-pattern` | Batch file operations |
-| **api** | - | `test`, `watch`, `benchmark` | API testing & monitoring |
-| **interactive** | `i` | `select-file`, `select-branch` | Interactive selections |
-| **nlp** | - | `overview`, `security`, `smells`, `docs` | Static analysis & text processing |
-
-> 💡 **Usage:** `ch [category] [command]` or use shortcuts like `chp`, `chs`, `chg`  
-> 📚 **Full docs:** Run `ch [category] help` to see all commands for any category
-
-## 💡 Why Use This?
-
-### Token Usage Comparison
-
-| Approach | Context Tokens | Example |
-|----------|---------------|---------|
-| **Other tools** | 5,000-15,000 tokens | Full documentation loaded in context |
-| **Manual work** | 1,000+ tokens per task | Multiple file reads, repeated commands |
-| **Claude Helpers** | **~300 tokens total** | Tiny config + environmental scripts |
-
-### Without these tools:
-- Claude makes multiple tool calls to gather project info
-- You type long commands repeatedly
-- Token usage adds up quickly
-- Workflows vary between sessions
-
-### With these tools:
-- One command (`chp`) = complete project context
-- Shortcuts for everything (`chg quick-commit "msg"`)
-- Batched operations save 50-80% on tokens
-- Consistent, reproducible workflows
-- **Your context stays clean for actual work**
-
-## 📦 What Gets Installed
-
-1. **Helper scripts** → `~/.claude/scripts/`
-2. **Slash commands** → `~/.claude/commands/`
-3. **Shell aliases** → Added to your `.zshrc` or `.bashrc`
-4. **Global config** → `~/.claude/CLAUDE.md` (auto-updated)
-
-## 🔧 Required & Optional Tools
-
-### Required
-- **ripgrep** - Fast file searching (search-tools.sh)
-- **jq** - JSON processing (project-info.sh, ts-helper.sh, api-helper.sh)
-
-### Optional Enhancements
-- **fzf** - Interactive fuzzy finder
-- **bat** - Syntax highlighting
-- **gum** - Beautiful CLI prompts
-- **delta** - Enhanced git diffs
-- **httpie** - Better HTTP client
-
-The setup script will offer to install missing tools automatically.
-
-## 🛠️ Customization
-
-### Adding New Scripts
-1. Create script in `scripts/my-helper.sh`
-2. Run `./setup.sh` to install
-3. Access via `ch myhelper` or add to main helper
-
-### Adding New Commands
-1. Create markdown in `commands/my-command.md`
-2. Run `./setup.sh` to install
-3. Use in Claude as `/my-command`
-
-## 📚 Full Script Reference
-
-For detailed documentation of all scripts and their options, see the [Script Reference Guide](#script-reference-guide) below.
-
----
-
-<details>
-<summary><h2>📖 Script Reference Guide</h2></summary>
-
-### 🎯 Main Entry Point
-
-#### **claude-helper.sh** (`ch`)
-The main router providing access to all other scripts through simple shortcuts.
-
-**Usage**: `ch <category> [command] [args]`
-
-**Example**: `ch project`, `ch git status`, `ch search find-code "pattern"`
-
----
-
-### 📊 Project Analysis
-
-#### **project-info.sh** (`chp`)
-Provides instant project overview including languages, dependencies, and structure.
-
-**Usage**: `chp [path]`
-
-**Output**: Languages, key files, dependencies, docker config, directory structure, git info, size metrics
-
----
-
-### 🔍 Search Tools
-
-#### **search-tools.sh** (`chs`)
-Lightning-fast code searching using ripgrep.
-
-**Commands**:
-- `find-code <pattern>` - Find code pattern
-- `find-file <pattern>` - Find files by name
-- `find-type <ext>` - Find files by extension
-- `search-imports <module>` - Search import statements
-- `search-function <name>` - Search function definitions
-- `search-class <name>` - Search class definitions
-- `todo-comments` - Find TODO/FIXME comments
-- `large-files [size]` - Find large files
-- `recent-files [days]` - Find recently modified
-- `count-lines` - Count lines by file type
-
----
-
-### 🚀 Git Operations
-
-#### **git-ops.sh** (`chg`)
-Git operations and workflow helpers.
-
-**Key Commands**:
-- `status` - Quick status overview
-- `quick-commit <message>` - Stage all & commit
-- `pr-ready` - Check if ready for PR
-- `pr-create <title> [body]` - Create PR with gh
-- `recent [n]` - Show recent commits
-- `file-history <file>` - Show file history
-
----
-
-### 🐳 Docker Operations
-
-#### **docker-quick.sh** (`ch d`)
-Quick Docker operations and container management.
-
-**Commands**:
-- `ps` - Show running containers
-- `logs <name>` - Tail logs for container
-- `shell <name>` - Get shell in container
-- `inspect <name>` - Inspect container (formatted)
-- `clean` - Clean up Docker resources
-- `compose-up` - Docker-compose up -d
-- `compose-logs [service]` - Docker-compose logs
-
----
-
-### 📦 TypeScript/Node.js
-
-#### **ts-helper.sh** (`ch ts`)
-TypeScript and Node.js project utilities.
-
-**Commands**:
-- `deps` - Show dependencies overview
-- `scripts` - List available npm scripts
-- `build` - Run build script
-- `test` - Run tests
-- `lint` - Run linter
-- `typecheck` - Run TypeScript type check
-- `outdated` - Check outdated packages
-- `audit` - Security audit
-
----
-
-### 📚 Multi-File Operations
-
-#### **multi-file.sh** (`ch m`)
-Operations on multiple files simultaneously to save tokens.
-
-**Commands**:
-- `read-many <file1> <file2> ...` - Read multiple files
-- `read-pattern <pattern> [lines]` - Read files matching pattern
-- `compare <file1> <file2>` - Compare two files
-- `read-related <file>` - Read file and related files
-
----
-
-### 🎯 Context Generation
-
-#### **claude-context.sh** (`ch ctx`)
-Generate optimal context for Claude by analyzing codebase.
-
-**Commands**:
-- `for-task <description>` - Generate context for specific task
-- `summarize [--save]` - Create codebase summary
-- `focus <directory> [depth]` - Focus on specific directory
-- `prepare-migration <description>` - Prepare context for migration
-
----
-
-### 🔗 Code Relationships
-
-#### **code-relationships.sh** (`ch cr`)
-Analyze dependencies and imports between files.
-
-**Commands**:
-- `imports-of <file>` - Show what a file imports
-- `imported-by <file/module>` - Find who imports a file/module
-- `dependency-tree <dir> [depth]` - Show dependency structure
-- `circular [dir]` - Check for circular dependencies
-
----
-
-### ✅ Code Quality
-
-#### **code-quality.sh** (`ch cq`)
-Find issues and improve code quality.
-
-**Commands**:
-- `todos [--with-context]` - Find TODO/FIXME/HACK comments
-- `console-logs` - Find console.log statements
-- `large-files [threshold]` - Find files exceeding line count
-- `complexity [threshold]` - Find complex code patterns
-- `secrets-scan` - Scan for potential secrets
-
----
-
-### 🧠 NLP & Static Analysis
-
-#### **nlp-helper.sh** (`ch nlp`)
-Comprehensive static analysis and text processing using Python stdlib.
-
-**Text Analysis Commands**:
-- `tokens <file>` - Count characters, words, and estimate tokens
-- `summary <file>` - Extract headers and first paragraph
-- `keywords <file> [n]` - Show top N keywords (default: 10)
-- `questions <file>` - Extract all questions from text
-- `sentiment "text"` - Analyze sentiment of text
-- `readability <file>` - Calculate readability score
-- `ngrams <n> <file>` - Extract n-grams (word pairs, triplets)
-- `entities <file>` - Extract potential named entities
-
-**Code Analysis Commands**:
-- `overview <file>` - Comprehensive file analysis (combines all below)
-- `analyze-complexity <file>` - Cyclomatic complexity analysis (Python)
-- `security <file>` - Basic security vulnerability scan
-- `imports <file>` - Analyze import dependencies
-- `duplicates <file> [n]` - Find duplicate code blocks
-- `docs <file>` - Analyze documentation quality
-- `smells <file>` - Detect code smells (long functions, deep nesting, etc)
-
-**Example**: `ch nlp overview app.py` - Get complete analysis including complexity, security issues, code smells, and documentation coverage
-
----
-
-### 🌐 API Testing
-
-#### **api-helper.sh** (`ch api`)
-Comprehensive API testing toolkit with JSON manipulation.
-
-**Commands**:
-- `test <endpoint>` - Send HTTP request
-- `parse <file>` - Pretty-print JSON
-- `compare <file1> <file2>` - Compare API responses
-- `extract <file> <path>` - Extract data using jq
-- `validate <file>` - Validate JSON structure
-
----
-
-### 🎨 Interactive Tools
-
-#### **interactive-helper.sh** (`ch i`)
-Enhanced interactive selection using fzf and gum.
-
-**Commands**:
-- `select-file` - Interactive file selection with preview
-- `select-files` - Select multiple files
-- `select-script` - Choose and run npm/yarn script
-- `select-branch` - Switch git branch interactively
-- `search-and-edit` - Search code and edit files
-- `quick-commit` - Interactive commit with preview
-
----
-
-### 🔧 Environment Checks
-
-#### **env-check.sh** (`ch env`)
-Check development environment, tools, and requirements.
-
-**Commands**:
-- `tools` - Check common dev tools
-- `node` - Node.js environment details
-- `python` - Python environment details
-- `docker` - Docker environment status
-- `git` - Git configuration
-- `ports` - Common ports status
-
----
-
-### 🔌 MCP Helpers
-
-#### **mcp-helper.sh** (`ch mcp`)
-Shortcuts for MCP (Model Context Protocol) server operations.
-
-**Commands**:
-- `linear-issues` - List Linear issues
-- `notion-search <query>` - Search Notion
-- `browser-open <url>` - Open in browser
-- `mastra-docs [topic]` - Mastra documentation
-
-</details>
+## 📋 Commands Reference
+
+### Slash Commands - Complete Workflows
+
+Type `/` in Claude Code to access these intelligent workflows:
+
+| Command | What it does & When to use |
+|---------|----------------------------|
+| `/start-feature` | Creates issue, branch, and draft PR. Use when beginning new feature work. |
+| `/debug-issue` | Systematic debugging with root cause analysis. Use for complex bugs. |
+| `/understand-codebase` | Get comprehensive project overview. Use when starting on a new project. |
+| `/tdd` | Test-driven development workflow. Use to write tests before implementation. |
+| `/visual-test` | Browser automation and screenshot testing. Use for UI regression testing. |
+| `/pre-deploy-check` | Verify production readiness. Use before any deployment. |
+| `/commit-and-push` | Complete git workflow with PR checks. Use when work is ready to share. |
+| `/tech-debt-hunt` | Find and prioritize technical debt. Use for cleanup planning. |
+| `/security-audit` | Scan for vulnerabilities. Use periodically or before releases. |
+| `/api-documenter` | Generate API documentation. Use after API changes. |
+| `/analyze-dependencies` | Audit all dependencies. Use to check for updates/vulnerabilities. |
+| `/refactor-assistant` | Guide systematic refactoring. Use when improving code structure. |
+| `/update-docs` | Sync documentation with code. Use after significant changes. |
+| `/performance-check` | Find bottlenecks. Use when experiencing slow performance. |
+| `/explore-module` | Deep dive into dependencies. Use to understand complex modules. |
+| `/gather-tech-docs` | Extract all technical docs. Use for documentation review. |
+| `/dev-diary` | Track decisions. Use to document important choices. |
+| `/pre-review-check` | Ensure PR readiness. Use before requesting code review. |
+| `/post-init-onboarding` | Project onboarding. Use when joining existing project. |
+
+### Shell Scripts & Aliases - Top 10 Most Useful
+
+These are the commands that save the most tokens and time:
+
+| Command | What it does & When to use |
+|---------|----------------------------|
+| `chp` | **Project overview in one shot.** Use ALWAYS when starting work on any project. Saves 10+ manual commands. |
+| `ch nlp tokens file.txt` | **Check token count before reading.** Use to avoid accidentally flooding context with large files. |
+| `ch m read-many f1 f2 f3` | **Batch read multiple files.** Use instead of multiple Read tool calls. Saves 50-80% tokens. |
+| `chs find-code "pattern"` | **Lightning-fast code search.** Use instead of grep. Returns structured results optimized for Claude. |
+| `ch nlp overview file.py` | **Complete code analysis.** Use to get complexity, security, docs, and smells in ONE command. |
+| `ch ctx for-task "migration"` | **Generate focused context.** Use to get only relevant files/info for specific task. |
+| `ch cr imported-by module` | **Find import dependencies.** Use to understand what depends on a module before changes. |
+| `ch m list-structure src/` | **See directory contents.** Use BEFORE reading files to know what's there. |
+| `ch cq secrets-scan` | **Security vulnerability scan.** Use periodically to catch exposed secrets/keys. |
+| `ch i select-files` | **Interactive file picker.** Use when you need specific files but unsure of exact names. |
+
+**Access pattern:** Most commands follow `ch [category] [command]` format, with shortcuts for the most common ones (`chp`, `chs`, `chg`).
+
+## 🔧 Technical Details
+
+### What Gets Installed
+- **Helper scripts** → `~/.claude/scripts/` (17 shell scripts)
+- **Slash commands** → `~/.claude/commands/` (19 markdown workflows)  
+- **Shell aliases** → Added to `.zshrc`/`.bashrc` (4 shortcuts)
+- **Global config** → `~/.claude/CLAUDE.md` (~300 tokens)
+
+### MCP Server Integration
+Setup automatically configures:
+- **Playwright MCP** - Browser automation and visual testing
+- **Context7 MCP** - Real-time documentation for 1000+ libraries
+
+### Dependencies
+**Required:**
+- `ripgrep` - Fast file searching
+- `jq` - JSON processing
+
+**Optional (but recommended):**
+- `fzf` - Interactive file selection
+- `bat` - Syntax highlighting
+- `gum` - Beautiful prompts
+- `delta` - Better diffs
+
+### Token Efficiency
+| Without Helpers | With Helpers | Savings |
+|----------------|--------------|---------|
+| 5 file reads = 5 tool calls | `ch m read-many` = 1 call | 80% |
+| Load full docs = 5000+ tokens | Scripts in environment = 0 tokens | 100% |
+| Manual git workflow = 8+ commands | `chg quick-commit` = 1 command | 87% |
+
+### Customization
+Add your own tools:
+```bash
+# New script
+echo '#!/bin/bash' > scripts/my-tool.sh
+./setup.sh
+
+# New command  
+echo '# My Command' > commands/my-workflow.md
+./setup.sh
+```
+
+## 🚀 Full Command Reference
+
+For complete documentation of all 17 shell scripts and their 100+ commands, run:
+```bash
+ch help              # See all categories
+ch [category] help   # See commands for specific category
+```
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Add your scripts/commands
-3. Submit a pull request
-4. Share your improvements!
+Found a useful pattern? Share it! PRs welcome at [github.com/cassler/awesome-claude-code-setup](https://github.com/cassler/awesome-claude-code-setup)
 
 ## 📄 License
 
-MIT License - see LICENSE file for details
+MIT License - Because great tools should be free.
