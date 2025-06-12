@@ -15,9 +15,18 @@ case "$1" in
     "tokens"|"tokencount")
         # Estimate token count (rough approximation)
         FILE="${2:-/dev/stdin}"
-        python3 -c "
+        export FILE
+        python3 <<'EOF'
 import sys
-text = open('$FILE').read() if '$FILE' != '/dev/stdin' else sys.stdin.read()
+import os
+
+file_path = os.environ.get('FILE', '/dev/stdin')
+if file_path == '/dev/stdin':
+    text = sys.stdin.read()
+else:
+    with open(file_path, 'r') as f:
+        text = f.read()
+
 # Rough token estimation: ~4 chars per token
 chars = len(text)
 words = len(text.split())
@@ -25,15 +34,24 @@ tokens = chars // 4
 print(f'Characters: {chars:,}')
 print(f'Words: {words:,}')
 print(f'Tokens (est): {tokens:,}')
-"
+EOF
         ;;
     
     "summary")
         # Extract first paragraph and headers
         FILE="${2:-/dev/stdin}"
-        python3 -c "
+        export FILE
+        python3 <<'EOF'
 import re
-text = open('$FILE').read() if '$FILE' != '/dev/stdin' else __import__('sys').stdin.read()
+import sys
+import os
+
+file_path = os.environ.get('FILE', '/dev/stdin')
+if file_path == '/dev/stdin':
+    text = sys.stdin.read()
+else:
+    with open(file_path, 'r') as f:
+        text = f.read()
 
 # Extract headers
 headers = re.findall(r'^#+\s+(.+)$', text, re.MULTILINE)
@@ -45,18 +63,28 @@ paragraphs = [p.strip() for p in text.split('\n\n') if p.strip() and not p.strip
 if paragraphs:
     first = paragraphs[0][:200] + '...' if len(paragraphs[0]) > 200 else paragraphs[0]
     print(f'\nFirst paragraph: {first}')
-"
+EOF
         ;;
     
     "keywords"|"frequency")
         # Word frequency analysis
         FILE="${2:-/dev/stdin}"
         TOP="${3:-10}"
-        python3 -c "
+        export FILE TOP
+        python3 <<'EOF'
 import re
+import os
+import sys
 from collections import Counter
 
-text = open('$FILE').read().lower() if '$FILE' != '/dev/stdin' else __import__('sys').stdin.read().lower()
+file_path = os.environ.get('FILE', '/dev/stdin')
+top_n = int(os.environ.get('TOP', '10'))
+
+if file_path == '/dev/stdin':
+    text = sys.stdin.read().lower()
+else:
+    with open(file_path, 'r') as f:
+        text = f.read().lower()
 
 # Common stop words
 stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
@@ -71,18 +99,27 @@ words = [w for w in words if len(w) > 2 and w not in stop_words]
 
 # Count frequency
 freq = Counter(words)
-print(f'Top {$TOP} keywords:')
-for word, count in freq.most_common($TOP):
+print(f'Top {top_n} keywords:')
+for word, count in freq.most_common(top_n):
     print(f'  {word}: {count}')
-"
+EOF
         ;;
     
     "questions")
         # Extract questions
         FILE="${2:-/dev/stdin}"
-        python3 -c "
+        export FILE
+        python3 <<'EOF'
 import re
-text = open('$FILE').read() if '$FILE' != '/dev/stdin' else __import__('sys').stdin.read()
+import sys
+import os
+
+file_path = os.environ.get('FILE', '/dev/stdin')
+if file_path == '/dev/stdin':
+    text = sys.stdin.read()
+else:
+    with open(file_path, 'r') as f:
+        text = f.read()
 
 # Find sentences ending with ?
 questions = re.findall(r'([^.!?\n]*\?)', text)
@@ -94,7 +131,7 @@ if questions:
         print(f'  ... and {len(questions) - 10} more')
 else:
     print('No questions found')
-"
+EOF
         ;;
     
     "todos"|"fixmes")
@@ -115,8 +152,11 @@ else:
         if [ -z "$TEXT" ]; then
             error_exit "Usage: $0 sentiment \"text to analyze\""
         fi
-        python3 -c "
-text = '''$TEXT'''.lower()
+        export TEXT
+        python3 <<'EOF'
+import os
+
+text = os.environ.get('TEXT', '').lower()
 
 # Positive and negative word lists
 positive = {'good', 'great', 'excellent', 'amazing', 'wonderful', 'fantastic',
@@ -140,15 +180,24 @@ else:
     print('😐 Neutral')
     
 print(f'Positive words: {pos_count}, Negative words: {neg_count}')
-"
+EOF
         ;;
     
     "readability"|"complexity")
         # Estimate readability
         FILE="${2:-/dev/stdin}"
-        python3 -c "
+        export FILE
+        python3 <<'EOF'
 import re
-text = open('$FILE').read() if '$FILE' != '/dev/stdin' else __import__('sys').stdin.read()
+import sys
+import os
+
+file_path = os.environ.get('FILE', '/dev/stdin')
+if file_path == '/dev/stdin':
+    text = sys.stdin.read()
+else:
+    with open(file_path, 'r') as f:
+        text = f.read()
 
 # Count sentences, words, syllables
 sentences = len(re.findall(r'[.!?]+', text)) or 1
@@ -181,19 +230,28 @@ if words > 0:
         print('Reading level: Difficult (College)')
     else:
         print('Reading level: Very Difficult (Graduate)')
-"
+EOF
         ;;
     
     "ngrams")
         # Extract n-grams
         N="${2:-2}"
         FILE="${3:-/dev/stdin}"
-        python3 -c "
+        export N FILE
+        python3 <<'EOF'
 import re
+import os
+import sys
 from collections import Counter
 
-n = int('$N')
-text = open('$FILE').read().lower() if '$FILE' != '/dev/stdin' else __import__('sys').stdin.read().lower()
+n = int(os.environ.get('N', '2'))
+file_path = os.environ.get('FILE', '/dev/stdin')
+
+if file_path == '/dev/stdin':
+    text = sys.stdin.read().lower()
+else:
+    with open(file_path, 'r') as f:
+        text = f.read().lower()
 
 # Extract words
 words = re.findall(r'\b\w+\b', text)
@@ -206,15 +264,25 @@ freq = Counter(ngrams)
 print(f'Top 10 {n}-grams:')
 for ngram, count in freq.most_common(10):
     print(f'  {ngram}: {count}')
-"
+EOF
         ;;
     
     "entities"|"extract-names")
         # Simple named entity extraction
         FILE="${2:-/dev/stdin}"
-        python3 -c "
+        export FILE
+        python3 <<'EOF'
 import re
-text = open('$FILE').read() if '$FILE' != '/dev/stdin' else __import__('sys').stdin.read()
+import os
+import sys
+from collections import Counter
+
+file_path = os.environ.get('FILE', '/dev/stdin')
+if file_path == '/dev/stdin':
+    text = sys.stdin.read()
+else:
+    with open(file_path, 'r') as f:
+        text = f.read()
 
 # Find capitalized words (potential names)
 # Exclude common words and single letters
@@ -223,22 +291,23 @@ entities = [e for e in entities if len(e) > 1 and e not in
            {'The', 'This', 'That', 'These', 'Those', 'A', 'An', 'In', 'On', 'At', 'To', 'For'}]
 
 # Count occurrences
-from collections import Counter
 entity_counts = Counter(entities)
 
 print('Potential entities:')
 for entity, count in entity_counts.most_common(15):
     if count > 1:  # Only show repeated entities
         print(f'  {entity}: {count}')
-"
+EOF
         ;;
     
-    "complexity"|"analyze-complexity")
+    "analyze-complexity")
         # Analyze code complexity
         FILE="${2:-/dev/stdin}"
-        python3 -c "
+        export FILE
+        python3 <<'EOF'
 import ast
 import sys
+import os
 
 def calculate_complexity(node, complexity=1):
     '''Calculate cyclomatic complexity of an AST node'''
@@ -250,8 +319,15 @@ def calculate_complexity(node, complexity=1):
             complexity += len(child.values) - 1
     return complexity
 
+file_path = os.environ.get('FILE', '/dev/stdin')
+
 try:
-    code = open('$FILE').read() if '$FILE' != '/dev/stdin' else sys.stdin.read()
+    if file_path == '/dev/stdin':
+        code = sys.stdin.read()
+    else:
+        with open(file_path, 'r') as f:
+            code = f.read()
+    
     tree = ast.parse(code)
     
     print('=== CODE COMPLEXITY ANALYSIS ===')
@@ -292,7 +368,7 @@ except SyntaxError as e:
     print(f'Error: Not valid Python code - {e}')
 except Exception as e:
     print(f'Error analyzing file: {e}')
-"
+EOF
         ;;
     
     "security"|"security-scan")
@@ -300,7 +376,7 @@ except Exception as e:
         FILE="${2:-/dev/stdin}"
         echo "=== SECURITY SCAN ==="
         export FILE
-        python3 <<'PYTHON_SCRIPT'
+        python3 <<'EOF'
 import re
 import ast
 import sys
@@ -378,19 +454,28 @@ try:
     
 except Exception as e:
     print(f'Error during security scan: {e}')
-PYTHON_SCRIPT
+EOF
         ;;
     
     "imports"|"analyze-imports")
         # Analyze import dependencies
         FILE="${2:-/dev/stdin}"
-        python3 -c "
+        export FILE
+        python3 <<'EOF'
 import ast
 import sys
+import os
 from collections import defaultdict
 
+file_path = os.environ.get('FILE', '/dev/stdin')
+
 try:
-    code = open('$FILE').read() if '$FILE' != '/dev/stdin' else sys.stdin.read()
+    if file_path == '/dev/stdin':
+        code = sys.stdin.read()
+    else:
+        with open(file_path, 'r') as f:
+            code = f.read()
+    
     tree = ast.parse(code)
     
     print('=== IMPORT ANALYSIS ===')
@@ -448,20 +533,29 @@ except SyntaxError:
             
 except Exception as e:
     print(f'Error analyzing imports: {e}')
-"
+EOF
         ;;
     
     "duplicates"|"find-duplicates")
         # Find duplicate code blocks
         FILE="${2:-/dev/stdin}"
         MIN_LINES="${3:-4}"
-        python3 -c "
+        export FILE MIN_LINES
+        python3 <<'EOF'
 import sys
+import os
 from collections import defaultdict
 
-code = open('$FILE').read() if '$FILE' != '/dev/stdin' else sys.stdin.read()
+file_path = os.environ.get('FILE', '/dev/stdin')
+min_block_size = int(os.environ.get('MIN_LINES', '4'))
+
+if file_path == '/dev/stdin':
+    code = sys.stdin.read()
+else:
+    with open(file_path, 'r') as f:
+        code = f.read()
+
 lines = code.splitlines()
-min_block_size = int('$MIN_LINES')
 
 print(f'=== DUPLICATE CODE DETECTION (min {min_block_size} lines) ===')
 
@@ -474,7 +568,7 @@ for i in range(len(lines) - min_block_size + 1):
     if all(not line.strip() or line.strip().startswith('#') for line in block):
         continue
         
-    block_text = '\\n'.join(block)
+    block_text = '\n'.join(block)
     block_hash = hash(block_text)
     block_hashes[block_hash].append((i + 1, block_text))
 
@@ -483,17 +577,248 @@ duplicates_found = False
 for block_hash, occurrences in block_hashes.items():
     if len(occurrences) > 1:
         duplicates_found = True
-        print(f'\\nDuplicate block found ({len(occurrences)} occurrences):')
+        print(f'\nDuplicate block found ({len(occurrences)} occurrences):')
         print(f'Lines: {", ".join(str(occ[0]) for occ in occurrences)}')
         print('Content:')
-        print('  ' + occurrences[0][1].replace('\\n', '\\n  '))
+        print('  ' + occurrences[0][1].replace('\n', '\n  '))
         print()
 
 if not duplicates_found:
     print('✅ No duplicate blocks found')
 else:
     print('💡 Consider extracting duplicate code into functions')
-"
+EOF
+        ;;
+    
+    "docs"|"doc-quality")
+        # Analyze documentation quality
+        FILE="${2:-/dev/stdin}"
+        export FILE
+        python3 <<'EOF'
+import re
+import ast
+import sys
+import os
+
+file_path = os.environ.get('FILE', '/dev/stdin')
+
+try:
+    if file_path == '/dev/stdin':
+        code = sys.stdin.read()
+    else:
+        with open(file_path, 'r') as f:
+            code = f.read()
+    
+    print('=== DOCUMENTATION ANALYSIS ===')
+    
+    # Check if it's a Python file
+    is_python = file_path.endswith('.py') or file_path == '/dev/stdin'
+    
+    if is_python:
+        try:
+            tree = ast.parse(code)
+            
+            # Count documented vs undocumented items
+            total_items = 0
+            documented_items = 0
+            missing_docs = []
+            
+            for node in ast.walk(tree):
+                if isinstance(node, (ast.FunctionDef, ast.ClassDef)):
+                    total_items += 1
+                    docstring = ast.get_docstring(node)
+                    if docstring:
+                        documented_items += 1
+                    else:
+                        item_type = 'function' if isinstance(node, ast.FunctionDef) else 'class'
+                        missing_docs.append((item_type, node.name))
+            
+            # Calculate coverage
+            if total_items > 0:
+                coverage = (documented_items / total_items) * 100
+                print(f'Documentation coverage: {coverage:.1f}%')
+                print(f'Documented: {documented_items}/{total_items}')
+                
+                if coverage >= 80:
+                    print('✅ Good documentation coverage')
+                elif coverage >= 50:
+                    print('⚡ Fair documentation coverage')
+                else:
+                    print('⚠️  Poor documentation coverage')
+                
+                if missing_docs:
+                    print('\nMissing documentation:')
+                    for item_type, name in missing_docs[:10]:
+                        print(f'  - {item_type} {name}()')
+                    if len(missing_docs) > 10:
+                        print(f'  ... and {len(missing_docs) - 10} more')
+            else:
+                print('No functions or classes found')
+                
+        except SyntaxError:
+            print('Note: Not valid Python code')
+    
+    # General documentation patterns
+    print('\n=== COMMENT ANALYSIS ===')
+    
+    lines = code.splitlines()
+    total_lines = len(lines)
+    comment_lines = 0
+    code_lines = 0
+    blank_lines = 0
+    
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            blank_lines += 1
+        elif stripped.startswith('#') or stripped.startswith('//') or stripped.startswith('/*') or stripped.startswith('*'):
+            comment_lines += 1
+        else:
+            code_lines += 1
+    
+    if total_lines > 0:
+        comment_ratio = (comment_lines / total_lines) * 100
+        print(f'Total lines: {total_lines}')
+        print(f'Code lines: {code_lines}')
+        print(f'Comment lines: {comment_lines} ({comment_ratio:.1f}%)')
+        print(f'Blank lines: {blank_lines}')
+        
+        if comment_ratio >= 20:
+            print('\n✅ Well-commented code')
+        elif comment_ratio >= 10:
+            print('\n⚡ Adequately commented')
+        else:
+            print('\n⚠️  Needs more comments')
+    
+    # Check for README
+    if file_path != '/dev/stdin':
+        dir_path = os.path.dirname(file_path) or '.'
+        readme_files = ['README.md', 'README.rst', 'README.txt', 'README']
+        has_readme = any(os.path.exists(os.path.join(dir_path, f)) for f in readme_files)
+        print(f'\nProject README: {"✅ Found" if has_readme else "❌ Not found"}')
+        
+except Exception as e:
+    print(f'Error analyzing documentation: {e}')
+EOF
+        ;;
+    
+    "smells"|"code-smells")
+        # Detect common code smells
+        FILE="${2:-/dev/stdin}"
+        export FILE
+        python3 <<'EOF'
+import ast
+import sys
+import os
+
+file_path = os.environ.get('FILE', '/dev/stdin')
+
+try:
+    if file_path == '/dev/stdin':
+        code = sys.stdin.read()
+    else:
+        with open(file_path, 'r') as f:
+            code = f.read()
+    
+    print('=== CODE SMELL DETECTION ===')
+    
+    smells_found = []
+    
+    # Check if it's Python
+    is_python = file_path.endswith('.py') or file_path == '/dev/stdin'
+    
+    if is_python:
+        try:
+            tree = ast.parse(code)
+            
+            # Analyze functions
+            for node in ast.walk(tree):
+                if isinstance(node, ast.FunctionDef):
+                    # Long function
+                    func_lines = node.end_lineno - node.lineno + 1 if hasattr(node, 'end_lineno') else 0
+                    if func_lines > 50:
+                        smells_found.append(f'Long function: {node.name} ({func_lines} lines)')
+                    
+                    # Too many parameters
+                    param_count = len(node.args.args)
+                    if param_count > 5:
+                        smells_found.append(f'Too many parameters: {node.name} ({param_count} params)')
+                    
+                    # Deep nesting
+                    def get_max_depth(n, depth=0):
+                        max_d = depth
+                        for child in ast.iter_child_nodes(n):
+                            if isinstance(child, (ast.If, ast.For, ast.While, ast.With)):
+                                max_d = max(max_d, get_max_depth(child, depth + 1))
+                            else:
+                                max_d = max(max_d, get_max_depth(child, depth))
+                        return max_d
+                    
+                    max_depth = get_max_depth(node)
+                    if max_depth > 3:
+                        smells_found.append(f'Deep nesting: {node.name} (depth {max_depth})')
+                
+                # Large classes
+                elif isinstance(node, ast.ClassDef):
+                    methods = [n for n in node.body if isinstance(n, ast.FunctionDef)]
+                    if len(methods) > 20:
+                        smells_found.append(f'Large class: {node.name} ({len(methods)} methods)')
+                    
+                    # God class (too many responsibilities)
+                    attrs = [n for n in node.body if isinstance(n, ast.Assign)]
+                    if len(attrs) > 15:
+                        smells_found.append(f'God class candidate: {node.name} ({len(attrs)} attributes)')
+        
+        except SyntaxError:
+            pass
+    
+    # General code smell patterns (language agnostic)
+    lines = code.splitlines()
+    
+    # Check for long lines
+    long_lines = [(i+1, len(line)) for i, line in enumerate(lines) if len(line) > 120]
+    if long_lines:
+        smells_found.append(f'Long lines: {len(long_lines)} lines over 120 chars')
+    
+    # Magic numbers
+    import re
+    magic_numbers = re.findall(r'\b(?<!\.)\d{2,}\b(?!\.)', code)
+    magic_numbers = [n for n in magic_numbers if n not in ['100', '1000', '200', '404', '500', '10', '20', '30', '40', '50', '60', '70', '80', '90']]
+    if len(magic_numbers) > 5:
+        smells_found.append(f'Magic numbers: {len(set(magic_numbers))} unique values')
+    
+    # Commented out code
+    commented_code_patterns = [
+        r'#\s*(if|for|while|def|class|import|return)\s',
+        r'//\s*(if|for|while|function|class|import|return)\s',
+        r'/\*.*?(if|for|while|function|class|import|return).*?\*/'
+    ]
+    commented_code_count = 0
+    for pattern in commented_code_patterns:
+        commented_code_count += len(re.findall(pattern, code, re.IGNORECASE))
+    
+    if commented_code_count > 3:
+        smells_found.append(f'Commented out code: {commented_code_count} blocks')
+    
+    # Report findings
+    if smells_found:
+        print(f'Found {len(smells_found)} code smells:\n')
+        for smell in smells_found:
+            print(f'⚠️  {smell}')
+        
+        print('\n💡 Recommendations:')
+        print('- Break long functions into smaller ones')
+        print('- Reduce parameter count using objects/configs')
+        print('- Extract nested logic into separate functions')
+        print('- Split large classes based on responsibilities')
+        print('- Replace magic numbers with named constants')
+        print('- Remove commented out code')
+    else:
+        print('✅ No significant code smells detected')
+        
+except Exception as e:
+    print(f'Error detecting code smells: {e}')
+EOF
         ;;
     
     "overview"|"analyze")
@@ -518,20 +843,33 @@ else:
         # Run appropriate analysis based on extension
         case "$EXT" in
             py)
-                "$0" complexity "$FILE"
+                "$0" analyze-complexity "$FILE"
                 echo ""
                 "$0" imports "$FILE"
+                echo ""
+                "$0" smells "$FILE"
                 ;;
             js|ts|jsx|tsx)
                 "$0" keywords "$FILE" 15
+                echo ""
+                "$0" smells "$FILE"
+                ;;
+            md|rst|txt)
+                "$0" readability "$FILE"
+                echo ""
+                "$0" summary "$FILE"
                 ;;
             *)
                 "$0" summary "$FILE"
+                echo ""
+                "$0" smells "$FILE"
                 ;;
         esac
         
         echo ""
         "$0" duplicates "$FILE" 3
+        echo ""
+        "$0" docs "$FILE"
         ;;
     
     "help"|"")
@@ -552,10 +890,12 @@ else:
         echo ""
         echo "Code Analysis Commands:"
         echo "  overview <file>       - Comprehensive file analysis"
-        echo "  complexity <file>     - Analyze cyclomatic complexity (Python)"
+        echo "  analyze-complexity <file> - Analyze cyclomatic complexity (Python)"
         echo "  security <file>       - Basic security vulnerability scan"
         echo "  imports <file>        - Analyze import dependencies"
         echo "  duplicates <file> [n] - Find duplicate code blocks (min n lines)"
+        echo "  docs <file>           - Analyze documentation quality"
+        echo "  smells <file>         - Detect common code smells"
         echo ""
         echo "Examples:"
         echo "  $0 tokens README.md"

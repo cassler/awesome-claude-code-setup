@@ -51,6 +51,9 @@ ch api test /endpoint        # Test APIs with formatted output
 ch nlp tokens README.md      # Count tokens before adding to context
 ch nlp todos                 # Find all TODO/FIXME comments
 ch nlp sentiment "text"      # Quick sentiment analysis
+ch nlp security code.py      # Security vulnerability scan
+ch nlp complexity code.py    # Cyclomatic complexity analysis
+ch nlp overview file.py      # Comprehensive file analysis
 
 # 💡 These helpers handle many steps in one command, reducing the need
 # for multiple tool calls and providing better structured output.
