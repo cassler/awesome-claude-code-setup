@@ -233,12 +233,313 @@ for entity, count in entity_counts.most_common(15):
 "
         ;;
     
+    "complexity"|"analyze-complexity")
+        # Analyze code complexity
+        FILE="${2:-/dev/stdin}"
+        python3 -c "
+import ast
+import sys
+
+def calculate_complexity(node, complexity=1):
+    '''Calculate cyclomatic complexity of an AST node'''
+    # Add 1 for each decision point
+    for child in ast.walk(node):
+        if isinstance(child, (ast.If, ast.While, ast.For, ast.ExceptHandler)):
+            complexity += 1
+        elif isinstance(child, ast.BoolOp):
+            complexity += len(child.values) - 1
+    return complexity
+
+try:
+    code = open('$FILE').read() if '$FILE' != '/dev/stdin' else sys.stdin.read()
+    tree = ast.parse(code)
+    
+    print('=== CODE COMPLEXITY ANALYSIS ===')
+    
+    # Count elements
+    functions = [n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)]
+    classes = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
+    
+    print(f'Classes: {len(classes)}')
+    print(f'Functions: {len(functions)}')
+    print()
+    
+    # Analyze each function
+    if functions:
+        print('Function Complexity:')
+        for func in functions:
+            complexity = calculate_complexity(func)
+            lines = len(func.body)
+            params = len(func.args.args)
+            
+            # Determine complexity level
+            if complexity > 10:
+                level = '⚠️  HIGH'
+            elif complexity > 5:
+                level = '⚡ MEDIUM'
+            else:
+                level = '✅ LOW'
+                
+            print(f'  {func.name}():')
+            print(f'    Cyclomatic complexity: {complexity} {level}')
+            print(f'    Lines: {lines}, Parameters: {params}')
+            
+    # Overall metrics
+    total_lines = len(code.splitlines())
+    print(f'\nTotal lines: {total_lines}')
+    
+except SyntaxError as e:
+    print(f'Error: Not valid Python code - {e}')
+except Exception as e:
+    print(f'Error analyzing file: {e}')
+"
+        ;;
+    
+    "security"|"security-scan")
+        # Basic security pattern detection
+        FILE="${2:-/dev/stdin}"
+        echo "=== SECURITY SCAN ==="
+        export FILE
+        python3 <<'PYTHON_SCRIPT'
+import re
+import ast
+import sys
+import os
+
+file_path = os.environ.get('FILE', '/dev/stdin')
+
+try:
+    if file_path == '/dev/stdin':
+        code = sys.stdin.read()
+    else:
+        with open(file_path, 'r') as f:
+            code = f.read()
+    
+    issues = []
+    
+    # Pattern-based detection
+    patterns = {
+        'Hardcoded Secret': [
+            r'(?i)(api[_-]?key|secret|password|token)\s*=\s*["\'][^"\']+["\']',
+            r'(?i)(AWS|AMAZON)_?(SECRET|ACCESS)_?KEY\s*=\s*["\'][^"\']+["\']',
+        ],
+        'SQL Injection Risk': [
+            r'\.execute\([^)]*%[^)]*\)',
+            r'\.execute\([^)]*\+[^)]*\)',
+            r'f["\'].*SELECT.*{.*}.*FROM',
+        ],
+        'Command Injection': [
+            r'os\.system\(',
+            r'subprocess\.call\(.*shell=True',
+            r'eval\([^)]*input\(',
+        ],
+        'Weak Crypto': [
+            r'hashlib\.md5\(',
+            r'hashlib\.sha1\(',
+            r'random\.random\(\).*password',
+        ],
+        'Path Traversal': [
+            r'open\([^)]*\+[^)]*\)',
+            r'\.\./',
+        ]
+    }
+    
+    # Check each pattern
+    for issue_type, pattern_list in patterns.items():
+        for pattern in pattern_list:
+            matches = re.findall(pattern, code, re.IGNORECASE)
+            if matches:
+                issues.append((issue_type, len(matches), matches[0][:50]))
+    
+    # AST-based detection for Python
+    if file_path.endswith('.py') or file_path == '/dev/stdin':
+        try:
+            tree = ast.parse(code)
+            
+            # Check for eval/exec usage
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Name) and node.id in ['eval', 'exec']:
+                    issues.append(('Dangerous Function', 1, 'eval/exec usage'))
+                    
+        except:
+            pass
+    
+    # Report findings
+    if issues:
+        print(f'Found {len(issues)} potential security issues:\n')
+        for issue_type, count, example in issues:
+            print(f'⚠️  {issue_type}: {count} occurrence(s)')
+            print(f'   Example: {example}...')
+            print()
+    else:
+        print('✅ No obvious security issues detected')
+        
+    print('\nNote: This is a basic scan. Use specialized tools for thorough analysis.')
+    
+except Exception as e:
+    print(f'Error during security scan: {e}')
+PYTHON_SCRIPT
+        ;;
+    
+    "imports"|"analyze-imports")
+        # Analyze import dependencies
+        FILE="${2:-/dev/stdin}"
+        python3 -c "
+import ast
+import sys
+from collections import defaultdict
+
+try:
+    code = open('$FILE').read() if '$FILE' != '/dev/stdin' else sys.stdin.read()
+    tree = ast.parse(code)
+    
+    print('=== IMPORT ANALYSIS ===')
+    
+    stdlib_modules = {
+        'os', 'sys', 're', 'json', 'math', 'random', 'datetime', 'time',
+        'collections', 'itertools', 'functools', 'pathlib', 'subprocess',
+        'urllib', 'http', 'email', 'html', 'xml', 'csv', 'sqlite3',
+        'logging', 'argparse', 'unittest', 'doctest', 'pdb', 'profile',
+        'ast', 'dis', 'tokenize', 'inspect', 'traceback', 'warnings'
+    }
+    
+    imports = defaultdict(list)
+    
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                module = alias.name.split('.')[0]
+                category = 'stdlib' if module in stdlib_modules else 'third-party'
+                imports[category].append(alias.name)
+        elif isinstance(node, ast.ImportFrom):
+            if node.module:
+                module = node.module.split('.')[0]
+                category = 'stdlib' if module in stdlib_modules else 'third-party'
+                for alias in node.names:
+                    imports[category].append(f'{node.module}.{alias.name}')
+    
+    # Report findings
+    for category in ['stdlib', 'third-party']:
+        if imports[category]:
+            print(f'\n{category.title()} imports ({len(set(imports[category]))})::')
+            for imp in sorted(set(imports[category])):
+                print(f'  - {imp}')
+    
+    # Check for potential issues
+    print('\n=== IMPORT HEALTH ===')
+    
+    # Circular import risk (basic check)
+    from_imports = [n for n in ast.walk(tree) if isinstance(n, ast.ImportFrom) and n.module and n.level == 0]
+    if len(from_imports) > 10:
+        print('⚠️  Many from imports - potential circular dependency risk')
+    else:
+        print('✅ Import structure looks healthy')
+        
+except SyntaxError:
+    print('Note: Not a Python file, showing basic import patterns...')
+    # Fallback to regex for other languages
+    import re
+    
+    js_imports = re.findall(r'(?:import|require)\s*\(["\']([^"\']+)["\']\)', code)
+    if js_imports:
+        print('\nJavaScript/TypeScript imports:')
+        for imp in sorted(set(js_imports)):
+            print(f'  - {imp}')
+            
+except Exception as e:
+    print(f'Error analyzing imports: {e}')
+"
+        ;;
+    
+    "duplicates"|"find-duplicates")
+        # Find duplicate code blocks
+        FILE="${2:-/dev/stdin}"
+        MIN_LINES="${3:-4}"
+        python3 -c "
+import sys
+from collections import defaultdict
+
+code = open('$FILE').read() if '$FILE' != '/dev/stdin' else sys.stdin.read()
+lines = code.splitlines()
+min_block_size = int('$MIN_LINES')
+
+print(f'=== DUPLICATE CODE DETECTION (min {min_block_size} lines) ===')
+
+# Create hashes of line blocks
+block_hashes = defaultdict(list)
+
+for i in range(len(lines) - min_block_size + 1):
+    block = lines[i:i + min_block_size]
+    # Skip empty or comment-only blocks
+    if all(not line.strip() or line.strip().startswith('#') for line in block):
+        continue
+        
+    block_text = '\\n'.join(block)
+    block_hash = hash(block_text)
+    block_hashes[block_hash].append((i + 1, block_text))
+
+# Find duplicates
+duplicates_found = False
+for block_hash, occurrences in block_hashes.items():
+    if len(occurrences) > 1:
+        duplicates_found = True
+        print(f'\\nDuplicate block found ({len(occurrences)} occurrences):')
+        print(f'Lines: {", ".join(str(occ[0]) for occ in occurrences)}')
+        print('Content:')
+        print('  ' + occurrences[0][1].replace('\\n', '\\n  '))
+        print()
+
+if not duplicates_found:
+    print('✅ No duplicate blocks found')
+else:
+    print('💡 Consider extracting duplicate code into functions')
+"
+        ;;
+    
+    "overview"|"analyze")
+        # Comprehensive file analysis
+        FILE="${2:-}"
+        if [ -z "$FILE" ]; then
+            error_exit "Usage: $0 overview <file>"
+        fi
+        
+        echo "=== COMPREHENSIVE ANALYSIS: $FILE ==="
+        echo ""
+        
+        # Token count
+        "$0" tokens "$FILE"
+        echo ""
+        
+        # Language detection
+        EXT="${FILE##*.}"
+        echo "File type: .$EXT"
+        echo ""
+        
+        # Run appropriate analysis based on extension
+        case "$EXT" in
+            py)
+                "$0" complexity "$FILE"
+                echo ""
+                "$0" imports "$FILE"
+                ;;
+            js|ts|jsx|tsx)
+                "$0" keywords "$FILE" 15
+                ;;
+            *)
+                "$0" summary "$FILE"
+                ;;
+        esac
+        
+        echo ""
+        "$0" duplicates "$FILE" 3
+        ;;
+    
     "help"|"")
-        echo "=== NLP HELPER ==="
+        echo "=== NLP & STATIC ANALYSIS HELPER ==="
         echo ""
         echo "Usage: $0 <command> [args]"
         echo ""
-        echo "Commands:"
+        echo "Text Analysis Commands:"
         echo "  tokens <file>         - Count characters, words, and estimate tokens"
         echo "  summary <file>        - Extract headers and first paragraph"
         echo "  keywords <file> [n]   - Show top N keywords (default: 10)"
@@ -248,6 +549,13 @@ for entity, count in entity_counts.most_common(15):
         echo "  readability <file>    - Calculate readability score"
         echo "  ngrams <n> <file>     - Extract n-grams (word pairs, triplets, etc)"
         echo "  entities <file>       - Extract potential named entities"
+        echo ""
+        echo "Code Analysis Commands:"
+        echo "  overview <file>       - Comprehensive file analysis"
+        echo "  complexity <file>     - Analyze cyclomatic complexity (Python)"
+        echo "  security <file>       - Basic security vulnerability scan"
+        echo "  imports <file>        - Analyze import dependencies"
+        echo "  duplicates <file> [n] - Find duplicate code blocks (min n lines)"
         echo ""
         echo "Examples:"
         echo "  $0 tokens README.md"
