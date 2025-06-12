@@ -28,14 +28,14 @@ case "$1" in
             exit 1
         fi
         
-        if command -v fzf &> /dev/null && command -v bat &> /dev/null; then
+        if should_use_interactive "$@" && command -v fzf &> /dev/null && command -v bat &> /dev/null; then
             # Interactive mode with fzf and bat
             echo "=== INTERACTIVE SEARCH: $PATTERN ==="
             $RG "$PATTERN" -l | fzf --preview "$RG '$PATTERN' -n --color always {} | bat --color=always --style=plain --language=txt" \
                 --preview-window=right:60%:wrap \
                 --header="Select file to view (ESC to cancel)"
         else
-            # Basic search output
+            # Non-interactive search output
             echo "=== SEARCHING FOR: $PATTERN ==="
             $RG "$PATTERN" -n --max-count=3 --max-columns=150
         fi
@@ -49,7 +49,7 @@ case "$1" in
             exit 1
         fi
         
-        if command -v fzf &> /dev/null; then
+        if should_use_interactive "$@" && command -v fzf &> /dev/null; then
             # Interactive file selection
             find . -type f -name "*$PATTERN*" -not -path "*/node_modules/*" -not -path "*/.git/*" | \
                 fzf --preview 'bat --color=always --style=numbers {} 2>/dev/null || head -50 {}' \
@@ -144,22 +144,28 @@ case "$1" in
         ;;
     
     "interactive"|"i")
-        # Interactive file search - requires fzf
-        if ! command -v fzf &> /dev/null; then
+        # Interactive file search
+        if ! should_use_interactive "$@"; then
+            echo "=== FILE LIST (top 30) ==="
+            $RG --files | head -30
+            echo ""
+            echo "Note: Interactive mode disabled (non-TTY environment)"
+            echo "Use specific search commands like 'find-file' or 'find-code' instead"
+        elif ! command -v fzf &> /dev/null; then
             echo "❌ fzf is required for interactive search"
             echo "Install with: brew install fzf"
             exit 1
-        fi
-        
-        echo "=== INTERACTIVE FILE SEARCH (ESC to cancel) ==="
-        
-        # Enhanced search with ripgrep for file listing (respects .gitignore)
-        if command -v bat &> /dev/null; then
-            $RG --files | fzf --preview 'bat --style=numbers --color=always --line-range :500 {}' \
-                --preview-window=right:60%:wrap \
-                --bind 'ctrl-/:change-preview-window(hidden|)'
         else
-            $RG --files | fzf --preview 'head -100 {}' --preview-window=right:60%:wrap
+            echo "=== INTERACTIVE FILE SEARCH (ESC to cancel) ==="
+            
+            # Enhanced search with ripgrep for file listing (respects .gitignore)
+            if command -v bat &> /dev/null; then
+                $RG --files | fzf --preview 'bat --style=numbers --color=always --line-range :500 {}' \
+                    --preview-window=right:60%:wrap \
+                    --bind 'ctrl-/:change-preview-window(hidden|)'
+            else
+                $RG --files | fzf --preview 'head -100 {}' --preview-window=right:60%:wrap
+            fi
         fi
         ;;
     

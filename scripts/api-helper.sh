@@ -195,7 +195,7 @@ extract_data() {
             # Offer to save if complex
             if [ $(echo "$result" | wc -l) -gt 10 ]; then
                 echo ""
-                if command -v gum &> /dev/null; then
+                if should_use_interactive "$@" && command -v gum &> /dev/null; then
                     if gum confirm "Save extracted data to file?"; then
                         local output_file="extracted_$(date +%Y%m%d_%H%M%S).json"
                         echo "$result" > "$output_file"

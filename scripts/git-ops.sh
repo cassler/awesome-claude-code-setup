@@ -47,7 +47,13 @@ case "$1" in
     
     "switch"|"sw")
         # Interactive branch switching with fzf
-        if command -v fzf &> /dev/null; then
+        if ! should_use_interactive "$@"; then
+            echo "=== AVAILABLE BRANCHES ==="
+            git branch -a | sed 's/^[* ]*//' | grep -v 'HEAD ->' | sort -u
+            echo ""
+            echo "Note: Interactive mode disabled (non-TTY environment)"
+            echo "Use: git checkout <branch-name>"
+        elif command -v fzf &> /dev/null; then
             echo "🌿 Interactive Branch Switch"
             local branch=$(git branch -a | sed 's/^[* ]*//' | grep -v 'HEAD ->' | sort -u | fzf --header="Select branch to switch to")
             if [ -n "$branch" ]; then
@@ -69,7 +75,7 @@ case "$1" in
     
     "quick-commit"|"qc")
         if [ -z "$2" ]; then
-            if [[ "$GUM_AVAILABLE" == "true" ]]; then
+            if [[ "$GUM_AVAILABLE" == "true" ]] && should_use_interactive "$@"; then
                 # Use gum for interactive commit message
                 echo "Enter commit message:"
                 MESSAGE=$(gum input --placeholder "feat: Add new feature" --width 60)
@@ -77,10 +83,16 @@ case "$1" in
                     echo "Commit cancelled."
                     exit 1
                 fi
+            elif is_interactive; then
+                echo -n "Enter commit message: "
+                read -r MESSAGE
+                if [ -z "$MESSAGE" ]; then
+                    echo "Commit cancelled."
+                    exit 1
+                fi
             else
                 echo "Usage: $0 quick-commit <message>"
-                echo "Tip: Install 'gum' for interactive commit messages"
-                check_optional_tool "gum" "false" > /dev/null 2>&1
+                echo "Note: Message required in non-interactive mode"
                 exit 1
             fi
         else

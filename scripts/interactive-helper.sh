@@ -34,52 +34,64 @@ show_help() {
 
 # Interactive file selection with preview
 select_file() {
-    if command -v fzf &> /dev/null && command -v bat &> /dev/null; then
+    if should_use_interactive "$@" && command -v fzf &> /dev/null && command -v bat &> /dev/null; then
         # Enhanced experience with fzf and bat
         find . -type f -not -path '*/\.*' -not -path '*/node_modules/*' | \
             fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}' \
                 --preview-window=right:60% \
                 --header="Select a file (arrows to navigate, enter to select)"
-    elif command -v fzf &> /dev/null; then
+    elif should_use_interactive "$@" && command -v fzf &> /dev/null; then
         # fzf without bat
         find . -type f -not -path '*/\.*' -not -path '*/node_modules/*' | \
             fzf --preview 'head -50 {}' \
                 --preview-window=right:50% \
                 --header="Select a file"
     else
-        # Fallback to numbered list
-        echo "Select a file:"
+        # Fallback to numbered list (works in non-TTY)
+        echo "Select a file:" >&2
         local files=()
         while IFS= read -r file; do
             files+=("$file")
         done < <(find . -type f -not -path '*/\.*' -not -path '*/node_modules/*' | head -20)
         
         for i in "${!files[@]}"; do
-            echo "$((i+1)). ${files[$i]}"
+            echo "$((i+1)). ${files[$i]}" >&2
         done
         
-        echo -n "Enter number (1-${#files[@]}): "
-        read -r num
-        if [[ "$num" =~ ^[0-9]+$ ]] && [ "$num" -ge 1 ] && [ "$num" -le "${#files[@]}" ]; then
-            echo "${files[$((num-1))]}"
+        if is_interactive; then
+            echo -n "Enter number (1-${#files[@]}): " >&2
+            read -r num
+            if [[ "$num" =~ ^[0-9]+$ ]] && [ "$num" -ge 1 ] && [ "$num" -le "${#files[@]}" ]; then
+                echo "${files[$((num-1))]}"
+            fi
+        else
+            echo "" >&2
+            echo "Note: Non-interactive mode - listing files only" >&2
+            return 1
         fi
     fi
 }
 
 # Select multiple files
 select_files() {
-    if command -v fzf &> /dev/null; then
+    if should_use_interactive "$@" && command -v fzf &> /dev/null; then
         find . -type f -not -path '*/\.*' -not -path '*/node_modules/*' | \
             fzf --multi \
                 --preview 'bat --color=always --style=numbers --line-range=:500 {} 2>/dev/null || head -50 {}' \
                 --preview-window=right:50% \
                 --header="Select files (tab to select multiple, enter when done)"
+    elif ! should_use_interactive "$@"; then
+        echo "=== FILE LIST (top 30) ===" >&2
+        find . -type f -not -path '*/\.*' -not -path '*/node_modules/*' | head -30
+        echo "" >&2
+        echo "Note: Multi-file selection disabled in non-interactive mode" >&2
+        return 1
     else
         echo "⚠️  Multi-file selection requires fzf"
         suggest_install_tool "fzf"
         echo ""
         echo "Falling back to single file selection..."
-        select_file
+        select_file "$@"
     fi
 }
 
@@ -143,7 +155,7 @@ select_branch() {
     
     local branches=$(git branch -a | sed 's/^[* ]*//' | grep -v 'HEAD ->' | sort -u)
     
-    if command -v fzf &> /dev/null; then
+    if should_use_interactive "$@" && command -v fzf &> /dev/null; then
         local selected=$(echo "$branches" | fzf --header="Select branch to switch to" \
                         --preview 'git log --oneline --graph --color=always {}..HEAD' \
                         --preview-window=right:50%)
@@ -156,8 +168,16 @@ select_branch() {
                 git checkout "$selected"
             fi
         fi
+    elif ! should_use_interactive "$@"; then
+        # Non-interactive mode - just list branches
+        echo "=== AVAILABLE BRANCHES ==="
+        echo "$branches"
+        echo ""
+        echo "Note: Branch selection disabled in non-interactive mode"
+        echo "Use: git checkout <branch-name>"
+        return 1
     else
-        # Fallback
+        # Fallback with numbered list
         echo "Available branches:"
         local branch_array=()
         while IFS= read -r branch; do
@@ -183,11 +203,15 @@ select_branch() {
 search_and_edit() {
     local pattern="$1"
     if [ -z "$pattern" ]; then
-        if command -v gum &> /dev/null; then
+        if should_use_interactive "$@" && command -v gum &> /dev/null; then
             pattern=$(gum input --placeholder "Enter search pattern")
-        else
+        elif is_interactive; then
             echo -n "Enter search pattern: "
             read -r pattern
+        else
+            echo "❌ Pattern required in non-interactive mode"
+            echo "Usage: search-and-edit <pattern>"
+            return 1
         fi
     fi
     
@@ -204,7 +228,7 @@ search_and_edit() {
         return 1
     fi
     
-    if command -v fzf &> /dev/null && command -v bat &> /dev/null; then
+    if should_use_interactive "$@" && command -v fzf &> /dev/null && command -v bat &> /dev/null; then
         # Enhanced selection with preview highlighting matches
         local selected=$(echo "$results" | fzf \
             --preview "bat --color=always --style=numbers --highlight-line {2} {1} | rg --color=always '$pattern' || bat --color=always {1}" \
@@ -215,6 +239,13 @@ search_and_edit() {
             echo "Selected: $selected"
             # Could open in editor here
         fi
+    elif ! should_use_interactive "$@"; then
+        # Non-interactive mode - just list matches
+        echo "=== FILES CONTAINING: $pattern ==="
+        echo "$results"
+        echo ""
+        echo "Note: File selection disabled in non-interactive mode"
+        return 1
     else
         # Basic selection
         echo "Files containing '$pattern':"
@@ -263,11 +294,15 @@ quick_commit() {
     
     # Get commit message
     local message
-    if command -v gum &> /dev/null; then
+    if should_use_interactive "$@" && command -v gum &> /dev/null; then
         message=$(gum input --placeholder "Enter commit message" --width 80)
-    else
+    elif is_interactive; then
         echo -n "Enter commit message: "
         read -r message
+    else
+        echo "❌ Cannot get commit message in non-interactive mode"
+        echo "Use: git commit -m 'your message' instead"
+        return 1
     fi
     
     if [ -z "$message" ]; then
@@ -276,9 +311,9 @@ quick_commit() {
     fi
     
     # Confirm
-    if command -v gum &> /dev/null; then
+    if should_use_interactive "$@" && command -v gum &> /dev/null; then
         gum confirm "Commit with message: $message" && git add -A && git commit -m "$message"
-    else
+    elif is_interactive; then
         echo -n "Commit with message: $message? [y/N] "
         read -r response
         if [[ "$response" =~ ^[Yy]$ ]]; then
