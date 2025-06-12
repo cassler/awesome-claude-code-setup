@@ -4,7 +4,7 @@
 
 Supercharge your Claude Code experience with lightning-fast commands and intelligent workflows.
 
-**🎯 19 Slash Commands** | **⚡ 17 Shell Tools** | **🐍 Python Support** | **🐹 Go Support** | **💰 50-80% Token Savings** | **🤖 MCP Servers**
+**🎯 19 Slash Commands** | **⚡ 17 Shell Tools** | **🧠 NLP Analysis** | **📦 TypeScript/JS** | **🐍 Python** | **🐹 Go** | **🦀 Rust** | **💰 50-80% Token Savings** | **🤖 MCP Servers**
 
 ## 🪶 Ultra-Light Context Footprint
 
@@ -60,6 +60,34 @@ During setup, these servers are **automatically configured** for you:
 - Falls back to manual instructions if needed
 
 These servers work seamlessly with our slash commands - especially `/visual-test` for UI testing!
+
+## 🧠 NLP & Code Analysis - Your AI-Powered Code Review
+
+**Powerful static analysis without external dependencies!** Our NLP toolkit uses only Python's standard library to provide:
+
+### 📊 Token Management
+- **`ch nlp tokens file.py`** - Know the cost before reading files
+- **Smart batching** - Check multiple files: `ch nlp tokens src/*.js`
+- **Prevent context bloat** - Never accidentally load massive files
+
+### 🔍 Code Quality Analysis
+- **`ch nlp complexity file.py`** - Cyclomatic complexity scoring
+- **`ch nlp security code.py`** - Find SQL injection, hardcoded secrets, unsafe operations
+- **`ch nlp smells code.py`** - Detect long functions, deep nesting, magic numbers
+- **`ch nlp duplicates src/ 5`** - Find duplicate code blocks (5+ lines)
+- **`ch nlp docs module.py`** - Documentation coverage analysis
+
+### 📝 Text Processing
+- **`ch nlp summary README.md`** - Extract key points from documentation
+- **`ch nlp keywords article.md 20`** - Extract top keywords
+- **`ch nlp readability docs.md`** - Calculate readability scores
+- **`ch nlp sentiment "review text"`** - Analyze text sentiment
+
+### 🎯 One Command, Complete Analysis
+```bash
+ch nlp overview app.py
+```
+Returns everything: complexity scores, security issues, code smells, documentation coverage, and improvement suggestions - all in one structured output!
 
 ## 📝 Slash Commands - What You'll Actually Use
 
@@ -117,7 +145,7 @@ These aliases are primarily for Claude to efficiently execute tasks without load
 | **multi** | `m` | `read-many`, `read-pattern` | Batch file operations |
 | **api** | - | `test`, `watch`, `benchmark` | API testing & monitoring |
 | **interactive** | `i` | `select-file`, `select-branch` | Interactive selections |
-| **nlp** | - | `overview`, `security`, `smells`, `docs` | Static analysis & text processing |
+| **nlp** | `text` | `tokens`, `complexity`, `security`, `smells` | 🧠 AI-powered code analysis |
 
 > 💡 **Usage:** `ch [category] [command]` or use shortcuts like `chp`, `chs`, `chg`  
 > 📚 **Full docs:** Run `ch [category] help` to see all commands for any category
@@ -142,6 +170,8 @@ These aliases are primarily for Claude to efficiently execute tasks without load
 - One command (`chp`) = complete project context
 - Shortcuts for everything (`chg quick-commit "msg"`)
 - Batched operations save 50-80% on tokens
+- AI-powered analysis (`ch nlp overview file.py` = complexity + security + quality)
+- Token awareness (`ch nlp tokens` before reading large files)
 - Consistent, reproducible workflows
 - **Your context stays clean for actual work**
 
