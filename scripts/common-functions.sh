@@ -37,6 +37,30 @@ check_command() {
     return 0
 }
 
+# Function to check if we're in an interactive TTY environment
+is_interactive() {
+    # Check if both stdin and stdout are connected to a terminal
+    [ -t 0 ] && [ -t 1 ]
+}
+
+# Function to check if we should use interactive mode
+# Takes into account TTY status and optional --non-interactive flag
+should_use_interactive() {
+    # Check for --non-interactive flag
+    for arg in "$@"; do
+        if [ "$arg" = "--non-interactive" ] || [ "$arg" = "-n" ]; then
+            return 1
+        fi
+    done
+    
+    # Check if we're in a TTY
+    if is_interactive; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 # Function to check required dependencies
 check_dependencies() {
     local missing=()

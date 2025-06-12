@@ -172,7 +172,18 @@ case "$1" in
     
     "select"|"s")
         # Interactive multi-file selection with fzf
-        if ! command -v fzf &> /dev/null; then
+        if ! should_use_interactive "$@"; then
+            echo "=== FILE LIST (top 30) ==="
+            if command -v rg &> /dev/null; then
+                rg --files | head -30
+            else
+                find . -type f -not -path "*/node_modules/*" -not -path "*/.git/*" | head -30
+            fi
+            echo ""
+            echo "Note: Interactive selection disabled (non-TTY environment)"
+            echo "Use: ch m read-many file1 file2 file3"
+            exit 0
+        elif ! command -v fzf &> /dev/null; then
             echo "❌ fzf is required for interactive selection"
             echo "Install with: brew install fzf"
             exit 1
