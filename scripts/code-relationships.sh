@@ -11,6 +11,83 @@ source "${SCRIPT_DIR}/common-functions.sh"
 # Check optional dependencies
 check_dependencies rg
 
+# Function to show shell script dependencies
+show_shell_dependencies() {
+    local dir="$1"
+    local depth="${2:-3}"
+    
+    echo "Shell Script Dependencies:"
+    echo ""
+    
+    # Find all shell scripts
+    local scripts=$(find "$dir" -maxdepth "$depth" -name "*.sh" -type f | sort)
+    
+    # Create temp file to track which scripts are sourced
+    local temp_sourced=$(mktemp -t ch_deps.XXXXXX || mktemp)
+    # Don't use trap in a function - clean up manually
+    
+    # Build dependency information
+    for script in $scripts; do
+        # Find what this script sources
+        if grep -E "^\s*(source|\.)\s+" "$script" >/dev/null 2>&1; then
+            grep -E "^\s*(source|\.)\s+" "$script" 2>/dev/null | \
+                sed -E 's/^[[:space:]]*(source|\.)[[:space:]]+//; s/["'\'']//g; s/\$\{?SCRIPT_DIR\}?\///g' | \
+                while read -r sourced; do
+                    # Extract just the filename
+                    local filename=$(basename "$sourced" 2>/dev/null)
+                    if [[ "$filename" =~ \.sh$ ]]; then
+                        echo "$filename" >> "$temp_sourced"
+                    fi
+                done
+        fi
+    done
+    
+    # Identify entry points (scripts that aren't sourced by others)
+    echo "Entry points (scripts not sourced by others):"
+    for script in $scripts; do
+        local script_name=$(basename "$script")
+        if ! grep -q "^$script_name$" "$temp_sourced"; then
+            echo "  - $script_name"
+        fi
+    done
+    echo ""
+    
+    # Show commonly sourced scripts
+    echo "Commonly sourced scripts:"
+    if [ -s "$temp_sourced" ]; then
+        sort "$temp_sourced" | uniq -c | sort -nr | head -10 | while read count script_name; do
+            [ -n "$script_name" ] && echo "  - $script_name (sourced by $count scripts)"
+        done
+    else
+        echo "  None found"
+    fi
+    echo ""
+    
+    # Show dependency relationships
+    echo "Dependency relationships:"
+    for script in $scripts; do
+        local script_name=$(basename "$script")
+        local sources=""
+        if grep -E "^\s*(source|\.)\s+" "$script" >/dev/null 2>&1; then
+            sources=$(grep -E "^\s*(source|\.)\s+" "$script" 2>/dev/null | \
+                sed -E 's/^[[:space:]]*(source|\.)[[:space:]]+//; s/["'\'']//g; s/\$\{?SCRIPT_DIR\}?\///g' | \
+                while read -r sourced; do
+                    local filename=$(basename "$sourced" 2>/dev/null)
+                    [[ "$filename" =~ \.sh$ ]] && echo "$filename"
+                done | sort -u)
+        fi
+        
+        if [ -n "$sources" ]; then
+            echo "  $script_name"
+            echo "$sources" | while read -r src; do
+                [ -n "$src" ] && echo "    └── $src"
+            done
+        fi
+    done | head -30
+    
+    rm -f "$temp_sourced"
+}
+
 case "$1" in
     "imports-of")
         # Find what a file imports
@@ -43,6 +120,12 @@ case "$1" in
         if [[ "$FILE" =~ \.go$ ]]; then
             echo "Go imports:"
             grep -A20 "^import (" "$FILE" | head -21 || grep "^import " "$FILE" || echo "  None found"
+        fi
+        
+        # Shell script sources
+        if [[ "$FILE" =~ \.(sh|bash)$ ]]; then
+            echo "Shell sources:"
+            grep -E "^\s*(source|\.)\s+" "$FILE" | grep -E "\.(sh|bash)" || echo "  None found"
         fi
         ;;
     
@@ -85,20 +168,27 @@ case "$1" in
         echo -e "${GREEN}=== DEPENDENCY TREE: $DIR ===${NC}"
         echo ""
         
-        # Find entry points
-        echo "Entry points:"
-        find "$DIR" -maxdepth 1 -name "index.*" -o -name "main.*" | head -10
-        echo ""
-        
-        # Show internal dependencies
-        echo "Internal module structure:"
-        if check_command tree; then
-            tree "$DIR" -P "*.js|*.jsx|*.ts|*.tsx|*.py|*.go" -I "node_modules|__pycache__|*.test.*|*.spec.*" -L "$DEPTH"
+        # Check if this is a shell script directory
+        shell_scripts=$(find "$DIR" -maxdepth "$DEPTH" -name "*.sh" -type f | head -1)
+        if [ -n "$shell_scripts" ]; then
+            # Show shell script dependencies
+            show_shell_dependencies "$DIR" "$DEPTH"
         else
-            find "$DIR" -maxdepth "$DEPTH" -type f \
-                \( -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" \
-                -o -name "*.py" -o -name "*.go" \) \
-                ! -name "*.test.*" ! -name "*.spec.*" | sort
+            # Find entry points for other languages
+            echo "Entry points:"
+            find "$DIR" -maxdepth 1 -name "index.*" -o -name "main.*" | head -10
+            echo ""
+            
+            # Show internal dependencies
+            echo "Internal module structure:"
+            if check_command tree; then
+                tree "$DIR" -P "*.js|*.jsx|*.ts|*.tsx|*.py|*.go" -I "node_modules|__pycache__|*.test.*|*.spec.*" -L "$DEPTH"
+            else
+                find "$DIR" -maxdepth "$DEPTH" -type f \
+                    \( -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" \
+                    -o -name "*.py" -o -name "*.go" \) \
+                    ! -name "*.test.*" ! -name "*.spec.*" | sort
+            fi
         fi
         ;;
     
