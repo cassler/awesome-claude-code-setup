@@ -117,6 +117,7 @@ These aliases are primarily for Claude to efficiently execute tasks without load
 | **multi** | `m` | `read-many`, `read-pattern` | Batch file operations |
 | **api** | - | `test`, `watch`, `benchmark` | API testing & monitoring |
 | **interactive** | `i` | `select-file`, `select-branch` | Interactive selections |
+| **nlp** | - | `overview`, `security`, `smells`, `docs` | Static analysis & text processing |
 
 > 💡 **Usage:** `ch [category] [command]` or use shortcuts like `chp`, `chs`, `chg`  
 > 📚 **Full docs:** Run `ch [category] help` to see all commands for any category
@@ -326,6 +327,34 @@ Find issues and improve code quality.
 - `large-files [threshold]` - Find files exceeding line count
 - `complexity [threshold]` - Find complex code patterns
 - `secrets-scan` - Scan for potential secrets
+
+---
+
+### 🧠 NLP & Static Analysis
+
+#### **nlp-helper.sh** (`ch nlp`)
+Comprehensive static analysis and text processing using Python stdlib.
+
+**Text Analysis Commands**:
+- `tokens <file>` - Count characters, words, and estimate tokens
+- `summary <file>` - Extract headers and first paragraph
+- `keywords <file> [n]` - Show top N keywords (default: 10)
+- `questions <file>` - Extract all questions from text
+- `sentiment "text"` - Analyze sentiment of text
+- `readability <file>` - Calculate readability score
+- `ngrams <n> <file>` - Extract n-grams (word pairs, triplets)
+- `entities <file>` - Extract potential named entities
+
+**Code Analysis Commands**:
+- `overview <file>` - Comprehensive file analysis (combines all below)
+- `analyze-complexity <file>` - Cyclomatic complexity analysis (Python)
+- `security <file>` - Basic security vulnerability scan
+- `imports <file>` - Analyze import dependencies
+- `duplicates <file> [n]` - Find duplicate code blocks
+- `docs <file>` - Analyze documentation quality
+- `smells <file>` - Detect code smells (long functions, deep nesting, etc)
+
+**Example**: `ch nlp overview app.py` - Get complete analysis including complexity, security issues, code smells, and documentation coverage
 
 ---
 

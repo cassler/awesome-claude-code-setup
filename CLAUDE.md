@@ -34,7 +34,7 @@ context|ctx       → Context generation
 code-relationships|cr → Dependency analysis
 code-quality|cq   → Quality checks
 mcp               → MCP server operations
-nlp|text          → Text analysis (tokens, sentiment, keywords)
+nlp|text          → Static analysis & text processing (complexity, security, docs)
 </ch:categories>
 
 <ch:key-commands>
@@ -53,7 +53,9 @@ ch nlp todos                 # Find all TODO/FIXME comments
 ch nlp sentiment "text"      # Quick sentiment analysis
 ch nlp security code.py      # Security vulnerability scan
 ch nlp complexity code.py    # Cyclomatic complexity analysis
-ch nlp overview file.py      # Comprehensive file analysis
+ch nlp smells code.py        # Detect code smells (long functions, etc)
+ch nlp docs code.py          # Check documentation coverage
+ch nlp overview file.py      # Comprehensive analysis (all above + more)
 
 # 💡 These helpers handle many steps in one command, reducing the need
 # for multiple tool calls and providing better structured output.
