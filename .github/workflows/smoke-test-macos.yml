@@ -1,0 +1,35 @@
+name: macOS Smoke Tests
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  test-macos:
+    runs-on: macos-latest
+    name: Test on macOS
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        # Install bats
+        brew install bats-core
+        
+        # Install ripgrep for search tools
+        brew install ripgrep
+        
+        # Install other optional dependencies
+        brew install jq fzf bat
+    
+    - name: Run setup script
+      run: ./setup.sh
+    
+    - name: Run all tests
+      run: make test
+    
+    - name: Check test coverage
+      run: make coverage || true

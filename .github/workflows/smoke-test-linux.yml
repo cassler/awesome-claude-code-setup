@@ -1,4 +1,4 @@
-name: Smoke Tests
+name: Linux Smoke Tests
 
 on:
   pull_request:
@@ -25,33 +25,6 @@ jobs:
         
         # Install other optional dependencies
         sudo apt-get install -y jq fzf bat
-    
-    - name: Run setup script
-      run: ./setup.sh
-    
-    - name: Run all tests
-      run: make test
-    
-    - name: Check test coverage
-      run: make coverage || true
-
-  test-macos:
-    runs-on: macos-latest
-    name: Test on macOS
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Install dependencies
-      run: |
-        # Install bats
-        brew install bats-core
-        
-        # Install ripgrep for search tools
-        brew install ripgrep
-        
-        # Install other optional dependencies
-        brew install jq fzf bat
     
     - name: Run setup script
       run: ./setup.sh

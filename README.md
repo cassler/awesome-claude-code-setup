@@ -15,7 +15,8 @@ Supercharge your Claude Code experience with lightning-fast commands and intelli
 </p>
 
 <p align="center">
-<img src="https://github.com/cassler/awesome-claude-code-setup/actions/workflows/smoketest.yml/badge.svg" />
+<img src="https://github.com/cassler/awesome-claude-code-setup/actions/workflows/smoke-test-macos.yml/badge.svg" alt="macOS Tests" />
+<img src="https://github.com/cassler/awesome-claude-code-setup/actions/workflows/smoke-test-linux.yml/badge.svg" alt="Linux Tests" />
 </p>
 
 ## 🪶 Ultra-Light Context Footprint
