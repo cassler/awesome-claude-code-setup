@@ -1,5 +1,7 @@
 # 🚀 Claude Code Power Tools
 
+[![Smoke Tests](https://github.com/cassler/claude-helpers/actions/workflows/smoketest.yml/badge.svg)](https://github.com/cassler/claude-helpers/actions/workflows/smoketest.yml)
+
 <img src="howdy.png" alt="Claude Code Power Tools" width="200"/>
 
 Supercharge your Claude Code experience with lightning-fast commands and intelligent workflows.

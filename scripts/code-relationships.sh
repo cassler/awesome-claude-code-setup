@@ -192,6 +192,42 @@ case "$1" in
         fi
         ;;
     
+    "show-deps")
+        # Show dependencies (alias for dependency-tree)
+        DIR="${2:-.}"
+        DEPTH="${3:-3}"
+        
+        if [ ! -d "$DIR" ]; then
+            error_exit "Directory not found: $DIR"
+        fi
+        
+        echo -e "${GREEN}=== DEPENDENCY TREE: $DIR ===${NC}"
+        echo ""
+        
+        # Check if this is a shell script directory
+        shell_scripts=$(find "$DIR" -maxdepth "$DEPTH" -name "*.sh" -type f | head -1)
+        if [ -n "$shell_scripts" ]; then
+            # Show shell script dependencies
+            show_shell_dependencies "$DIR" "$DEPTH"
+        else
+            # Find entry points for other languages
+            echo "Entry points:"
+            find "$DIR" -maxdepth 1 -name "index.*" -o -name "main.*" | head -10
+            echo ""
+            
+            # Show internal dependencies
+            echo "Internal module structure:"
+            if check_command tree; then
+                tree "$DIR" -P "*.js|*.jsx|*.ts|*.tsx|*.py|*.go" -I "node_modules|__pycache__|*.test.*|*.spec.*" -L "$DEPTH"
+            else
+                find "$DIR" -maxdepth "$DEPTH" -type f \
+                    \( -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" \
+                    -o -name "*.py" -o -name "*.go" \) \
+                    ! -name "*.test.*" ! -name "*.spec.*" | sort
+            fi
+        fi
+        ;;
+    
     "circular")
         # Check for circular dependencies
         DIR="${2:-.}"
@@ -219,14 +255,14 @@ case "$1" in
                     fi
                 fi
             done
-        done | sort -u | head -20
+        done | sort -u | head -20 || true
         
         echo ""
         echo -e "${YELLOW}Note: This is a heuristic check. Manual verification recommended.${NC}"
         ;;
     
     "help"|"")
-        echo "=== CODE RELATIONSHIPS ANALYZER ==="
+        echo "=== Code Relationships ==="
         echo ""
         echo "Usage: $0 <command> [args]"
         echo ""
@@ -234,6 +270,7 @@ case "$1" in
         echo "  imports-of <file>         - Show what a file imports"
         echo "  imported-by <file/module> - Find who imports a file/module"
         echo "  dependency-tree <dir>     - Show dependency structure"
+        echo "  show-deps <dir>           - Show dependencies (alias for dependency-tree)"
         echo "  circular [dir]            - Check for circular dependencies"
         echo ""
         echo "Examples:"
