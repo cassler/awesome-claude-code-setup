@@ -132,6 +132,10 @@ case "$1" in
     "large-files"|"lf")
         # Find large files
         SIZE="${2:-1M}"
+        # If SIZE is just a number, assume it's in KB
+        if [[ "$SIZE" =~ ^[0-9]+$ ]]; then
+            SIZE="${SIZE}k"
+        fi
         echo "=== FILES LARGER THAN $SIZE ==="
         find . -type f -size +$SIZE -not -path "*/node_modules/*" -not -path "*/.git/*" -exec ls -lh {} \; | awk '{print $5 "\t" $9}'
         ;;
