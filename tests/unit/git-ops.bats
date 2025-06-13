@@ -107,20 +107,6 @@ teardown() {
     [[ -z "$output" ]]
 }
 
-@test "git-ops does NOT handle non-git directory gracefully (BUG)" {
-    # This test shows git-ops doesn't check if we're in a git repo
-    # The script still shows the headers even though git commands fail
-    mkdir "$TEST_DIR/non-git"
-    cd "$TEST_DIR/non-git"
-    
-    # Override the test directory so git commands fail
-    export GIT_DIR="/nonexistent"
-    
-    run "$SCRIPTS_DIR/git-ops.sh" status
-    assert_success  # Script succeeds even though it shouldn't
-    assert_output_contains "=== GIT STATUS ==="
-    # Git errors are shown in stderr, not captured by BATS
-}
 
 @test "git-ops shows help for unknown commands" {
     run "$SCRIPTS_DIR/git-ops.sh" unknown-command

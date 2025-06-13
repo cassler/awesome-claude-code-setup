@@ -11,8 +11,17 @@ source "$SCRIPT_DIR/common-functions.sh"
 GUM_AVAILABLE=$(check_command gum && echo "true" || echo "false")
 DELTA_AVAILABLE=$(check_command delta && echo "true" || echo "false")
 
+# Function to check if we're in a git repository
+check_git_repo() {
+    if ! git rev-parse --git-dir > /dev/null 2>&1; then
+        error_exit "Not in a git repository. Please run this command from within a git repository."
+    fi
+}
+
 case "$1" in
     "status"|"st")
+        check_git_repo
+        
         echo "=== GIT STATUS ==="
         echo "Branch: $(git branch --show-current)"
         echo ""
@@ -186,6 +195,7 @@ case "$1" in
         ;;
     
     "recent")
+        check_git_repo
         N="${2:-10}"
         git log --pretty=format:"%h - %s (%cr) <%an>" -n "$N"
         ;;
