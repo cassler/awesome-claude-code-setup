@@ -431,7 +431,7 @@ EOF
 }
 
 # Main command handling
-case "$1" in
+case "${1:-}" in
     "find-for"|"ff")
         # Find tests for a specific file
         FILE="${2:-}"
