@@ -10,6 +10,13 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Configuration paths - define once, use everywhere
+CLAUDE_DIR="$HOME/.claude"
+CLAUDE_MD_FILE="CLAUDE.md"
+CLAUDE_PROJECT_MD_FILE="CLAUDE_PROJECT.md"
+CONFIG_DIR="config"
+MCP_CONFIG_FILE="mcp.json"
+
 # Disable strict mode for this script to handle errors gracefully
 set +u
 set +e
@@ -42,8 +49,8 @@ done
 
 # Set up directories
 CLAUDE_HELPERS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SCRIPTS_INSTALL_DIR="$HOME/.claude/scripts"
-COMMANDS_INSTALL_DIR="$HOME/.claude/commands"
+SCRIPTS_INSTALL_DIR="$CLAUDE_DIR/scripts"
+COMMANDS_INSTALL_DIR="$CLAUDE_DIR/commands"
 
 # Validate CLAUDE_HELPERS_DIR is set and exists
 if [ -z "$CLAUDE_HELPERS_DIR" ]; then
@@ -270,8 +277,8 @@ setup_shell_aliases() {
     echo -e "${GREEN}✅ Added aliases to $shell_rc${NC}"
     
     # Create template
-    local template_path="$HOME/.claude/CLAUDE_PROJECT.md"
-    if [ -n "$CLAUDE_HELPERS_DIR" ] && [ -f "$CLAUDE_HELPERS_DIR/config/CLAUDE_PROJECT.md" ] && cp "$CLAUDE_HELPERS_DIR/config/CLAUDE_PROJECT.md" "$template_path" 2>/dev/null; then
+    local template_path="$CLAUDE_DIR/$CLAUDE_PROJECT_MD_FILE"
+    if [ -n "$CLAUDE_HELPERS_DIR" ] && [ -f "$CLAUDE_HELPERS_DIR/$CONFIG_DIR/$CLAUDE_PROJECT_MD_FILE" ] && cp "$CLAUDE_HELPERS_DIR/$CONFIG_DIR/$CLAUDE_PROJECT_MD_FILE" "$template_path" 2>/dev/null; then
         echo -e "${GREEN}✅ Created template at $template_path${NC}"
     else
         # Create a basic template if copy fails
@@ -472,8 +479,8 @@ install_optional_tools() {
 
 # Create or update global CLAUDE.md with XML formatting
 setup_global_claude_md() {
-    local claude_md="$HOME/.claude/CLAUDE.md"
-    local temp_file="$HOME/.claude/CLAUDE.md.tmp.$$"
+    local claude_md="$CLAUDE_DIR/$CLAUDE_MD_FILE"
+    local temp_file="$CLAUDE_DIR/$CLAUDE_MD_FILE.tmp.$$"
     
     echo -e "${BLUE}📝 Setting up global CLAUDE.md...${NC}"
     
@@ -514,8 +521,8 @@ bat     → syntax highlighting
 gum     → interactive prompts
 delta   → enhanced diffs"
     
-    local paths_content="Scripts: ~/.claude/scripts/
-Commands: ~/.claude/commands/"
+    local paths_content="Scripts: ~/$(basename "$CLAUDE_DIR")/scripts/
+Commands: ~/$(basename "$CLAUDE_DIR")/commands/"
     
     # If file doesn't exist, create it with full structure
     if [ ! -f "$claude_md" ]; then
@@ -634,10 +641,10 @@ EOF
             echo -e "${BLUE}💾 Backup saved at: $backup_file${NC}"
             
             # Clean up old backups (keep only the 5 most recent)
-            local backup_count=$(ls -1 "$HOME/.claude/CLAUDE.md.backup."* 2>/dev/null | wc -l)
+            local backup_count=$(ls -1 "$CLAUDE_DIR/$CLAUDE_MD_FILE.backup."* 2>/dev/null | wc -l)
             if [ "$backup_count" -gt 5 ]; then
                 echo -e "${YELLOW}🧹 Cleaning up old backups (keeping 5 most recent)...${NC}"
-                ls -1t "$HOME/.claude/CLAUDE.md.backup."* | tail -n +6 | xargs rm -f
+                ls -1t "$CLAUDE_DIR/$CLAUDE_MD_FILE.backup."* | tail -n +6 | xargs rm -f
             fi
         else
             echo -e "${RED}❌ Failed to update CLAUDE.md${NC}"
@@ -656,8 +663,8 @@ setup_mcp_servers() {
     local claude_cmd=""
     if command -v claude &> /dev/null; then
         claude_cmd="claude"
-    elif [ -x "$HOME/.claude/local/claude" ]; then
-        claude_cmd="$HOME/.claude/local/claude"
+    elif [ -x "$CLAUDE_DIR/local/claude" ]; then
+        claude_cmd="$CLAUDE_DIR/local/claude"
     else
         echo -e "${YELLOW}⚠️  Claude Code CLI not found${NC}"
         echo "Install Claude Code to use MCP servers: https://docs.anthropic.com/claude-code"
@@ -742,10 +749,10 @@ setup_mcp_servers() {
         echo -e "${BLUE}ℹ️  Run 'claude mcp list' to see all configured servers${NC}"
         
         # Copy mcp.json to current directory for project-level option
-        if [ -n "$CLAUDE_HELPERS_DIR" ] && [ -f "$CLAUDE_HELPERS_DIR/config/mcp.json" ] && [ "$PWD" != "$CLAUDE_HELPERS_DIR" ]; then
+        if [ -n "$CLAUDE_HELPERS_DIR" ] && [ -f "$CLAUDE_HELPERS_DIR/$CONFIG_DIR/$MCP_CONFIG_FILE" ] && [ "$PWD" != "$CLAUDE_HELPERS_DIR" ]; then
             echo ""
             echo -e "${YELLOW}Alternative: Project-level configuration${NC}"
-            echo "The mcp.json file is available in claude-helpers/config/"
+            echo "The $MCP_CONFIG_FILE file is available in claude-helpers/$CONFIG_DIR/"
             echo "Copy it to any project root for project-specific MCP servers"
         fi
     else
