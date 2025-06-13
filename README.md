@@ -1,12 +1,22 @@
 # 🚀 Claude Code Power Tools
 
-[![Smoke Tests](https://github.com/cassler/claude-helpers/actions/workflows/smoketest.yml/badge.svg)](https://github.com/cassler/claude-helpers/actions/workflows/smoketest.yml)
-
+<p align="center">
 <img src="howdy.png" alt="Claude Code Power Tools" width="200"/>
+</p>
 
+<p align="center"><b>
 Supercharge your Claude Code experience with lightning-fast commands and intelligent workflows.
+</b></p>
 
-**🎯 19 Slash Commands** | **⚡ 17 Shell Tools** | **🧠 NLP Analysis** | **📦 TypeScript/JS** | **🐍 Python** | **🐹 Go** | **🦀 Rust** | **💰 50-80% Token Savings** | **🤖 MCP Servers**
+<p align="center">
+🎯 19 Slash Commands &bull; ⚡ 17 Shell Tools<br />
+🧠 NLP Analysis &bull; 🤖 MCP Servers 💰 50-80% Token Savings<br />
+📦 TypeScript/JS &bull; 🐍 Python &bull; 🐹 Go &bull; 🦀 Rust<br />
+</p>
+
+<p align="center">
+<img src="https://github.com/cassler/awesome-claude-code-setup/actions/workflows/smoketest.yml/badge.svg" />
+</p>
 
 ## 🪶 Ultra-Light Context Footprint
 
