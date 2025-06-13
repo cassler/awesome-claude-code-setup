@@ -176,7 +176,7 @@ is_stop_word() {
 # Optional tools configuration
 export OPTIONAL_TOOLS=(fzf jq bat gum delta rg fd-find httpie tldr)
 
-# Function to detect OS and package manager
+# Function to detect system package manager
 detect_package_manager() {
     if [[ "$OSTYPE" == "darwin"* ]]; then
         if check_command brew; then

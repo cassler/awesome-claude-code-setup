@@ -14,10 +14,10 @@ operations into single commands.
 
 <ch:aliases> ch → Main helper: ch [category] [command] chp → Project overview
 (highly recommended for new projects!) chs → Search tools: find-code, find-file,
-search-imports chg → Git ops: quick-commit, pr-ready, diff </ch:aliases>
+search-imports </ch:aliases>
 
 <ch:categories> project|p → Project analysis docker|d → Container ops: ps, logs,
-shell, inspect git|g → Git workflows search|s → Code search (needs: ripgrep)
+shell, inspect search|s → Code search (needs: ripgrep)
 ts|node → TypeScript/Node.js (needs: jq) python|py → Python development (pip,
 poetry, pytest) go|golang → Go development (modules, testing, linting) multi|m →
 Multi-file ops (uses: bat) env|e → Environment checks api → API testing (needs:

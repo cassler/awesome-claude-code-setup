@@ -229,7 +229,6 @@ setup_shell_aliases() {
         grep -v "alias ch=.*claude-helper.sh" | \
         grep -v "alias chp=.*project-info.sh" | \
         grep -v "alias chs=.*search-tools.sh" | \
-        grep -v "alias chg=.*git-ops.sh" | \
         grep -v "^# Claude Helper Scripts$" > "$temp_file"
         
         mv "$temp_file" "$shell_rc"
@@ -264,7 +263,6 @@ setup_shell_aliases() {
         echo "alias ch='$SCRIPTS_INSTALL_DIR/claude-helper.sh'"
         echo "alias chp='$SCRIPTS_INSTALL_DIR/project-info.sh'"
         echo "alias chs='$SCRIPTS_INSTALL_DIR/search-tools.sh'"
-        echo "alias chg='$SCRIPTS_INSTALL_DIR/git-ops.sh'"
         echo "$end_marker"
         echo ""
     } >> "$shell_rc"
