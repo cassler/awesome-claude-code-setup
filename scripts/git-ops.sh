@@ -214,7 +214,7 @@ case "$1" in
         ;;
     
     "diff-stat")
-        if [ -z "$2" ]; then
+        if [ -z "${2:-}" ]; then
             git diff --stat
         else
             git diff "$2" --stat
