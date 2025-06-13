@@ -129,7 +129,6 @@ These aliases are primarily for Claude to efficiently execute tasks without load
 ### Essential Shortcuts
 - `chp` - **Project overview** - Get instant context about any codebase
 - `chs find-code "pattern"` - **Lightning-fast search** using ripgrep
-- `chg quick-commit "msg"` - **Git in 5 keystrokes** - stage, commit, push
 - `ch` - **Main helper** - Access any tool with `ch [category] [command]`
 
 ### Command Categories
@@ -149,7 +148,7 @@ These aliases are primarily for Claude to efficiently execute tasks without load
 | **interactive** | `i` | `select-file`, `select-branch` | Interactive selections |
 | **nlp** | `text` | `tokens`, `complexity`, `security`, `smells` | 🧠 AI-powered code analysis |
 
-> 💡 **Usage:** `ch [category] [command]` or use shortcuts like `chp`, `chs`, `chg`  
+> 💡 **Usage:** `ch [category] [command]` or use shortcuts like `chp`, `chs`  
 > 📚 **Full docs:** Run `ch [category] help` to see all commands for any category
 
 ## 💡 Why Use This?
@@ -170,7 +169,7 @@ These aliases are primarily for Claude to efficiently execute tasks without load
 
 ### With these tools:
 - One command (`chp`) = complete project context
-- Shortcuts for everything (`chg quick-commit "msg"`)
+- Shortcuts for everything (`chs find-code "pattern"`)
 - Batched operations save 50-80% on tokens
 - AI-powered analysis (`ch nlp overview file.py` = complexity + security + quality)
 - Token awareness (`ch nlp tokens` before reading large files)
@@ -263,7 +262,6 @@ Lightning-fast code searching using ripgrep.
 
 ### 🚀 Git Operations
 
-#### **git-ops.sh** (`chg`)
 Git operations and workflow helpers.
 
 **Key Commands**:

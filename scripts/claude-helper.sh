@@ -16,11 +16,6 @@ case "$1" in
         "$SCRIPT_DIR/docker-quick.sh" "$@"
         ;;
     
-    "git"|"g")
-        shift
-        "$SCRIPT_DIR/git-ops.sh" "$@"
-        ;;
-    
     "search"|"s")
         shift
         "$SCRIPT_DIR/search-tools.sh" "$@"
@@ -99,7 +94,6 @@ case "$1" in
         echo "Categories:"
         echo "  project|p     - Project overview and analysis"
         echo "  docker|d      - Docker operations"
-        echo "  git|g         - Git operations"
         echo "  search|s      - Code searching tools"
         echo "  ts|node       - TypeScript/Node.js helpers"
         echo "  python|py     - Python development tools"
@@ -119,7 +113,6 @@ case "$1" in
         echo ""
         echo "Quick Examples:"
         echo "  $0 p                    # Project overview"
-        echo "  $0 g status             # Git status"
         echo "  $0 d ps                 # Docker containers"
         echo "  $0 s find-code pattern  # Search code"
         echo "  $0 ts deps              # Show dependencies"
