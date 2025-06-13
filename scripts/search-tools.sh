@@ -22,7 +22,7 @@ fi
 case "$1" in
     "find-code"|"fc")
         # Find code pattern with interactive selection
-        PATTERN="$2"
+        PATTERN="${2:-}"
         if [ -z "$PATTERN" ]; then
             echo "Usage: $0 find-code <pattern>"
             exit 1
@@ -43,7 +43,7 @@ case "$1" in
     
     "find-file"|"ff")
         # Find files by name with interactive selection
-        PATTERN="$2"
+        PATTERN="${2:-}"
         if [ -z "$PATTERN" ]; then
             echo "Usage: $0 find-file <pattern>"
             exit 1
@@ -63,7 +63,7 @@ case "$1" in
     
     "find-type"|"ft")
         # Find files by extension
-        EXT="$2"
+        EXT="${2:-}"
         if [ -z "$EXT" ]; then
             echo "Common types: js ts tsx jsx py go rs rb java cpp h"
             echo "Usage: $0 find-type <extension>"
@@ -76,7 +76,7 @@ case "$1" in
     
     "search-imports"|"si")
         # Search for import statements
-        MODULE="$2"
+        MODULE="${2:-}"
         if [ -z "$MODULE" ]; then
             echo "Usage: $0 search-imports <module-name>"
             exit 1
@@ -92,7 +92,7 @@ case "$1" in
     
     "search-function"|"sf")
         # Search for function definitions with context
-        FUNC="$2"
+        FUNC="${2:-}"
         if [ -z "$FUNC" ]; then
             echo "Usage: $0 search-function <function-name>"
             exit 1
@@ -105,7 +105,7 @@ case "$1" in
     
     "search-class"|"sc")
         # Search for class definitions
-        CLASS="$2"
+        CLASS="${2:-}"
         if [ -z "$CLASS" ]; then
             echo "Usage: $0 search-class <class-name>"
             exit 1
@@ -180,7 +180,7 @@ case "$1" in
     
     "search-all"|"sa")
         # Search everything (slower but thorough)
-        PATTERN="$2"
+        PATTERN="${2:-}"
         if [ -z "$PATTERN" ]; then
             echo "Usage: $0 search-all <pattern>"
             exit 1
@@ -223,8 +223,8 @@ case "$1" in
         echo ""
         echo "Optional tool status:"
         [ -n "$RG" ] && echo "  ✓ ripgrep (fast searching)"
-        [[ "$FZF_AVAILABLE" == "true" ]] && echo "  ✓ fzf (interactive search)"
-        [[ "$BAT_AVAILABLE" == "true" ]] && echo "  ✓ bat (syntax highlighting)"
+        command -v fzf &> /dev/null && echo "  ✓ fzf (interactive search)"
+        command -v bat &> /dev/null && echo "  ✓ bat (syntax highlighting)"
         echo ""
         echo "Install optional tools for enhanced features."
         ;;
