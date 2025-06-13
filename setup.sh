@@ -270,8 +270,8 @@ setup_shell_aliases() {
     echo -e "${GREEN}✅ Added aliases to $shell_rc${NC}"
     
     # Create template
-    local template_path="$HOME/.claude/CLAUDE_TEMPLATE.md"
-    if [ -n "$CLAUDE_HELPERS_DIR" ] && [ -f "$CLAUDE_HELPERS_DIR/CLAUDE_TEMPLATE.md" ] && cp "$CLAUDE_HELPERS_DIR/CLAUDE_TEMPLATE.md" "$template_path" 2>/dev/null; then
+    local template_path="$HOME/.claude/CLAUDE_PROJECT.md"
+    if [ -n "$CLAUDE_HELPERS_DIR" ] && [ -f "$CLAUDE_HELPERS_DIR/config/CLAUDE_PROJECT.md" ] && cp "$CLAUDE_HELPERS_DIR/config/CLAUDE_PROJECT.md" "$template_path" 2>/dev/null; then
         echo -e "${GREEN}✅ Created template at $template_path${NC}"
     else
         # Create a basic template if copy fails
@@ -741,11 +741,11 @@ setup_mcp_servers() {
         echo -e "${BLUE}ℹ️  These servers are now available in all your projects${NC}"
         echo -e "${BLUE}ℹ️  Run 'claude mcp list' to see all configured servers${NC}"
         
-        # Copy .mcp.json to current directory for project-level option
-        if [ -n "$CLAUDE_HELPERS_DIR" ] && [ -f "$CLAUDE_HELPERS_DIR/.mcp.json" ] && [ "$PWD" != "$CLAUDE_HELPERS_DIR" ]; then
+        # Copy mcp.json to current directory for project-level option
+        if [ -n "$CLAUDE_HELPERS_DIR" ] && [ -f "$CLAUDE_HELPERS_DIR/config/mcp.json" ] && [ "$PWD" != "$CLAUDE_HELPERS_DIR" ]; then
             echo ""
             echo -e "${YELLOW}Alternative: Project-level configuration${NC}"
-            echo "The .mcp.json file is available in claude-helpers"
+            echo "The mcp.json file is available in claude-helpers/config/"
             echo "Copy it to any project root for project-specific MCP servers"
         fi
     else
@@ -796,7 +796,7 @@ main() {
     echo -e "   ${YELLOW}ch${NC}"
     echo ""
     echo "3. In any project, create a CLAUDE.md file:"
-    echo -e "   ${YELLOW}cp ~/.claude/CLAUDE_TEMPLATE.md ./CLAUDE.md${NC}"
+    echo -e "   ${YELLOW}cp ~/.claude/CLAUDE_PROJECT.md ./CLAUDE.md${NC}"
     echo ""
     echo -e "${BLUE}Enjoy your enhanced Claude experience! 🚀${NC}"
     
