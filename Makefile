@@ -19,9 +19,16 @@ install:
 	@./setup.sh
 
 # Run all tests
-test: check-bats
-	@echo "🧪 Running tests..."
-	@bats tests/unit/*.bats
+test: test-unit test-integration
+
+# Run integration tests  
+test-integration: check-bats
+	@echo "🧪 Running integration tests..."
+	@if ls tests/integration/*.bats >/dev/null 2>&1; then \
+		bats tests/integration/*.bats; \
+	else \
+		echo "No integration tests found"; \
+	fi
 
 # Run tests with verbose output
 test-verbose: check-bats

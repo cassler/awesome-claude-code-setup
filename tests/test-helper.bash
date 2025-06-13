@@ -60,7 +60,7 @@ assert_failure() {
 # Assert output contains a string
 assert_output_contains() {
     local expected="$1"
-    if [[ ! "$output" =~ $expected ]]; then
+    if [[ "$output" != *"$expected"* ]]; then
         echo "Output does not contain expected string"
         echo "Expected: $expected"
         echo "Actual: $output"
@@ -71,7 +71,7 @@ assert_output_contains() {
 # Assert output does not contain a string
 assert_output_not_contains() {
     local unexpected="$1"
-    if [[ "$output" =~ $unexpected ]]; then
+    if [[ "$output" == *"$unexpected"* ]]; then
         echo "Output contains unexpected string"
         echo "Unexpected: $unexpected"
         echo "Actual: $output"
