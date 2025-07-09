@@ -729,7 +729,7 @@ setup_mcp_servers() {
                 return 0
             else
                 echo -e "${RED}❌ Failed${NC}"
-                echo -e "${YELLOW}  Manual command: claude mcp add $server_name -s user $command_args${NC}"
+                echo -e "${YELLOW}  Manual command: claude mcp add $server_name -s user -- $command_args${NC}"
                 return 1
             fi
         }
