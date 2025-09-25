@@ -724,23 +724,23 @@ setup_mcp_servers() {
             local command_args="$3"
             
             echo -n "Installing $display_name MCP server... "
-            if $claude_cmd mcp add $server_name -s user $command_args &>/dev/null; then
+            if $claude_cmd mcp add $server_name -s user -- $command_args &>/dev/null; then
                 echo -e "${GREEN}✅${NC}"
                 return 0
             else
                 echo -e "${RED}❌ Failed${NC}"
-                echo -e "${YELLOW}  Manual command: claude mcp add $server_name -s user $command_args${NC}"
+                echo -e "${YELLOW}  Manual command: claude mcp add $server_name -s user -- $command_args${NC}"
                 return 1
             fi
         }
         
         # Install missing servers
         if [ "$has_playwright" = false ]; then
-            install_mcp_server "playwright" "Playwright" "npx -y @antropic/playwright-mcp-server"
+            install_mcp_server "playwright" "Playwright" "npx -y @playwright/mcp"
         fi
         
         if [ "$has_context7" = false ]; then
-            install_mcp_server "context7" "Context7" "npx -y @context7/mcp-server -e DEFAULT_MINIMUM_TOKENS=6000"
+            install_mcp_server "context7" "Context7" "npx -y @upstash/context7-mcp -e DEFAULT_MINIMUM_TOKENS=6000"
         fi
         
         echo ""
