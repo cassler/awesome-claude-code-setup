@@ -9,6 +9,11 @@ Complete the onboarding process for this codebase:
   - Validate environment-specific settings
   - Ensure secrets are properly protected
 
+- **Claude Code environment variables** (optional but recommended)
+  - `CLAUDE_PROJECT_DIR` - Set to project root if needed
+  - `ANTHROPIC_API_KEY` - For API access (if using Claude API)
+  - Review [environment variables docs](../docs/claude-code-updates-2024.md#-enhanced-environment-variables)
+
 - **Test service connectivity**
   ```bash
   make dev        # Start all services

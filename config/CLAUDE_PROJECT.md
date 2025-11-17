@@ -7,6 +7,14 @@
 - Key patterns to follow: 
 </ch:project-context>
 
+<ch:project-environment>
+## Environment Variables
+<!-- Configure project-specific environment variables -->
+# CLAUDE_PROJECT_DIR is automatically set to your project root
+# CLAUDE_PLUGIN_ROOT enables custom plugins and output styles
+# Add any project-specific environment variables below:
+</ch:project-environment>
+
 <ch:project-commands>
 # Frequently used commands for this project
 # Examples:
@@ -56,5 +64,7 @@ You have these MCP servers configured globally:
 Use these servers when:
 - Testing UI changes (Playwright can navigate, screenshot, and interact)
 - Researching library APIs (Context7 provides current documentation)
+
+**Token Optimization Tip**: Disable unused MCP servers as each adds tool definitions to the system prompt. Only enable what you need for your current task.
 
 Note: These are user-level servers available in all your projects.

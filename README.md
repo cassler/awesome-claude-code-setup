@@ -7,8 +7,8 @@ Supercharge your Claude Code experience with lightning-fast commands and intelli
 </b></p>
 
 <p align="center">
-🎯 19 Slash Commands &bull; ⚡ 17 Shell Tools<br />
-🧠 NLP Analysis &bull; 🤖 MCP Servers 💰 50-80% Token Savings<br />
+🎯 20 Slash Commands &bull; ⚡ 17 Shell Tools<br />
+🧠 NLP Analysis &bull; 🤖 MCP Servers &bull; 🤖 Subagents 💰 50-80% Token Savings<br />
 📦 TypeScript/JS &bull; 🐍 Python &bull; 🐹 Go &bull; 🦀 Rust<br /><br />
 Brought to you by<br />
 <a href='https://pressw.ai&utm_source=github&utm_medium=readme&utm_campaign=claude-code-power-tools'>
@@ -70,6 +70,21 @@ Setup handles everything automatically!
 3. **Shell aliases** → Added to your `.zshrc` or `.bashrc`
 4. **Global config** → `~/.claude/CLAUDE.md` (auto-updated)
 
+## ⚡ New Claude Code Features (v2.0.41+)
+
+AwesomeClaude stays current with the latest Claude Code capabilities:
+
+- **🤖 Subagents** - Create specialized AI assistants with separate contexts, custom tools, and focused expertise for task-specific workflows
+- **🔄 Rewind Feature** - Use `/rewind` (double-escape) to roll back code state and conversation context to recover from errors or safely experiment
+- **🎯 Enhanced Environment Variables** - `CLAUDE_PROJECT_DIR` and `CLAUDE_PLUGIN_ROOT` for improved bash command processing
+- **🚀 New Models** - Support for Claude Haiku 4.5 (fast, cost-efficient) and Sonnet 4.5 (advanced coding accuracy)
+- **🧠 Memory Support** - Automatic memory summaries and recall for improved context awareness (Pro/Max/Enterprise)
+- **🔒 Security Enhancements** - Improved trust dialogs and permission controls
+- **⚙️ More Git Commands** - Additional git operations now run without manual approval
+- **⚙️ CLI & Settings** - Powerful CLI with layered settings system for team consistency and automation
+
+📖 **[Read detailed update notes](docs/claude-code-updates-2024.md)** for subagents guide, CLI reference, migration guide and best practices.
+
 ## 📝 Slash Commands - What You'll Actually Use
 
 Type `/` in Claude to access these complete workflows:
@@ -104,6 +119,10 @@ Type `/` in Claude to access these complete workflows:
 - 🔄 `/commit-and-push` - Complete git workflow with PR checks
 - 📓 `/dev-diary` - Track development decisions
 - 🚀 `/post-init-onboarding` - Systematic project onboarding
+
+### Automation & AI
+
+- 🤖 `/create-subagent` - Create specialized AI subagents for task-specific workflows with custom tools and context
 
 ## 🎯 Shell Commands (How Claude Saves You Tokens)
 
@@ -201,6 +220,27 @@ output!
 - Token awareness (`ch nlp tokens` before reading large files)
 - Consistent, reproducible workflows
 - **Your context stays clean for actual work**
+
+### Current Best Practices (2024):
+
+- **Use CLAUDE.md effectively** - Define which files/folders to read or ignore, keeping context clean
+- **Monitor token spend** - Use dashboards to track usage and identify bottlenecks
+- **Semantic search integration** - Leverage MCP servers for precise data retrieval
+- **Disable unused MCP servers** - Each server adds tool definitions to system prompt
+- **Compact file structure** - Small, focused files mean less context to process
+- **Batch related edits** - Make multiple related changes in a single operation
+- **Use subagents for context isolation** - Delegate specialized tasks to subagents with separate contexts (see `/agents` command)
+
+## 🔒 Security Best Practices
+
+Built on Anthropic's security recommendations:
+
+- **🔍 Security Scanning** - Use `/security-audit` command or `ch nlp security` for vulnerability detection
+- **🔐 Secret Detection** - `ch cq secrets-scan` finds exposed credentials and API keys
+- **✅ Approval Controls** - Review trust dialogs for file operations and git commands
+- **📂 Scope Limitation** - Use `.gitignore` patterns in CLAUDE.md to exclude sensitive directories
+- **🔄 Regular Audits** - Run security checks before commits with `/pre-review-check`
+- **🛡️ Environment Variables** - Store secrets in environment variables, never in code
 
 ## 🔧 Required & Optional Tools
 
