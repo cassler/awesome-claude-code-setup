@@ -10,6 +10,8 @@ PR causing issue: ${PR_NUMBER:-unknown}
 
 ## Systematic Debugging Workflow
 
+**💡 Tip**: Use `/rewind` (double-escape) to safely experiment with different debugging approaches without losing your current state.
+
 1. **Search for error patterns**:
    ```bash
    # Search for the exact error
