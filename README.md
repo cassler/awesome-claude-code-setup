@@ -70,6 +70,19 @@ Setup handles everything automatically!
 3. **Shell aliases** → Added to your `.zshrc` or `.bashrc`
 4. **Global config** → `~/.claude/CLAUDE.md` (auto-updated)
 
+## ⚡ New Claude Code Features (v2.0.41+)
+
+AwesomeClaude stays current with the latest Claude Code capabilities:
+
+- **🔄 Rewind Feature** - Use `/rewind` (double-escape) to roll back code state and conversation context to recover from errors or safely experiment
+- **🎯 Enhanced Environment Variables** - `CLAUDE_PROJECT_DIR` and `CLAUDE_PLUGIN_ROOT` for improved bash command processing
+- **🚀 New Models** - Support for Claude Haiku 4.5 (fast, cost-efficient) and Sonnet 4.5 (advanced coding accuracy)
+- **🧠 Memory Support** - Automatic memory summaries and recall for improved context awareness (Pro/Max/Enterprise)
+- **🔒 Security Enhancements** - Improved trust dialogs and permission controls
+- **⚙️ More Git Commands** - Additional git operations now run without manual approval
+
+📖 **[Read detailed update notes](docs/claude-code-updates-2024.md)** for migration guide and best practices.
+
 ## 📝 Slash Commands - What You'll Actually Use
 
 Type `/` in Claude to access these complete workflows:
@@ -201,6 +214,26 @@ output!
 - Token awareness (`ch nlp tokens` before reading large files)
 - Consistent, reproducible workflows
 - **Your context stays clean for actual work**
+
+### Current Best Practices (2024):
+
+- **Use CLAUDE.md effectively** - Define which files/folders to read or ignore, keeping context clean
+- **Monitor token spend** - Use dashboards to track usage and identify bottlenecks
+- **Semantic search integration** - Leverage MCP servers for precise data retrieval
+- **Disable unused MCP servers** - Each server adds tool definitions to system prompt
+- **Compact file structure** - Small, focused files mean less context to process
+- **Batch related edits** - Make multiple related changes in a single operation
+
+## 🔒 Security Best Practices
+
+Built on Anthropic's security recommendations:
+
+- **🔍 Security Scanning** - Use `/security-audit` command or `ch nlp security` for vulnerability detection
+- **🔐 Secret Detection** - `ch cq secrets-scan` finds exposed credentials and API keys
+- **✅ Approval Controls** - Review trust dialogs for file operations and git commands
+- **📂 Scope Limitation** - Use `.gitignore` patterns in CLAUDE.md to exclude sensitive directories
+- **🔄 Regular Audits** - Run security checks before commits with `/pre-review-check`
+- **🛡️ Environment Variables** - Store secrets in environment variables, never in code
 
 ## 🔧 Required & Optional Tools
 

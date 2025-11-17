@@ -12,6 +12,22 @@ operations into single commands.
 - Token-efficient responses (less back-and-forth)
 - Consistent patterns across different tech stacks </ch:why-use-helpers>
 
+<ch:environment-variables>
+## 🔧 Enhanced Environment Variables (v2.0.41+)
+
+Claude Code now supports enhanced environment variables for better workflow integration:
+
+- **`CLAUDE_PROJECT_DIR`** - Identifies the root context for AI operations and relative path resolution
+- **`CLAUDE_PLUGIN_ROOT`** - Enables plugin sharing and custom output styles
+- **`ANTHROPIC_API_KEY`** - Required for API access
+- **`CLAUDE_DEBUG`** - Enable debug logging
+- **`CLAUDE_LOG_LEVEL`** - Control logging verbosity
+- **`CLAUDE_CONFIG_PATH`** - Custom configuration location
+- **`CLAUDE_NO_GIT`** - Disable git integration if needed
+
+These variables enhance bash command processing and enable better project-scoped operations.
+</ch:environment-variables>
+
 <ch:aliases> ch → Main helper: ch [category] [command] chp → Project overview
 (highly recommended for new projects!) chs → Search tools: find-code, find-file,
 search-imports </ch:aliases>
@@ -25,6 +41,16 @@ jq, httpie) interactive|i → Interactive tools (needs: fzf, gum) context|ctx �
 Context generation code-relationships|cr → Dependency analysis code-quality|cq →
 Quality checks mcp → MCP server operations nlp|text → Static analysis & text
 processing (complexity, security, docs) </ch:categories>
+
+<ch:built-in-features>
+## ⚡ Built-in Claude Code Features (v2.0.41+)
+
+**Rewind Feature** - Use `/rewind` or double-escape to roll back code state and conversation context:
+- Recover from errors or unwanted changes
+- Safely experiment with different approaches
+- Reset context when conversation becomes unfocused
+- Specify how far back to rewind
+</ch:built-in-features>
 
 <ch:key-commands>
 
