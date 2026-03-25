@@ -240,6 +240,11 @@ The setup script will offer to install missing tools automatically.
 3. Submit a pull request
 4. Share your improvements!
 
+## 🔗 Related Projects
+
+- [**cc-safe-setup**](https://github.com/yurukusa/cc-safe-setup) — Safety hooks for autonomous Claude Code. Blocks destructive commands, prevents secret leaks, validates syntax after edits. `npx cc-safe-setup --shield`
+- [**claude-code-hooks**](https://github.com/yurukusa/claude-code-hooks) — Curated hook collection with recipes and templates for production Claude Code.
+
 ## 📄 License
 
 MIT License - see LICENSE file for details
