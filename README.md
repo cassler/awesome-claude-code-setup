@@ -233,6 +233,10 @@ The setup script will offer to install missing tools automatically.
 2. Run `./setup.sh` to install
 3. Use in Claude as `/my-command`
 
+## 🔗 See Also
+
+- [claude-dash](https://github.com/krabat-l/claude-dash) - Real-time statusline for Claude Code showing context health, cost, quota, cache, tools, and git status
+
 ## 🤝 Contributing
 
 1. Fork the repository
