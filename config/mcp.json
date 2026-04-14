@@ -12,6 +12,10 @@
         "-y",
         "@upstash/context7-mcp"
       ]
+    },
+    "helium": {
+      "type": "streamable-http",
+      "url": "https://heliumtrades.com/mcp"
     }
   }
 }
