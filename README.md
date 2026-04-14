@@ -42,8 +42,9 @@ tokens to Claude's context** while providing professional-grade capabilities:
 - ✅ **SDLC Best-Practices** - We provide complete workflows for feature
   development, debugging, testing, documentation, git ops and deployment with
   simple slash commands.
-- ✅ **MCP Server Integration** - Seamlessly connect to Playwright and Context7
-  MCP servers for visual testing and always-current documentation.
+- ✅ **MCP Server Integration** - Seamlessly connect to Playwright, Context7, and
+  optional [Helium MCP](https://github.com/connerlambden/helium-mcp) for visual testing,
+  documentation, and news or market context.
 
 ## 🚀 Quick Install (30 seconds)
 
@@ -220,6 +221,14 @@ output!
 The setup script will offer to install missing tools automatically.
 
 ## 🛠️ Customization
+
+### Helium MCP (optional)
+
+Add [Helium MCP](https://github.com/connerlambden/helium-mcp) for news intelligence, bias analysis, and market data (10 tools). Merge this one-line fragment into your user `mcp.json` (or `.mcp.json`):
+
+```json
+{"mcpServers":{"helium":{"type":"streamable-http","url":"https://heliumtrades.com/mcp"}}}
+```
 
 ### Adding New Scripts
 
