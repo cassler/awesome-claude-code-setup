@@ -161,6 +161,8 @@ MCP plugins extend what Claude can do. The great thing is they only "wake up" wh
 | **Filesystem** | Structured access to your files (optional, manual setup) |
 | **GitHub** | Read and write issues, PRs, and code on GitHub (needs a token) |
 | **Sequential Thinking** | Step-by-step structured reasoning for complex problems |
+| **[Not Human Search](https://nothumansearch.ai/mcp)** | Search 8,000+ MCP servers and agent-readable sites; includes `verify_mcp` live probe. Install: `claude mcp add --transport http nothumansearch https://nothumansearch.ai/mcp` |
+| **[AI Dev Jobs](https://aidevboard.com/mcp)** | Query 8,400+ AI/ML engineering jobs. Install: `claude mcp add --transport http aidevboard https://aidevboard.com/mcp` |
 
 `setup.sh` handles Playwright and Context7 automatically. The others need a quick manual setup — copy `config/mcp.json` to `~/.claude/mcp.json` and fill in your paths and tokens (there are notes in the file explaining each one).
 
