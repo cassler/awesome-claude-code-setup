@@ -49,12 +49,31 @@ Run `ch help` to see all available commands and categories.
 
 ## MCP Servers (User Level)
 
-You have these MCP servers configured globally:
+The default setup (`setup.sh`) configures these MCP servers globally:
 - **Playwright**: Browser automation for visual testing and UI interactions
 - **Context7**: Up-to-date documentation for libraries and frameworks
 
-Use these servers when:
-- Testing UI changes (Playwright can navigate, screenshot, and interact)
-- Researching library APIs (Context7 provides current documentation)
+Additional servers (Filesystem, GitHub, Sequential Thinking) are available in
+`config/mcp.json` and can be added manually. See the README for details.
 
-Note: These are user-level servers available in all your projects.
+MCP servers are **lazy-loaded** — they only consume context tokens when you
+first invoke them. Enable all servers freely without impacting performance on
+unrelated tasks.
+
+## Scoped Rules
+
+Scoped rules auto-load based on the files Claude is working with. Two locations
+are supported:
+
+- **User-level** (`~/.claude/rules/`) — installed by `setup.sh`, apply across all projects
+- **Project-level** (`.claude/rules/`) — place in your repo root, apply only to this project
+
+The default rules installed at user level:
+- `typescript.md` — TypeScript/JS conventions (loads for `*.ts`, `*.tsx`, `*.js`, `*.jsx`)
+- `python.md` — Python conventions (loads for `*.py`)
+- `testing.md` — Testing conventions (loads for test files)
+
+To add a project-scoped rule:
+1. Create `.claude/rules/your-rule.md` in your repo
+2. Add front matter: `globs: "**/*.ext"`
+3. Write your rules in the body — Claude will load them automatically for this project

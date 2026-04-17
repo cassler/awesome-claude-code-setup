@@ -12,6 +12,18 @@ operations into single commands.
 - Token-efficient responses (less back-and-forth)
 - Consistent patterns across different tech stacks </ch:why-use-helpers>
 
+<ch:models>
+
+## Recommended Models (Claude 4.x)
+
+| Model | ID | Best For |
+|---|---|---|
+| **Opus 4.7** | `claude-opus-4-7` | Complex agentic coding, multi-step reasoning, large refactors |
+| **Sonnet 4.6** | `claude-sonnet-4-6` | Daily driver — fast, capable, great for most tasks |
+| **Haiku 4.5** | `claude-haiku-4-5-20251001` | Quick lookups, simple edits, high-volume batch work |
+
+</ch:models>
+
 <ch:aliases> ch → Main helper: ch [category] [command] chp → Project overview
 (highly recommended for new projects!) chs → Search tools: find-code, find-file,
 search-imports </ch:aliases>
@@ -145,4 +157,9 @@ This is the claude-helpers project itself. Key points:
 Project includes .mcp.json with:
 
 - Playwright: For visual testing demos
-- Context7: For documentation lookups </ch:user-customizations>
+- Context7: For documentation lookups
+- Filesystem: Structured file access with path sandboxing
+- GitHub: Issues, PRs, and code search (requires GITHUB_TOKEN)
+- Sequential Thinking: Structured reasoning for complex problems
+
+Note: MCP servers are lazy-loaded — they only consume context when first used. </ch:user-customizations>

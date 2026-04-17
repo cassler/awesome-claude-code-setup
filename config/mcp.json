@@ -2,16 +2,35 @@
   "mcpServers": {
     "playwright": {
       "command": "npx",
-      "args": [
-        "@playwright/mcp@latest"
-      ]
+      "args": ["-y", "@playwright/mcp@latest"],
+      "description": "Browser automation for visual testing and UI interactions"
     },
     "context7": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@upstash/context7-mcp"
-      ]
+      "args": ["-y", "@upstash/context7-mcp"],
+      "description": "Up-to-date library and framework documentation"
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/yourname"],
+      "description": "Structured filesystem access — replace /Users/yourname with your actual home directory path before using"
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}"
+      },
+      "description": "GitHub API: issues, PRs, repos, code search. Requires GITHUB_TOKEN env var."
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "description": "Structured multi-step reasoning for complex problems"
     }
+  },
+  "_notes": {
+    "lazy-loading": "Claude Code lazy-loads MCP servers on first use, reducing context overhead by up to 95%. You can safely enable all servers without impacting token usage on unrelated tasks.",
+    "optional": "The 'github' server requires a GITHUB_TOKEN environment variable. The 'filesystem' server requires editing the path placeholder before use. Add any required env vars to your shell profile before starting Claude Code."
   }
 }

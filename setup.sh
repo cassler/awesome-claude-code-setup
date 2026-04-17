@@ -762,34 +762,72 @@ setup_mcp_servers() {
     echo ""
 }
 
+# Install settings.json (hooks + permissions) and scoped rules
+setup_hooks_and_rules() {
+    echo -e "${BLUE}🪝 Setting up hooks and scoped rules...${NC}"
+
+    local settings_src="$CLAUDE_HELPERS_DIR/$CONFIG_DIR/settings.json"
+    local settings_dst="$CLAUDE_DIR/settings.json"
+
+    # Install settings.json
+    if [ -f "$settings_src" ]; then
+        if [ -f "$settings_dst" ]; then
+            echo -e "${YELLOW}⚠️  $settings_dst already exists — skipping to preserve your customizations${NC}"
+            echo -e "${BLUE}ℹ️  Reference copy available at: $settings_src${NC}"
+        else
+            cp "$settings_src" "$settings_dst"
+            echo -e "${GREEN}✅ Installed hooks config to $settings_dst${NC}"
+        fi
+    fi
+
+    # Install scoped rules
+    local rules_src="$CLAUDE_HELPERS_DIR/.claude/rules"
+    local rules_dst="$CLAUDE_DIR/rules"
+
+    if [ -d "$rules_src" ]; then
+        mkdir -p "$rules_dst"
+        cp -n "$rules_src/"*.md "$rules_dst/" 2>/dev/null
+        echo -e "${GREEN}✅ Installed scoped rules to $rules_dst${NC}"
+    fi
+
+    # Make hook scripts executable
+    chmod +x "$SCRIPTS_INSTALL_DIR/post-edit.sh" 2>/dev/null
+    chmod +x "$SCRIPTS_INSTALL_DIR/notify.sh" 2>/dev/null
+
+    echo ""
+}
+
 # Main setup flow
 main() {
     # Step 1: Detect platform
     detect_platform
-    
+
     # Step 2: Install Homebrew on macOS if needed
     if [[ "$OS" == "macOS" ]]; then
         install_homebrew
     fi
-    
+
     # Step 3: Install core scripts
     if ! install_core_scripts; then
         echo -e "${RED}❌ Failed to install core scripts${NC}"
         exit 1
     fi
-    
+
     # Step 4: Setup shell aliases
     setup_shell_aliases
-    
+
     # Step 5: Create/update global CLAUDE.md
     setup_global_claude_md
-    
+
     # Step 6: Setup MCP servers
     setup_mcp_servers
-    
-    # Step 7: Check and offer to install optional tools
+
+    # Step 7: Install hooks config and scoped rules
+    setup_hooks_and_rules
+
+    # Step 8: Check and offer to install optional tools
     check_optional_tools
-    
+
     # Final instructions
     echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo -e "${GREEN}✨ Setup Complete!${NC}"
