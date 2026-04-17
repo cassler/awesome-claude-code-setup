@@ -2,7 +2,7 @@
   "mcpServers": {
     "playwright": {
       "command": "npx",
-      "args": ["@playwright/mcp@latest"],
+      "args": ["-y", "@playwright/mcp@latest"],
       "description": "Browser automation for visual testing and UI interactions"
     },
     "context7": {

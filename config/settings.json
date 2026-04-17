@@ -34,17 +34,16 @@
       "Bash(git pull*)",
       "Bash(git branch*)",
       "Bash(git checkout*)",
-      "Bash(npm run *)",
+      "Bash(git stash*)",
+      "Bash(npm run test*)",
+      "Bash(npm run build*)",
+      "Bash(npm run lint*)",
       "Bash(npm test*)",
-      "Bash(npm install*)",
-      "Bash(npx *)",
-      "Bash(make *)",
       "Bash(pytest*)",
       "Bash(go test*)",
       "Bash(go build*)",
       "Bash(cargo test*)",
       "Bash(cargo build*)"
     ]
-  },
-  "autoScrollEnabled": true
+  }
 }

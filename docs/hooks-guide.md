@@ -141,15 +141,14 @@ exit 0
 
 ## Installing the Defaults
 
-`setup.sh` copies `post-edit.sh` and `notify.sh` to `~/.claude/scripts/` and
-makes them executable. Copy `config/settings.json` to `~/.claude/settings.json`
-to activate the hooks:
+`setup.sh` copies `post-edit.sh` and `notify.sh` to `~/.claude/scripts/`,
+makes them executable, and installs `~/.claude/settings.json` automatically
+if it does not already exist.
 
-```bash
-cp config/settings.json ~/.claude/settings.json
-```
-
-Restart Claude Code after editing `settings.json`.
+If `~/.claude/settings.json` is already present, `setup.sh` skips replacing
+it to preserve your existing Claude Code settings. In that case, manually
+merge the hook entries from `config/settings.json` into your existing file,
+then restart Claude Code.
 
 ## Further Reading
 

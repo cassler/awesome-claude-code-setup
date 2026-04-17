@@ -70,8 +70,8 @@ Setup handles everything automatically!
 2. **Slash commands** → `~/.claude/commands/`
 3. **Shell aliases** → Added to your `.zshrc` or `.bashrc`
 4. **Global config** → `~/.claude/CLAUDE.md` (auto-updated)
-5. **Hooks config** → `~/.claude/settings.json`
-6. **Scoped rules** → `~/.claude/rules/` (auto-loaded by file type)
+5. **Hooks config** → `~/.claude/settings.json` (skipped if file already exists)
+6. **Scoped rules** → `~/.claude/rules/` (user-level, auto-loaded by file type)
 
 ---
 
@@ -114,11 +114,17 @@ every time.
 
 ---
 
-## 🧠 Scoped Rules (.claude/rules/)
+## 🧠 Scoped Rules
 
-Rules in `.claude/rules/` are CLAUDE.md files that **only load when Claude
-works with matching file types** — keeping context lean while ensuring
-language-specific guidance is always available.
+Scoped rules are CLAUDE.md files that **only load when Claude works with
+matching file types** — keeping context lean while ensuring language-specific
+guidance is always available.
+
+Claude Code supports two locations:
+- **User-level** (`~/.claude/rules/`) — installed by `setup.sh`, apply across **all** projects
+- **Project-level** (`.claude/rules/` in your repo) — apply only to that project
+
+`setup.sh` installs the following as user-level rules:
 
 | Rule file | Loads for | Covers |
 |---|---|---|
@@ -126,7 +132,7 @@ language-specific guidance is always available.
 | `python.md` | `*.py` | Type hints, pathlib, ruff, dataclasses |
 | `testing.md` | Test files (`*.test.*`, `test_*.py`, etc.) | Deterministic tests, one-assertion-per-test |
 
-Add your own by creating `.claude/rules/my-rule.md` with a `globs:` front matter field.
+Add your own by creating a file in either location with a `globs:` front matter field.
 
 ---
 
@@ -143,8 +149,10 @@ first invoked. You can enable all servers without any overhead on unrelated task
 | **GitHub** | `@modelcontextprotocol/server-github` | Issues, PRs, code search (needs `GITHUB_TOKEN`) |
 | **Sequential Thinking** | `@modelcontextprotocol/server-sequential-thinking` | Structured multi-step reasoning |
 
-Config lives in `config/mcp.json`. Copy to `~/.claude/mcp.json` or let
-`setup.sh` handle it.
+`setup.sh` installs Playwright and Context7 automatically. The Filesystem,
+GitHub, and Sequential Thinking servers require manual setup — copy
+`config/mcp.json` to `~/.claude/mcp.json` and edit paths/tokens as needed
+(see notes in the file).
 
 ---
 

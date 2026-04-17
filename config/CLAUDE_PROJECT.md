@@ -49,27 +49,31 @@ Run `ch help` to see all available commands and categories.
 
 ## MCP Servers (User Level)
 
-You have these MCP servers configured globally:
+The default setup (`setup.sh`) configures these MCP servers globally:
 - **Playwright**: Browser automation for visual testing and UI interactions
 - **Context7**: Up-to-date documentation for libraries and frameworks
-- **Filesystem**: Structured file access with path sandboxing
-- **GitHub**: Issues, PRs, repos, code search (requires `GITHUB_TOKEN`)
-- **Sequential Thinking**: Structured multi-step reasoning for complex problems
+
+Additional servers (Filesystem, GitHub, Sequential Thinking) are available in
+`config/mcp.json` and can be added manually. See the README for details.
 
 MCP servers are **lazy-loaded** — they only consume context tokens when you
 first invoke them. Enable all servers freely without impacting performance on
 unrelated tasks.
 
-## Scoped Rules (.claude/rules/)
+## Scoped Rules
 
-This project uses scoped CLAUDE.md rules that auto-load based on the files
-Claude is working with:
+Scoped rules auto-load based on the files Claude is working with. Two locations
+are supported:
 
-- `.claude/rules/typescript.md` — TypeScript/JS conventions (loads for `*.ts`, `*.tsx`, `*.js`, `*.jsx`)
-- `.claude/rules/python.md` — Python conventions (loads for `*.py`)
-- `.claude/rules/testing.md` — Testing conventions (loads for test files)
+- **User-level** (`~/.claude/rules/`) — installed by `setup.sh`, apply across all projects
+- **Project-level** (`.claude/rules/`) — place in your repo root, apply only to this project
 
-To add a new scoped rule:
-1. Create `.claude/rules/your-rule.md`
+The default rules installed at user level:
+- `typescript.md` — TypeScript/JS conventions (loads for `*.ts`, `*.tsx`, `*.js`, `*.jsx`)
+- `python.md` — Python conventions (loads for `*.py`)
+- `testing.md` — Testing conventions (loads for test files)
+
+To add a project-scoped rule:
+1. Create `.claude/rules/your-rule.md` in your repo
 2. Add front matter: `globs: "**/*.ext"`
-3. Write your rules in the body — Claude will load them automatically
+3. Write your rules in the body — Claude will load them automatically for this project
