@@ -7,8 +7,8 @@ Supercharge your Claude Code experience with lightning-fast commands and intelli
 </b></p>
 
 <p align="center">
-🎯 19 Slash Commands &bull; ⚡ 17 Shell Tools<br />
-🧠 NLP Analysis &bull; 🤖 MCP Servers 💰 50-80% Token Savings<br />
+🎯 21 Slash Commands &bull; ⚡ 17 Shell Tools<br />
+🧠 NLP Analysis &bull; 🤖 MCP Servers &bull; 🪝 Hooks &bull; 💰 50-80% Token Savings<br />
 📦 TypeScript/JS &bull; 🐍 Python &bull; 🐹 Go &bull; 🦀 Rust<br /><br />
 Brought to you by<br />
 <a href='https://pressw.ai&utm_source=github&utm_medium=readme&utm_campaign=claude-code-power-tools'>
@@ -32,18 +32,19 @@ seasoned engineer, we focus on mastering the environment Claude works in** - not
 just adding more tools, but building the right foundation. **We add only ~300
 tokens to Claude's context** while providing professional-grade capabilities:
 
-- ✅ **Token-Conscious Bash** - scripts, automations, and cli tools to minmize
+- ✅ **Token-Conscious Bash** - scripts, automations, and cli tools to minimize
   token usage while maximizing power.
 - ✅ **NLP-Powered Code Analysis** - static analysis, code quality, and
   documentation insights without external dependencies.
 - ✅ **Thoughtful Batching** - We keep complex business logic where it belongs:
   in code, not in Claude's context.
-
 - ✅ **SDLC Best-Practices** - We provide complete workflows for feature
   development, debugging, testing, documentation, git ops and deployment with
   simple slash commands.
-- ✅ **MCP Server Integration** - Seamlessly connect to Playwright and Context7
-  MCP servers for visual testing and always-current documentation.
+- ✅ **Hooks & Automation** - Auto-format files after edits, send notifications
+  on task completion, and enforce policies without lifting a finger.
+- ✅ **MCP Server Integration** - Playwright, Context7, GitHub, Filesystem, and
+  Sequential Thinking — lazy-loaded so they never bloat your context.
 
 ## 🚀 Quick Install (30 seconds)
 
@@ -69,8 +70,121 @@ Setup handles everything automatically!
 2. **Slash commands** → `~/.claude/commands/`
 3. **Shell aliases** → Added to your `.zshrc` or `.bashrc`
 4. **Global config** → `~/.claude/CLAUDE.md` (auto-updated)
+5. **Hooks config** → `~/.claude/settings.json`
+6. **Scoped rules** → `~/.claude/rules/` (auto-loaded by file type)
 
-## 📝 Slash Commands - What You'll Actually Use
+---
+
+## 🤖 Claude 4.x Model Reference
+
+| Model | ID | Best For |
+|---|---|---|
+| **Opus 4.7** | `claude-opus-4-7` | Complex agentic coding, large refactors, multi-step reasoning |
+| **Sonnet 4.6** | `claude-sonnet-4-6` | Daily driver — fast, capable, excellent value |
+| **Haiku 4.5** | `claude-haiku-4-5-20251001` | Quick edits, lookups, high-volume batch tasks |
+
+> Claude Code defaults to Sonnet 4.6. Switch models with `/model` or the model picker in the desktop app.
+
+---
+
+## 🪝 Hooks — Automation Without Lifting a Finger
+
+Hooks run shell commands automatically in response to Claude's actions. This
+repo ships two ready-to-use hooks and a `settings.json` template to activate them.
+
+### Included Hooks
+
+| Hook | Trigger | What it does |
+|---|---|---|
+| `post-edit.sh` | After every `Edit` or `Write` | Auto-formats the file (Prettier, Ruff, gofmt, rustfmt) |
+| `notify.sh` | When Claude finishes a task | Desktop notification via `osascript` (macOS) or `notify-send` (Linux) |
+
+### Activating Hooks
+
+```bash
+cp config/settings.json ~/.claude/settings.json
+# Restart Claude Code
+```
+
+The `settings.json` also includes a curated `permissions.allow` list so Claude
+can run common git, npm, make, pytest, and go commands without prompting you
+every time.
+
+→ **Full documentation:** [docs/hooks-guide.md](docs/hooks-guide.md)
+
+---
+
+## 🧠 Scoped Rules (.claude/rules/)
+
+Rules in `.claude/rules/` are CLAUDE.md files that **only load when Claude
+works with matching file types** — keeping context lean while ensuring
+language-specific guidance is always available.
+
+| Rule file | Loads for | Covers |
+|---|---|---|
+| `typescript.md` | `*.ts`, `*.tsx`, `*.js`, `*.jsx` | Type safety, async patterns, no-`any` policy |
+| `python.md` | `*.py` | Type hints, pathlib, ruff, dataclasses |
+| `testing.md` | Test files (`*.test.*`, `test_*.py`, etc.) | Deterministic tests, one-assertion-per-test |
+
+Add your own by creating `.claude/rules/my-rule.md` with a `globs:` front matter field.
+
+---
+
+## 🤖 MCP Servers — Lazy-Loaded, Zero Context Cost
+
+Claude Code **lazy-loads** MCP servers — they only consume context tokens when
+first invoked. You can enable all servers without any overhead on unrelated tasks.
+
+| Server | Package | Purpose |
+|---|---|---|
+| **Playwright** | `@playwright/mcp` | Browser automation, visual testing, screenshots |
+| **Context7** | `@upstash/context7-mcp` | Up-to-date library & framework docs |
+| **Filesystem** | `@modelcontextprotocol/server-filesystem` | Structured file access with path sandboxing |
+| **GitHub** | `@modelcontextprotocol/server-github` | Issues, PRs, code search (needs `GITHUB_TOKEN`) |
+| **Sequential Thinking** | `@modelcontextprotocol/server-sequential-thinking` | Structured multi-step reasoning |
+
+Config lives in `config/mcp.json`. Copy to `~/.claude/mcp.json` or let
+`setup.sh` handle it.
+
+---
+
+## 🆕 2025-2026 Claude Code Features
+
+### Auto Mode
+
+Run Claude with autonomous permission decisions — a safety classifier reviews
+actions before execution and blocks truly risky operations (mass deletion, data
+exfiltration):
+
+```bash
+claude --enable-auto-mode
+```
+
+A safer alternative to `--dangerously-skip-permissions` for long autonomous tasks.
+
+### Plan Mode
+
+Draft a step-by-step plan before Claude writes any code. Review and edit the
+plan, then approve execution. Activate with `/plan` in Claude Code or via the
+web editor.
+
+### Routines (Pro/Max/Team/Enterprise)
+
+Bundle a prompt, repository, and connectors into a reusable configuration that
+runs on a schedule, fires from an API call, or triggers off GitHub events.
+Execution happens on Anthropic's infrastructure — no laptop required.
+
+### Desktop App & VS Code
+
+- **Desktop app** (Mac/Windows): Manage multiple parallel sessions from one window,
+  with a sidebar, drag-and-drop layout, integrated terminal, rebuilt diff viewer,
+  and a side-chat shortcut (**Cmd+;**) for branching questions.
+- **VS Code extension**: Inline diffs in a dedicated sidebar panel with real-time
+  visibility of Claude's changes.
+
+---
+
+## 📝 Slash Commands — What You'll Actually Use
 
 Type `/` in Claude to access these complete workflows:
 
@@ -80,6 +194,7 @@ Type `/` in Claude to access these complete workflows:
 - 🐛 `/debug-issue` - Systematic debugging with root cause analysis
 - ✅ `/pre-review-check` - Ensure code is review-ready
 - 🚢 `/pre-deploy-check` - Production readiness verification
+- 🔁 `/autofix-pr` - **New** — automatically fix CI failures and review feedback
 
 ### Analysis & Documentation
 
@@ -98,12 +213,15 @@ Type `/` in Claude to access these complete workflows:
 - 💸 `/tech-debt-hunt` - Find and prioritize technical debt
 - 🔒 `/security-audit` - Comprehensive security vulnerability scan
 - ⚡ `/performance-check` - Find performance bottlenecks
+- 🔬 `/ultrareview` - **New** — deep multi-agent code review on a branch diff
 
 ### Process & Tracking
 
 - 🔄 `/commit-and-push` - Complete git workflow with PR checks
 - 📓 `/dev-diary` - Track development decisions
 - 🚀 `/post-init-onboarding` - Systematic project onboarding
+
+---
 
 ## 🎯 Shell Commands (How Claude Saves You Tokens)
 
@@ -232,6 +350,12 @@ The setup script will offer to install missing tools automatically.
 1. Create markdown in `commands/my-command.md`
 2. Run `./setup.sh` to install
 3. Use in Claude as `/my-command`
+
+### Adding Scoped Rules
+
+1. Create `.claude/rules/my-rule.md`
+2. Add front matter: `---\nglobs: "**/*.ext"\n---`
+3. Write your rules — Claude loads them automatically for matching files
 
 ## 🤝 Contributing
 

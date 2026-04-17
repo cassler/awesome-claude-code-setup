@@ -52,9 +52,24 @@ Run `ch help` to see all available commands and categories.
 You have these MCP servers configured globally:
 - **Playwright**: Browser automation for visual testing and UI interactions
 - **Context7**: Up-to-date documentation for libraries and frameworks
+- **Filesystem**: Structured file access with path sandboxing
+- **GitHub**: Issues, PRs, repos, code search (requires `GITHUB_TOKEN`)
+- **Sequential Thinking**: Structured multi-step reasoning for complex problems
 
-Use these servers when:
-- Testing UI changes (Playwright can navigate, screenshot, and interact)
-- Researching library APIs (Context7 provides current documentation)
+MCP servers are **lazy-loaded** — they only consume context tokens when you
+first invoke them. Enable all servers freely without impacting performance on
+unrelated tasks.
 
-Note: These are user-level servers available in all your projects.
+## Scoped Rules (.claude/rules/)
+
+This project uses scoped CLAUDE.md rules that auto-load based on the files
+Claude is working with:
+
+- `.claude/rules/typescript.md` — TypeScript/JS conventions (loads for `*.ts`, `*.tsx`, `*.js`, `*.jsx`)
+- `.claude/rules/python.md` — Python conventions (loads for `*.py`)
+- `.claude/rules/testing.md` — Testing conventions (loads for test files)
+
+To add a new scoped rule:
+1. Create `.claude/rules/your-rule.md`
+2. Add front matter: `globs: "**/*.ext"`
+3. Write your rules in the body — Claude will load them automatically

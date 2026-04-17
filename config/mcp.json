@@ -2,16 +2,35 @@
   "mcpServers": {
     "playwright": {
       "command": "npx",
-      "args": [
-        "@playwright/mcp@latest"
-      ]
+      "args": ["@playwright/mcp@latest"],
+      "description": "Browser automation for visual testing and UI interactions"
     },
     "context7": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@upstash/context7-mcp"
-      ]
+      "args": ["-y", "@upstash/context7-mcp"],
+      "description": "Up-to-date library and framework documentation"
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${HOME}"],
+      "description": "Structured filesystem access with path sandboxing"
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}"
+      },
+      "description": "GitHub API: issues, PRs, repos, code search. Requires GITHUB_TOKEN env var."
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "description": "Structured multi-step reasoning for complex problems"
     }
+  },
+  "_notes": {
+    "lazy-loading": "Claude Code lazy-loads MCP servers on first use, reducing context overhead by up to 95%. You can safely enable all servers without impacting token usage on unrelated tasks.",
+    "optional": "The 'github' server requires a GITHUB_TOKEN environment variable. The 'brave-search' server (not included) requires a BRAVE_API_KEY. Add them to your shell profile before starting Claude Code."
   }
 }
