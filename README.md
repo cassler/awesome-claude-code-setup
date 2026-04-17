@@ -166,29 +166,6 @@ MCP plugins extend what Claude can do. The great thing is they only "wake up" wh
 
 ---
 
-## 🆕 What's New in Claude Code (2025–2026)
-
-### 🤖 Auto Mode
-Tired of approving every little action? Auto Mode lets Claude make permission decisions on its own, with a safety layer that automatically blocks anything risky.
-
-```bash
-claude --enable-auto-mode
-```
-
-### 📋 Plan Mode
-Before Claude writes a single line of code, have it draft a full plan. Review it, edit it, then give the go-ahead. Great for bigger changes where you want to stay in control.
-
-Type `/plan` in Claude Code to try it.
-
-### ⏰ Routines (Pro/Max/Team/Enterprise)
-Set Claude up to run tasks on a schedule — or trigger them from GitHub events or an API call. It all runs in the cloud, so your laptop doesn't need to be open.
-
-### 🖥️ Desktop App & VS Code
-- **Desktop app** (Mac/Windows): Run multiple Claude sessions side by side, with a built-in terminal, diff viewer, and a quick side-chat shortcut (**Cmd+;**) that doesn't mess with your main context
-- **VS Code extension**: See Claude's edits inline as they happen, with a dedicated diff panel for easy review
-
----
-
 ## 🛠️ Shell Helpers — For Claude's Use (and Yours)
 
 These are short commands that Claude uses behind the scenes to work faster in your project. You can run them yourself too!
