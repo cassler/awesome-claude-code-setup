@@ -1,14 +1,16 @@
 # Hooks Guide
 
-Claude Code hooks let you run shell commands automatically in response to
-Claude's actions. Use them to auto-format files after edits, send notifications
-when tasks complete, enforce policies, or integrate with external tools.
+Hooks let you set up things that run automatically whenever Claude does something. Think of them like IFTTT for Claude Code — "when Claude edits a file, run my formatter" or "when Claude finishes a task, send me a notification."
 
-## How Hooks Work
+You don't need to know much about them to benefit from them. The two hooks that come with this setup (auto-format and task notifications) just work out of the box after running `setup.sh`.
 
-Hooks are defined in `~/.claude/settings.json` (user-level) or
-`.claude/settings.json` (project-level). Claude Code runs them as subprocesses
-at the specified lifecycle points.
+This guide is for when you want to go further and build your own.
+
+---
+
+## How It Works
+
+Hooks live in a `settings.json` file in your Claude config folder. When something happens — Claude edits a file, runs a command, finishes a task — Claude Code checks if any hooks match and runs them.
 
 ```json
 {
@@ -28,40 +30,45 @@ at the specified lifecycle points.
 }
 ```
 
-## Hook Events
+This says: "After Claude edits or writes a file, run `post-edit.sh`. When Claude finishes a task, run `notify.sh`."
 
-| Event | Fires When | Common Uses |
+---
+
+## When Hooks Can Fire
+
+| Event | When it fires | Good for |
 |---|---|---|
-| `PreToolUse` | Before Claude calls a tool | Validation, logging, blocking dangerous ops |
-| `PostToolUse` | After a tool call completes | Auto-format, lint, update indexes |
-| `Notification` | Claude sends a user notification | Forward to Slack, mobile push |
-| `Stop` | Main agent turn finishes | Desktop notification, logging, CI trigger |
+| `PreToolUse` | *Before* Claude runs a tool | Blocking dangerous commands, validating inputs |
+| `PostToolUse` | *After* Claude runs a tool | Auto-formatting, updating indexes, linting |
+| `Notification` | When Claude sends you a message | Forwarding to Slack, sending a push notification |
+| `Stop` | When Claude finishes its turn | Desktop notification, logging, triggering CI |
 
-## Matchers
+---
 
-The `matcher` field filters which tool calls trigger the hook. It uses
-permission-rule syntax.
+## Matching the Right Events
 
-**Tool name matching:**
+The `matcher` field lets you be specific about which tool calls trigger your hook. You can match broadly or precisely:
+
 ```json
-"matcher": "Edit"           // only Edit tool
-"matcher": "Edit|Write"     // Edit or Write
-"matcher": "Bash"           // any Bash call
-"matcher": "Bash(rm *)"     // only Bash calls starting with "rm "
+"matcher": "Edit"           // fires only when Claude edits a file
+"matcher": "Edit|Write"     // fires for edits OR new file writes
+"matcher": "Bash"           // fires for any shell command Claude runs
+"matcher": "Bash(rm *)"     // fires only for shell commands that start with "rm "
 ```
 
-**MCP tool matching:**
+You can also match MCP plugin actions:
 ```json
-"matcher": "mcp__playwright__*"      // any Playwright MCP tool
-"matcher": "mcp__github__create_*"   // GitHub create operations only
+"matcher": "mcp__playwright__*"      // any Playwright action
+"matcher": "mcp__github__create_*"   // only GitHub "create" actions
 ```
 
-**No matcher** (omit the field) matches all tool calls for that event.
+Leave out the `matcher` entirely to catch everything for that event type.
 
-## The `if` Field (Conditional Hooks)
+---
 
-Narrow hook execution further with the `if` field using the same syntax as
-permission rules:
+## Extra Filtering with `if`
+
+Sometimes you need the matcher to be even more specific. The `if` field adds a second check:
 
 ```json
 {
@@ -71,39 +78,50 @@ permission rules:
 }
 ```
 
-## Environment Variables
+This only triggers for Bash commands that start with `git push`.
 
-Claude Code injects context into hook processes:
+---
 
-| Variable | Set For | Value |
+## What Your Hook Script Can Read
+
+Claude passes context to your hook script through environment variables:
+
+| Variable | Available when | What's in it |
 |---|---|---|
-| `CLAUDE_TOOL_NAME` | All hooks | Tool that triggered the hook (`Edit`, `Bash`, etc.) |
-| `CLAUDE_TOOL_INPUT_FILE_PATH` | Edit/Write | Absolute path of the modified file |
-| `CLAUDE_TOOL_INPUT_COMMAND` | Bash | The command string being run |
-| `CLAUDE_NOTIFICATION_MESSAGE` | Notification/Stop | Message from Claude |
+| `CLAUDE_TOOL_NAME` | Always | Which tool fired the hook (`Edit`, `Bash`, etc.) |
+| `CLAUDE_TOOL_INPUT_FILE_PATH` | Edit / Write hooks | The full path of the file Claude just touched |
+| `CLAUDE_TOOL_INPUT_COMMAND` | Bash hooks | The exact command Claude is about to run or just ran |
+| `CLAUDE_NOTIFICATION_MESSAGE` | Notification / Stop hooks | The message Claude is surfacing to you |
 
-## Exit Codes
+---
 
-| Code | Meaning |
+## What Your Script Should Return
+
+Your script's exit code tells Claude what to do next:
+
+| Exit code | What it means |
 |---|---|
-| `0` | Success — Claude continues normally |
-| `1` | Error — logged but Claude continues |
-| `2` | **Block** (PreToolUse only) — Claude skips the tool call |
+| `0` | All good — Claude continues normally |
+| `1` | Something went wrong — Claude logs it and continues anyway |
+| `2` | **Block this action** (PreToolUse only) — Claude skips the tool call entirely |
 
-## Examples
+Exit code `2` is how you prevent Claude from doing something. It only works on `PreToolUse` hooks — you can't stop something that's already happened.
 
-### Auto-format after file edits
+---
 
-Already included at `scripts/post-edit.sh`. Runs Prettier, Ruff/Black, gofmt,
-or rustfmt depending on the file extension. No-ops silently if no formatter is
-found.
+## Example Hooks
 
-### Desktop notification on task completion
+### Auto-format files after Claude edits them
 
-Already included at `scripts/notify.sh`. Uses `osascript` on macOS and
-`notify-send` on Linux.
+This one's already included at `scripts/post-edit.sh`. It checks the file extension and runs the right formatter — Prettier for JS/TS, Ruff for Python, gofmt for Go, rustfmt for Rust. If none of those are installed, it does nothing.
 
-### Block accidental `git push --force` to main
+### Desktop notification when Claude finishes
+
+Also already included at `scripts/notify.sh`. It pops up a system notification when Claude is done with a task — so you can step away from your desk without having to check back constantly.
+
+### Block accidental force-pushes
+
+This one prevents Claude from ever running `git push --force`, which can overwrite your teammates' work:
 
 ```bash
 # ~/.claude/scripts/block-force-push.sh
@@ -116,6 +134,7 @@ fi
 exit 0
 ```
 
+Then add it to your `settings.json`:
 ```json
 {
   "hooks": {
@@ -129,7 +148,9 @@ exit 0
 }
 ```
 
-### Log every file Claude touches
+### Keep a log of every file Claude touches
+
+Useful if you want to review what changed during a long session:
 
 ```bash
 # ~/.claude/scripts/audit-log.sh
@@ -139,7 +160,9 @@ echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) EDIT ${CLAUDE_TOOL_INPUT_FILE_PATH:-}" \
 exit 0
 ```
 
-## Installing the Defaults
+---
+
+## Getting Started (Already Done If You Ran setup.sh)
 
 `setup.sh` copies `post-edit.sh` and `notify.sh` to `~/.claude/scripts/`,
 makes them executable, and installs `~/.claude/settings.json` automatically
@@ -149,6 +172,8 @@ If `~/.claude/settings.json` is already present, `setup.sh` skips replacing
 it to preserve your existing Claude Code settings. In that case, manually
 merge the hook entries from `config/settings.json` into your existing file,
 then restart Claude Code.
+
+---
 
 ## Further Reading
 
