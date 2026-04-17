@@ -12,8 +12,8 @@
     },
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${HOME}"],
-      "description": "Structured filesystem access with path sandboxing"
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/yourname"],
+      "description": "Structured filesystem access — replace /Users/yourname with your actual home directory path before using"
     },
     "github": {
       "command": "npx",
@@ -31,6 +31,6 @@
   },
   "_notes": {
     "lazy-loading": "Claude Code lazy-loads MCP servers on first use, reducing context overhead by up to 95%. You can safely enable all servers without impacting token usage on unrelated tasks.",
-    "optional": "The 'github' server requires a GITHUB_TOKEN environment variable. The 'brave-search' server (not included) requires a BRAVE_API_KEY. Add them to your shell profile before starting Claude Code."
+    "optional": "The 'github' server requires a GITHUB_TOKEN environment variable. The 'filesystem' server requires editing the path placeholder before use. Add any required env vars to your shell profile before starting Claude Code."
   }
 }
