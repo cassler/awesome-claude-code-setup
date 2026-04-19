@@ -23,6 +23,9 @@ Brought to you by<br />
 
 ## 👋 What is AwesomeClaude?
 
+
+- [Agent Shadow Brain](https://github.com/theihtisham/agent-shadow-brain) - Self-evolving AI coding intelligence with infinite memory (TurboQuant), genetic algorithm self-evolution, predictive bug detection, PageRank knowledge graphs, swarm intelligence, and adversarial defense.
+- [Omni Skills Forge](https://github.com/theihtisham/omni-skills-forge) - 50,000+ curated AI agent skills for Claude Code, Cursor, Copilot, Windsurf, Cline. Visual dashboard, one-click install, skill doctor, auto-update.
 Claude Code is already incredible — but out of the box, it doesn't know anything about *your* project. Every new session, you're starting from scratch. **AwesomeClaude fixes that.**
 
 One install gives Claude an instant understanding of your codebase, a library of ready-to-use workflows, and smart automations that run quietly in the background. It's built on [Anthropic's own Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices) and installs in under a minute.
