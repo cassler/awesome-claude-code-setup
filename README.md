@@ -161,6 +161,7 @@ MCP plugins extend what Claude can do. The great thing is they only "wake up" wh
 | **Filesystem** | Structured access to your files (optional, manual setup) |
 | **GitHub** | Read and write issues, PRs, and code on GitHub (needs a token) |
 | **Sequential Thinking** | Step-by-step structured reasoning for complex problems |
+| **[Bring Your AI](https://bringyour.ai)** | Migrate Claude Code context (rules, skills, hooks, MCP config) to Codex and other harnesses — remote MCP at bringyour.ai/mcp, no data retained |
 
 `setup.sh` handles Playwright and Context7 automatically. The others need a quick manual setup — copy `config/mcp.json` to `~/.claude/mcp.json` and fill in your paths and tokens (there are notes in the file explaining each one).
 
