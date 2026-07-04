@@ -220,6 +220,7 @@ No extra tools needed — everything runs with Python's built-in libraries.
 - **gum** — nice-looking CLI prompts
 - **delta** — better git diffs
 - **httpie** — friendlier HTTP client
+- **[Context Kit](https://github.com/JDDavenport/context-kit)** — Personal Context Artifacts: 4 Markdown templates + 5 Claude Code skills for giving AI agents deep personal context. MIT, one-command install.
 
 ---
 
