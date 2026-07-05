@@ -255,3 +255,5 @@ Found a workflow that saves you time? A hook that's been useful? Add it and shar
 ## 📄 License
 
 MIT License — see LICENSE for details
+
+- [Context Kit](https://github.com/JDDavenport/context-kit) — 4 PCA templates (wiki, mental-models, voice, protocols) + 5 Claude Code skills. One-command install, MIT licensed.
