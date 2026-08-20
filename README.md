@@ -252,6 +252,12 @@ Found a workflow that saves you time? A hook that's been useful? Add it and shar
 
 ---
 
+## 🔗 Related
+
+- [awesome-claude-code-hooks](https://github.com/loqimean/awesome-claude-code-hooks) — a curated list of Claude Code hooks for automating and extending workflows
+
+---
+
 ## 📄 License
 
 MIT License — see LICENSE for details
